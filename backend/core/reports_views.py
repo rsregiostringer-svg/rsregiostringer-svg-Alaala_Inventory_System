@@ -181,13 +181,27 @@ class ExportCSVView(APIView):
             if end_date:
                 recs = recs.filter(laundry_in_date__lte=end_date)
             for r in recs:
-                laundry_in_str = f"{r.laundry_in_date} / {r.laundry_in_shift} / {r.laundry_in_charge}"
-                laba_str = f"{r.laba_date} / {r.laba_shift or ''} / {r.laba_in_charge or ''}" if r.laba_date else ""
-                banlaw_str = f"{r.banlaw_date} / {r.banlaw_shift or ''} / {r.banlaw_in_charge or ''}" if r.banlaw_date else ""
-                sampay_str = f"{r.sampay_date} / {r.sampay_shift or ''} / {r.sampay_in_charge or ''}" if r.sampay_date else ""
-                pinaw_str = f"{r.pinaw_date} / {r.pinaw_shift or ''} / {r.pinaw_in_charge or ''}" if r.pinaw_date else ""
-                tiklop_str = f"{r.tiklop_date} / {r.tiklop_shift or ''} / {r.tiklop_in_charge or ''}" if r.tiklop_date else ""
-                returned_str = f"{r.date_returned} / {r.returned_by or ''}" if r.date_returned else ""
+                laundry_in_dt = f"{r.laundry_in_date} {r.laundry_in_time}".strip()
+                laundry_in_str = f"{laundry_in_dt} / {r.laundry_in_shift} / {r.laundry_in_charge}"
+                
+                laba_dt = f"{r.laba_date} {r.laba_time}".strip() if r.laba_date else ""
+                laba_str = f"{laba_dt} / {r.laba_shift or ''} / {r.laba_in_charge or ''}" if r.laba_date else ""
+                
+                banlaw_dt = f"{r.banlaw_date} {r.banlaw_time}".strip() if r.banlaw_date else ""
+                banlaw_str = f"{banlaw_dt} / {r.banlaw_shift or ''} / {r.banlaw_in_charge or ''}" if r.banlaw_date else ""
+                
+                sampay_dt = f"{r.sampay_date} {r.sampay_time}".strip() if r.sampay_date else ""
+                sampay_str = f"{sampay_dt} / {r.sampay_shift or ''} / {r.sampay_in_charge or ''}" if r.sampay_date else ""
+                
+                pinaw_dt = f"{r.pinaw_date} {r.pinaw_time}".strip() if r.pinaw_date else ""
+                pinaw_str = f"{pinaw_dt} / {r.pinaw_shift or ''} / {r.pinaw_in_charge or ''}" if r.pinaw_date else ""
+                
+                tiklop_dt = f"{r.tiklop_date} {r.tiklop_time}".strip() if r.tiklop_date else ""
+                tiklop_str = f"{tiklop_dt} / {r.tiklop_shift or ''} / {r.tiklop_in_charge or ''}" if r.tiklop_date else ""
+                
+                returned_dt = f"{r.date_returned} {r.returned_time}".strip() if r.date_returned else ""
+                returned_str = f"{returned_dt} / {r.returned_by or ''}" if r.date_returned else ""
+                
                 writer.writerow([
                     laundry_in_str,
                     f"{r.item} ({r.location.name})",

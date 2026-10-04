@@ -96,6 +96,7 @@ class LaundryViewSet(viewsets.ModelViewSet):
         record = self.get_object()
         stage = request.data.get('stage')  # 'laba', 'banlaw', 'sampay', 'pinaw', 'tiklop', 'return'
         date_val = request.data.get('date')
+        time_val = request.data.get('time', '')
         shift_val = request.data.get('shift', '8am to 5pm')
         in_charge_val = request.data.get('in_charge', '')
 
@@ -108,35 +109,42 @@ class LaundryViewSet(viewsets.ModelViewSet):
         stage = stage.lower()
         if stage == 'laba':
             record.laba_date = date_val
+            record.laba_time = time_val
             record.laba_shift = shift_val
             record.laba_in_charge = in_charge_val
         elif stage == 'banlaw':
             record.banlaw_date = date_val
+            record.banlaw_time = time_val
             record.banlaw_shift = shift_val
             record.banlaw_in_charge = in_charge_val
         elif stage == 'sampay':
             record.sampay_date = date_val
+            record.sampay_time = time_val
             record.sampay_shift = shift_val
             record.sampay_in_charge = in_charge_val
         elif stage == 'pinaw':
             record.pinaw_date = date_val
+            record.pinaw_time = time_val
             record.pinaw_shift = shift_val
             record.pinaw_in_charge = in_charge_val
         elif stage == 'tiklop':
             record.tiklop_date = date_val
+            record.tiklop_time = time_val
             record.tiklop_shift = shift_val
             record.tiklop_in_charge = in_charge_val
         elif stage == 'return':
             record.date_returned = date_val
+            record.returned_time = time_val
             record.returned_by = in_charge_val
         else:
             return Response({'detail': f"Unknown stage: {stage}"}, status=status.HTTP_400_BAD_REQUEST)
 
         record.save()
 
+        time_str = f" at {time_val}" if time_val else ""
         log_audit(
             request, 'STAGE_CHANGE', 'LAUNDRY', record.id, f"{record.item} (Qty: {record.quantity})",
-            f"Completed stage '{stage.upper()}' for Laundry #{record.id} by {in_charge_val} (Shift: {shift_val}, Date: {date_val})."
+            f"Completed stage '{stage.upper()}' for Laundry #{record.id} by {in_charge_val} (Shift: {shift_val}, Date: {date_val}{time_str})."
         )
 
         broadcast_event('laundry.stage.updated', {

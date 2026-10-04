@@ -16,6 +16,7 @@ class LaundryWorkflowTests(TestCase):
             item='Chapel Curtains',
             quantity=10,
             laundry_in_date=self.today,
+            laundry_in_time='09:00 AM',
             laundry_in_shift='8am to 5pm',
             laundry_in_charge='Juan',
             encoded_by='Admin'
@@ -24,6 +25,7 @@ class LaundryWorkflowTests(TestCase):
 
         # 2. Laba
         record.laba_date = self.today
+        record.laba_time = '10:30 AM'
         record.laba_shift = '8am to 5pm'
         record.laba_in_charge = 'Pedro'
         record.save()
@@ -31,6 +33,7 @@ class LaundryWorkflowTests(TestCase):
 
         # 3. Banlaw
         record.banlaw_date = self.today
+        record.banlaw_time = '04:15 PM'
         record.banlaw_shift = '4pm to 1am'
         record.banlaw_in_charge = 'Pedro'
         record.save()
@@ -38,6 +41,7 @@ class LaundryWorkflowTests(TestCase):
 
         # 4. Sampay
         record.sampay_date = self.today
+        record.sampay_time = '05:00 PM'
         record.sampay_shift = '4pm to 1am'
         record.sampay_in_charge = 'Maria'
         record.save()
@@ -45,6 +49,7 @@ class LaundryWorkflowTests(TestCase):
 
         # 5. Pinaw
         record.pinaw_date = self.today
+        record.pinaw_time = '01:00 AM'
         record.pinaw_shift = '12midnight to 9am'
         record.pinaw_in_charge = 'Elena'
         record.save()
@@ -52,6 +57,7 @@ class LaundryWorkflowTests(TestCase):
 
         # 6. Tiklop
         record.tiklop_date = self.today
+        record.tiklop_time = '08:30 AM'
         record.tiklop_shift = '8am to 5pm'
         record.tiklop_in_charge = 'Elena'
         record.save()
@@ -59,6 +65,7 @@ class LaundryWorkflowTests(TestCase):
 
         # 7. Returned
         record.date_returned = self.today
+        record.returned_time = '02:00 PM'
         record.returned_by = 'Juan'
         record.save()
         self.assertEqual(record.status, LaundryRecord.Status.RETURNED)

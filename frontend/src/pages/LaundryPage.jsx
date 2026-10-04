@@ -36,6 +36,7 @@ export default function LaundryPage() {
     item: '',
     quantity: 1,
     laundry_in_date: new Date().toISOString().split('T')[0],
+    laundry_in_time: new Date().toTimeString().slice(0, 5),
     laundry_in_shift: '8am to 5pm',
     laundry_in_charge: '',
     notes: '',
@@ -122,6 +123,7 @@ export default function LaundryPage() {
       item: '',
       quantity: 1,
       laundry_in_date: new Date().toISOString().split('T')[0],
+      laundry_in_time: new Date().toTimeString().slice(0, 5),
       laundry_in_shift: '8am to 5pm',
       laundry_in_charge: defaultStaff,
       notes: '',
@@ -313,13 +315,21 @@ export default function LaundryPage() {
             />
 
             <Input
-              label="In Charge (Received By)"
-              placeholder="e.g. Juan Dela Cruz"
+              type="time"
+              label="Intake Time (Hour)"
               required
-              value={newBatchData.laundry_in_charge}
-              onChange={(e) => setNewBatchData({ ...newBatchData, laundry_in_charge: e.target.value })}
+              value={newBatchData.laundry_in_time}
+              onChange={(e) => setNewBatchData({ ...newBatchData, laundry_in_time: e.target.value })}
             />
           </div>
+
+          <Input
+            label="In Charge (Received By)"
+            placeholder="e.g. Juan Dela Cruz"
+            required
+            value={newBatchData.laundry_in_charge}
+            onChange={(e) => setNewBatchData({ ...newBatchData, laundry_in_charge: e.target.value })}
+          />
 
           <Input
             label="Special Washing Instructions / Notes"

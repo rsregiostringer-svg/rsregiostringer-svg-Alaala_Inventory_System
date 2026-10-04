@@ -37,36 +37,43 @@ class LaundryRecord(models.Model):
 
     # 1. Laundry IN
     laundry_in_date = models.DateField()
-    laundry_in_shift = models.CharField(max_length=50)  # Morning, Afternoon, Night
+    laundry_in_time = models.CharField(max_length=30, blank=True, default='')  # e.g. 9:00am or 09:00
+    laundry_in_shift = models.CharField(max_length=50)  # 8am to 5pm, 4pm to 1am, 12midnight to 9am
     laundry_in_charge = models.CharField(max_length=150)
 
     # 4. Laba (Washing)
     laba_date = models.DateField(null=True, blank=True)
+    laba_time = models.CharField(max_length=30, blank=True, default='')
     laba_shift = models.CharField(max_length=50, blank=True, default='')
     laba_in_charge = models.CharField(max_length=150, blank=True, default='')
 
     # 5. Banlaw (Rinsing)
     banlaw_date = models.DateField(null=True, blank=True)
+    banlaw_time = models.CharField(max_length=30, blank=True, default='')
     banlaw_shift = models.CharField(max_length=50, blank=True, default='')
     banlaw_in_charge = models.CharField(max_length=150, blank=True, default='')
 
     # 6. Sampay (Hanging)
     sampay_date = models.DateField(null=True, blank=True)
+    sampay_time = models.CharField(max_length=30, blank=True, default='')
     sampay_shift = models.CharField(max_length=50, blank=True, default='')
     sampay_in_charge = models.CharField(max_length=150, blank=True, default='')
 
     # 7. Pinaw (Ironing/Pressing)
     pinaw_date = models.DateField(null=True, blank=True)
+    pinaw_time = models.CharField(max_length=30, blank=True, default='')
     pinaw_shift = models.CharField(max_length=50, blank=True, default='')
     pinaw_in_charge = models.CharField(max_length=150, blank=True, default='')
 
     # 8. Tiklop (Folding)
     tiklop_date = models.DateField(null=True, blank=True)
+    tiklop_time = models.CharField(max_length=30, blank=True, default='')
     tiklop_shift = models.CharField(max_length=50, blank=True, default='')
     tiklop_in_charge = models.CharField(max_length=150, blank=True, default='')
 
     # 9. Returned
     date_returned = models.DateField(null=True, blank=True)
+    returned_time = models.CharField(max_length=30, blank=True, default='')
     returned_by = models.CharField(max_length=150, blank=True, default='')
 
     # 10. Encoded By

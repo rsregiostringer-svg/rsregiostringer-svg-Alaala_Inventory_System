@@ -8,7 +8,7 @@ import Badge from '../components/common/Badge';
 import Button from '../components/common/Button';
 import LoadingState from '../components/common/LoadingState';
 import AdvanceStageModal from '../components/laundry/AdvanceStageModal';
-import { formatDate, formatDateTime, LAUNDRY_STATUS_MAP } from '../utils/formatters';
+import { formatDate, formatDateTime, formatDateTimeDisplay, LAUNDRY_STATUS_MAP } from '../utils/formatters';
 import {
   ArrowLeft,
   CheckCircle2,
@@ -84,6 +84,7 @@ export default function LaundryDetailPage() {
       key: 'in',
       name: 'Laundry IN (Intake)',
       date: record.laundry_in_date,
+      time: record.laundry_in_time,
       shift: record.laundry_in_shift,
       inCharge: record.laundry_in_charge,
       completed: true,
@@ -93,6 +94,7 @@ export default function LaundryDetailPage() {
       key: 'laba',
       name: 'Laba (Washing)',
       date: record.laba_date,
+      time: record.laba_time,
       shift: record.laba_shift,
       inCharge: record.laba_in_charge,
       completed: !!record.laba_date,
@@ -102,6 +104,7 @@ export default function LaundryDetailPage() {
       key: 'banlaw',
       name: 'Banlaw (Rinsing)',
       date: record.banlaw_date,
+      time: record.banlaw_time,
       shift: record.banlaw_shift,
       inCharge: record.banlaw_in_charge,
       completed: !!record.banlaw_date,
@@ -111,6 +114,7 @@ export default function LaundryDetailPage() {
       key: 'sampay',
       name: 'Sampay (Hanging/Drying)',
       date: record.sampay_date,
+      time: record.sampay_time,
       shift: record.sampay_shift,
       inCharge: record.sampay_in_charge,
       completed: !!record.sampay_date,
@@ -120,6 +124,7 @@ export default function LaundryDetailPage() {
       key: 'pinaw',
       name: 'Pinaw (Ironing/Pressing)',
       date: record.pinaw_date,
+      time: record.pinaw_time,
       shift: record.pinaw_shift,
       inCharge: record.pinaw_in_charge,
       completed: !!record.pinaw_date,
@@ -129,6 +134,7 @@ export default function LaundryDetailPage() {
       key: 'tiklop',
       name: 'Tiklop (Folding)',
       date: record.tiklop_date,
+      time: record.tiklop_time,
       shift: record.tiklop_shift,
       inCharge: record.tiklop_in_charge,
       completed: !!record.tiklop_date,
@@ -138,6 +144,7 @@ export default function LaundryDetailPage() {
       key: 'return',
       name: 'Date Returned / By',
       date: record.date_returned,
+      time: record.returned_time,
       shift: 'Delivered',
       inCharge: record.returned_by,
       completed: !!record.date_returned,
@@ -231,7 +238,7 @@ export default function LaundryDetailPage() {
               <div className="flex items-center gap-3 self-end sm:self-center">
                 {st.completed ? (
                   <span className="text-xs font-mono text-slate-300 font-medium">
-                    {formatDate(st.date)}
+                    {formatDateTimeDisplay(st.date, st.time)}
                   </span>
                 ) : (
                   <Button

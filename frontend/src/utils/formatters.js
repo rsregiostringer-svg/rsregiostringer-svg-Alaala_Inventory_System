@@ -42,6 +42,29 @@ export const formatDateTime = (dateTimeString) => {
   }
 };
 
+export const formatTime = (timeStr) => {
+  if (!timeStr) return '';
+  if (/am|pm/i.test(timeStr)) return timeStr.trim();
+  const parts = timeStr.split(':');
+  if (parts.length >= 2) {
+    let hours = parseInt(parts[0], 10);
+    const minutes = parts[1];
+    if (isNaN(hours)) return timeStr;
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    return `${hours}:${minutes} ${ampm}`;
+  }
+  return timeStr;
+};
+
+export const formatDateTimeDisplay = (dateStr, timeStr) => {
+  if (!dateStr) return '—';
+  const formattedDate = formatDate(dateStr);
+  if (!timeStr) return formattedDate;
+  return `${formattedDate} · ${formatTime(timeStr)}`;
+};
+
 export const INVENTORY_STATUS_MAP = {
   AVAILABLE: { label: 'Available', variant: 'success' },
   LOW_STOCK: { label: 'Low Stock', variant: 'warning' },

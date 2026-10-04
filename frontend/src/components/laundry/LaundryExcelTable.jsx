@@ -1,7 +1,7 @@
 import React from 'react';
 import Badge from '../common/Badge';
 import Button from '../common/Button';
-import { LAUNDRY_STATUS_MAP, formatDate } from '../../utils/formatters';
+import { LAUNDRY_STATUS_MAP, formatDate, formatDateTimeDisplay } from '../../utils/formatters';
 import { CheckCircle2, ArrowRightCircle, Eye } from 'lucide-react';
 
 /**
@@ -14,7 +14,7 @@ export default function LaundryExcelTable({
   onViewDetail,
   loading = false,
 }) {
-  const renderProcessCell = (date, shift, inCharge, stageLabel, stageKey, record) => {
+  const renderProcessCell = (date, time, shift, inCharge, stageLabel, stageKey, record) => {
     if (!date) {
       return (
         <div className="flex flex-col items-center justify-center p-2 rounded-md bg-slate-950/20 border border-dashed border-slate-800/80 text-xs min-h-[68px]">
@@ -34,7 +34,7 @@ export default function LaundryExcelTable({
 
     return (
       <div className="flex flex-col justify-center p-2 rounded-md bg-slate-950/60 border border-slate-800 text-xs min-w-[130px] leading-tight">
-        <span className="font-semibold text-slate-100">{formatDate(date)}</span>
+        <span className="font-semibold text-slate-100">{formatDateTimeDisplay(date, time)}</span>
         <span className="text-slate-400 text-[11px] mt-0.5">{shift || '8am to 5pm'}</span>
         <span className="text-amber-400 font-medium text-[11px] truncate mt-0.5" title={inCharge}>
           {inCharge || 'Staff'}
@@ -147,7 +147,7 @@ export default function LaundryExcelTable({
                   {/* 1. Laundy IN (Date/ Shift/ In Charge) */}
                   <td className="p-2.5">
                     <div className="flex flex-col justify-center p-2 rounded-md bg-slate-950/60 border border-slate-800 text-xs min-w-[140px] leading-tight">
-                      <span className="font-semibold text-slate-100">{formatDate(r.laundry_in_date)}</span>
+                      <span className="font-semibold text-slate-100">{formatDateTimeDisplay(r.laundry_in_date, r.laundry_in_time)}</span>
                       <span className="text-slate-400 text-[11px] mt-0.5">{r.laundry_in_shift}</span>
                       <span className="text-amber-400 text-[11px] font-medium mt-0.5 truncate" title={r.laundry_in_charge}>
                         {r.laundry_in_charge}
@@ -177,27 +177,27 @@ export default function LaundryExcelTable({
 
                   {/* 4. Laba (Date/Shift/ In Charge) */}
                   <td className="p-2">
-                    {renderProcessCell(r.laba_date, r.laba_shift, r.laba_in_charge, 'Laba', 'laba', r)}
+                    {renderProcessCell(r.laba_date, r.laba_time, r.laba_shift, r.laba_in_charge, 'Laba', 'laba', r)}
                   </td>
 
                   {/* 5. Banlaw (Date/Shift/ In Charge) */}
                   <td className="p-2">
-                    {renderProcessCell(r.banlaw_date, r.banlaw_shift, r.banlaw_in_charge, 'Banlaw', 'banlaw', r)}
+                    {renderProcessCell(r.banlaw_date, r.banlaw_time, r.banlaw_shift, r.banlaw_in_charge, 'Banlaw', 'banlaw', r)}
                   </td>
 
                   {/* 6. Sampay (Date/Shift/ In Charge) */}
                   <td className="p-2">
-                    {renderProcessCell(r.sampay_date, r.sampay_shift, r.sampay_in_charge, 'Sampay', 'sampay', r)}
+                    {renderProcessCell(r.sampay_date, r.sampay_time, r.sampay_shift, r.sampay_in_charge, 'Sampay', 'sampay', r)}
                   </td>
 
                   {/* 7. Pinaw (Date/Shift/ In Charge) */}
                   <td className="p-2">
-                    {renderProcessCell(r.pinaw_date, r.pinaw_shift, r.pinaw_in_charge, 'Pinaw', 'pinaw', r)}
+                    {renderProcessCell(r.pinaw_date, r.pinaw_time, r.pinaw_shift, r.pinaw_in_charge, 'Pinaw', 'pinaw', r)}
                   </td>
 
                   {/* 8. Tiklop (Date/Shift/ In Charge) */}
                   <td className="p-2">
-                    {renderProcessCell(r.tiklop_date, r.tiklop_shift, r.tiklop_in_charge, 'Tiklop', 'tiklop', r)}
+                    {renderProcessCell(r.tiklop_date, r.tiklop_time, r.tiklop_shift, r.tiklop_in_charge, 'Tiklop', 'tiklop', r)}
                   </td>
 
                   {/* 9. Date Returned/ By */}
@@ -206,7 +206,7 @@ export default function LaundryExcelTable({
                       <div className="flex flex-col justify-center p-2 rounded-md bg-emerald-950/20 border border-emerald-900/50 text-xs min-w-[130px] leading-tight">
                         <span className="font-semibold text-emerald-400 flex items-center gap-1">
                           <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                          {formatDate(r.date_returned)}
+                          {formatDateTimeDisplay(r.date_returned, r.returned_time)}
                         </span>
                         <span className="text-slate-300 text-[11px] mt-0.5 truncate" title={r.returned_by}>
                           By: {r.returned_by}
