@@ -161,11 +161,17 @@ class ExportCSVView(APIView):
 
         elif module == 'laundry':
             writer.writerow([
-                'ID', 'Location', 'Item', 'Quantity', 'Laundry IN Date', 'Shift', 'Laundry IN Charge',
-                'Laba Date', 'Laba In Charge', 'Banlaw Date', 'Banlaw In Charge',
-                'Sampay Date', 'Sampay In Charge', 'Pinaw Date', 'Pinaw In Charge',
-                'Tiklop Date', 'Tiklop In Charge', 'Date Returned', 'Returned By',
-                'Status', 'Encoded By'
+                'Laundry IN (Date/ Shift/ In Charge)',
+                'Items',
+                'Quantity',
+                'Laba (Date/Shift/ In Charge)',
+                'Banlaw (Date/Shift/ In Charge)',
+                'Sampay (Date/Shift/ In Charge)',
+                'Pinaw (Date/Shift/ In Charge)',
+                'Tiklop (Date/Shift/ In Charge)',
+                'Date Returned/ By',
+                'Encoded By',
+                'Status'
             ])
             recs = LaundryRecord.objects.select_related('location').all()
             if location_id:
@@ -175,16 +181,25 @@ class ExportCSVView(APIView):
             if end_date:
                 recs = recs.filter(laundry_in_date__lte=end_date)
             for r in recs:
+                laundry_in_str = f"{r.laundry_in_date} / {r.laundry_in_shift} / {r.laundry_in_charge}"
+                laba_str = f"{r.laba_date} / {r.laba_shift or ''} / {r.laba_in_charge or ''}" if r.laba_date else ""
+                banlaw_str = f"{r.banlaw_date} / {r.banlaw_shift or ''} / {r.banlaw_in_charge or ''}" if r.banlaw_date else ""
+                sampay_str = f"{r.sampay_date} / {r.sampay_shift or ''} / {r.sampay_in_charge or ''}" if r.sampay_date else ""
+                pinaw_str = f"{r.pinaw_date} / {r.pinaw_shift or ''} / {r.pinaw_in_charge or ''}" if r.pinaw_date else ""
+                tiklop_str = f"{r.tiklop_date} / {r.tiklop_shift or ''} / {r.tiklop_in_charge or ''}" if r.tiklop_date else ""
+                returned_str = f"{r.date_returned} / {r.returned_by or ''}" if r.date_returned else ""
                 writer.writerow([
-                    r.id, r.location.name, r.item, r.quantity,
-                    r.laundry_in_date, r.laundry_in_shift, r.laundry_in_charge,
-                    r.laba_date or '', r.laba_in_charge or '',
-                    r.banlaw_date or '', r.banlaw_in_charge or '',
-                    r.sampay_date or '', r.sampay_in_charge or '',
-                    r.pinaw_date or '', r.pinaw_in_charge or '',
-                    r.tiklop_date or '', r.tiklop_in_charge or '',
-                    r.date_returned or '', r.returned_by or '',
-                    r.get_status_display(), r.encoded_by
+                    laundry_in_str,
+                    f"{r.item} ({r.location.name})",
+                    r.quantity,
+                    laba_str,
+                    banlaw_str,
+                    sampay_str,
+                    pinaw_str,
+                    tiklop_str,
+                    returned_str,
+                    r.encoded_by,
+                    r.get_status_display()
                 ])
 
         elif module == 'caskets':

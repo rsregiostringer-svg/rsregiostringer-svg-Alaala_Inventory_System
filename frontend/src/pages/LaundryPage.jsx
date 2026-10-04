@@ -11,7 +11,7 @@ import Select from '../components/common/Select';
 import Modal from '../components/common/Modal';
 import Input from '../components/common/Input';
 import LoadingState from '../components/common/LoadingState';
-import { Plus, RefreshCw, Shirt, Filter } from 'lucide-react';
+import { Plus, RefreshCw, Shirt, Filter, Download } from 'lucide-react';
 
 export default function LaundryPage() {
   const [records, setRecords] = useState([]);
@@ -87,6 +87,34 @@ export default function LaundryPage() {
     setTargetStage(stageKey);
   };
 
+  const handleExportCSV = async () => {
+    try {
+      const params = new URLSearchParams({
+        module: 'laundry',
+        location: selectedLocation || '',
+      });
+      const exportUrl = `${api.baseUrl}/reports/export-csv/?${params.toString()}`;
+      const token = localStorage.getItem('alaala_access_token');
+
+      const res = await fetch(exportUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `alaala_laundry_monitoring_sheet_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error('Failed to export laundry CSV:', err);
+    }
+  };
+
   const handleOpenNewBatch = () => {
     const defaultStaff = user ? `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.username : '';
     setNewBatchData({
@@ -142,7 +170,10 @@ export default function LaundryPage() {
             Exact Alaala Funeral Homes monitoring workflow: IN &rarr; LABA &rarr; BANLAW &rarr; SAMPAY &rarr; PINAW &rarr; TIKLOP &rarr; RETURNED.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="secondary" size="sm" onClick={handleExportCSV} icon={Download}>
+            Export Excel (CSV)
+          </Button>
           <Button variant="secondary" size="sm" onClick={loadLaundry} icon={RefreshCw}>
             Refresh
           </Button>
