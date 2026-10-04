@@ -10,7 +10,6 @@ import SearchInput from '../components/common/SearchInput';
 import Select from '../components/common/Select';
 import Modal from '../components/common/Modal';
 import Input from '../components/common/Input';
-import LoadingState from '../components/common/LoadingState';
 import {
   Plus,
   RefreshCw,
@@ -24,6 +23,8 @@ import {
   User,
   Building2,
   CalendarRange,
+  Trash2,
+  AlertTriangle,
 } from 'lucide-react';
 
 const MONTH_NAMES = [
@@ -78,6 +79,22 @@ export default function LaundryPage() {
   const [batchLoading, setBatchLoading] = useState(false);
   const [batchError, setBatchError] = useState('');
   const [isExporting, setIsExporting] = useState(false);
+  const [deleteBatchTarget, setDeleteBatchTarget] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  const handleDeleteBatch = async () => {
+    if (!deleteBatchTarget) return;
+    setDeleteLoading(true);
+    try {
+      await api.delete(`/laundry/${deleteBatchTarget.id}/`);
+      setDeleteBatchTarget(null);
+      loadLaundry();
+    } catch (err) {
+      alert(err.message || 'Failed to delete laundry record.');
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   // Compute effective start and end date based on active range mode
   const { effectiveStartDate, effectiveEndDate, rangeLabel } = useMemo(() => {
@@ -566,16 +583,15 @@ export default function LaundryPage() {
         </div>
       </div>
 
-      {/* Laundry Monitoring Sheet View */}
-      {loading && records.length === 0 ? (
-        <LoadingState message="Loading laundry tracking sheet..." />
-      ) : (
-        <LaundryExcelTable
-          records={records}
-          onAdvanceStage={handleOpenAdvance}
-          onViewDetail={(record) => navigate(`/laundry/${record.id}`)}
-        />
-      )}
+      {/* Laundry Monitoring Sheet View (Progressive skeletal loading) */}
+      <LaundryExcelTable
+        records={records}
+        loading={loading}
+        onAdvanceStage={handleOpenAdvance}
+        onViewDetail={(record) => navigate(`/laundry/${record.id}`)}
+        onDeleteRecord={(record) => setDeleteBatchTarget(record)}
+        isMasterAdmin={user?.role === 'MASTER_ADMIN' || user?.is_master_admin}
+      />
 
       {/* Advance Stage & Personnel Modal */}
       <AdvanceStageModal
@@ -738,6 +754,37 @@ export default function LaundryPage() {
             </Button>
           </div>
         </form>
+      </Modal>
+
+      {/* Delete Confirmation Modal for Master Admin */}
+      <Modal
+        isOpen={!!deleteBatchTarget}
+        onClose={() => setDeleteBatchTarget(null)}
+        title="Delete Laundry Record"
+        subtitle="Permanent action reserved for Master Admin"
+        maxWidth="max-w-md"
+      >
+        <div className="space-y-4">
+          <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-rose-200">Are you sure you want to permanently delete this batch?</p>
+              <p className="mt-1">
+                Batch #{deleteBatchTarget?.id} &bull; <strong>{deleteBatchTarget?.item}</strong> ({deleteBatchTarget?.quantity} pcs).
+                This action cannot be undone and will be logged in the system audit trail.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-2">
+            <Button variant="ghost" onClick={() => setDeleteBatchTarget(null)} disabled={deleteLoading}>
+              Cancel
+            </Button>
+            <Button variant="danger" onClick={handleDeleteBatch} loading={deleteLoading} icon={Trash2}>
+              Permanently Delete Batch
+            </Button>
+          </div>
+        </div>
       </Modal>
     </div>
   );

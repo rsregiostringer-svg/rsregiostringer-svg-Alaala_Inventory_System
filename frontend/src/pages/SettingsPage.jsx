@@ -7,24 +7,16 @@ import Badge from '../components/common/Badge';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
 import Modal from '../components/common/Modal';
-import { Building2, Layers, KeyRound, Server, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Building2, Layers, Server, Trash2, Plus, Shield } from 'lucide-react';
 
 export default function SettingsPage() {
-  const { user, isAdmin } = useAuth();
+  const { user, isMasterAdmin, isAdmin } = useAuth();
   const { isWsConnected } = useRealtime();
 
   // Locations & Categories
   const [locations, setLocations] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // Password Change
-  const [oldPassword, setOldPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [pwSuccess, setPwSuccess] = useState('');
-  const [pwError, setPwError] = useState('');
-  const [pwLoading, setPwLoading] = useState(false);
 
   // New Location Modal
   const [isLocModalOpen, setIsLocModalOpen] = useState(false);
@@ -56,37 +48,6 @@ export default function SettingsPage() {
   useEffect(() => {
     loadData();
   }, []);
-
-  const handlePasswordChange = async (e) => {
-    e.preventDefault();
-    setPwSuccess('');
-    setPwError('');
-
-    if (newPassword !== confirmPassword) {
-      setPwError('New passwords do not match.');
-      return;
-    }
-    if (newPassword.length < 6) {
-      setPwError('New password must be at least 6 characters.');
-      return;
-    }
-
-    setPwLoading(true);
-    try {
-      await api.post('/auth/change-password/', {
-        old_password: oldPassword,
-        new_password: newPassword,
-      });
-      setPwSuccess('Password successfully changed.');
-      setOldPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-    } catch (err) {
-      setPwError(err.message || 'Failed to update password.');
-    } finally {
-      setPwLoading(false);
-    }
-  };
 
   const handleCreateLocation = async (e) => {
     e.preventDefault();
@@ -124,182 +85,227 @@ export default function SettingsPage() {
     }
   };
 
+  // Categorize locations: Chapels vs Office vs Service / Laundry
+  const viewingChapels = locations.filter((l) => ['C2', 'C3', 'NC2', 'NC3'].includes(l.code));
+  const officeDepots = locations.filter((l) => ['OFFICE'].includes(l.code));
+  const serviceAndTags = locations.filter((l) => ['SERVICES', 'NO_CODE', 'NO CODE'].includes(l.code) || l.name === 'SERVICES' || l.name === 'NO CODE');
+  const otherLocations = locations.filter(
+    (l) =>
+      !viewingChapels.some((c) => c.id === l.id) &&
+      !officeDepots.some((c) => c.id === l.id) &&
+      !serviceAndTags.some((c) => c.id === l.id)
+  );
+
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-5xl mx-auto">
       <div>
         <h1 className="text-2xl font-serif font-bold text-slate-100 tracking-wide">
-          System Settings & Preferences
+          System Settings & Facilities
         </h1>
         <p className="text-xs text-slate-400 mt-0.5">
-          Configure physical facilities, inventory classification, and security credentials.
+          Configure viewing chapels, service departments, uncoded laundry tags, and inventory classifications.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Operational Locations */}
+        {/* Operational Locations, Chapels & Service Departments */}
         <Card
-          title="Operational Locations & Chapels"
-          subtitle="Branches, chapels, and monitoring codes (NO CODE, SERVICES, C2, C3, NC2, NC3, OFFICE)"
+          title="Chapels & Service Departments"
+          subtitle="Physical viewing chapels vs. operational service departments and monitoring tags."
           action={
             isAdmin && (
-              <Button variant="secondary" size="sm" onClick={() => setIsLocModalOpen(true)}>
-                + Add
+              <Button variant="secondary" size="sm" onClick={() => setIsLocModalOpen(true)} icon={Plus}>
+                Add Facility
               </Button>
             )
           }
         >
-          <div className="space-y-2">
-            {locations.map((loc) => (
-              <div
-                key={loc.id}
-                className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 flex items-center justify-between"
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-xs text-slate-200">{loc.name}</span>
-                    <span className="font-mono text-[10px] text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">
-                      {loc.code}
-                    </span>
+          <div className="space-y-4">
+            {/* 1. Viewing Chapels */}
+            <div>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-400 block mb-2">
+                Viewing Chapels (Physical Rooms)
+              </span>
+              <div className="space-y-2">
+                {viewingChapels.map((loc) => (
+                  <div
+                    key={loc.id}
+                    className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 flex items-center justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-slate-100 text-sm">{loc.name}</span>
+                        <Badge variant="primary" size="sm">Chapel</Badge>
+                      </div>
+                      <p className="text-xs text-slate-400 mt-0.5">{loc.description || 'Viewing facility'}</p>
+                    </div>
+                    <span className="text-xs font-mono text-slate-500">#{loc.code}</span>
                   </div>
-                  {loc.description && (
-                    <p className="text-[11px] text-slate-400 mt-0.5">{loc.description}</p>
-                  )}
-                </div>
-                <Badge variant={loc.is_active ? 'success' : 'danger'} size="sm">
-                  {loc.is_active ? 'Active' : 'Inactive'}
-                </Badge>
+                ))}
               </div>
-            ))}
-          </div>
-        </Card>
-
-        {/* Categories */}
-        <Card
-          title="Inventory Categories"
-          subtitle="Classify linens, funeral supplies, equipment, and chemicals"
-          action={
-            isAdmin && (
-              <Button variant="secondary" size="sm" onClick={() => setIsCatModalOpen(true)}>
-                + Add
-              </Button>
-            )
-          }
-        >
-          <div className="space-y-2">
-            {categories.map((cat) => (
-              <div
-                key={cat.id}
-                className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 flex items-center justify-between"
-              >
-                <div>
-                  <span className="font-semibold text-xs text-slate-200">{cat.name}</span>
-                  {cat.description && (
-                    <p className="text-[11px] text-slate-400 mt-0.5">{cat.description}</p>
-                  )}
-                </div>
-                <span className="text-xs text-slate-400">{cat.items_count || 0} items</span>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        {/* Security & Password */}
-        <Card title="Account Security" subtitle="Update your account login password">
-          <form onSubmit={handlePasswordChange} className="space-y-3">
-            {pwSuccess && (
-              <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs rounded-lg flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4" />
-                <span>{pwSuccess}</span>
-              </div>
-            )}
-            {pwError && (
-              <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs rounded-lg flex items-center gap-2">
-                <AlertCircle className="w-4 h-4" />
-                <span>{pwError}</span>
-              </div>
-            )}
-
-            <Input
-              type="password"
-              label="Current Password"
-              required
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
-            />
-
-            <Input
-              type="password"
-              label="New Password"
-              required
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-
-            <Input
-              type="password"
-              label="Confirm New Password"
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-
-            <div className="pt-2">
-              <Button type="submit" variant="primary" loading={pwLoading} className="w-full">
-                Update Password
-              </Button>
             </div>
-          </form>
-        </Card>
 
-        {/* System & Deployment Architecture Info */}
-        <Card title="Deployment & Architecture Status" subtitle="Vercel Frontend & Django Backend">
-          <div className="space-y-3 text-xs">
-            <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400">Frontend Deployment:</span>
-                <span className="font-semibold text-slate-200">Vercel (React + Vite)</span>
+            {/* 2. Administrative Offices */}
+            <div>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block mb-2">
+                Administrative Facilities
+              </span>
+              <div className="space-y-2">
+                {officeDepots.map((loc) => (
+                  <div
+                    key={loc.id}
+                    className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 flex items-center justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-slate-100 text-sm">{loc.name}</span>
+                        <Badge variant="secondary" size="sm">Office Depot</Badge>
+                      </div>
+                      <p className="text-xs text-slate-400 mt-0.5">{loc.description || 'Administrative headquarters'}</p>
+                    </div>
+                    <span className="text-xs font-mono text-slate-500">#{loc.code}</span>
+                  </div>
+                ))}
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400">Backend API URL:</span>
-                <span className="font-mono text-slate-300 text-[11px] truncate max-w-[200px]" title={api.baseUrl}>
-                  {api.baseUrl}
+            </div>
+
+            {/* 3. Operational & Service Units (NOT Chapels) */}
+            <div>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-sky-400 block mb-2">
+                Service Units & Monitoring Tags (Non-Chapel)
+              </span>
+              <div className="space-y-2">
+                {serviceAndTags.map((loc) => (
+                  <div
+                    key={loc.id}
+                    className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 flex items-center justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-slate-100 text-sm">{loc.name}</span>
+                        {loc.name === 'SERVICES' ? (
+                          <Badge variant="info" size="sm">Service Dept (Non-Chapel)</Badge>
+                        ) : (
+                          <Badge variant="warning" size="sm">Laundry Tag (Non-Chapel)</Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        {loc.name === 'SERVICES'
+                          ? 'Preparation, embalming, and funeral service operations (not a viewing chapel).'
+                          : 'Laundry monitoring tag for uncoded linen, rags, and general fabrics.'}
+                      </p>
+                    </div>
+                    <span className="text-xs font-mono text-slate-500">#{loc.code}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Other / Custom facilities */}
+            {otherLocations.length > 0 && (
+              <div>
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block mb-2">
+                  Other Locations
                 </span>
+                <div className="space-y-2">
+                  {otherLocations.map((loc) => (
+                    <div
+                      key={loc.id}
+                      className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 flex items-center justify-between"
+                    >
+                      <div>
+                        <span className="font-semibold text-slate-100 text-sm">{loc.name}</span>
+                        <p className="text-xs text-slate-400 mt-0.5">{loc.description}</p>
+                      </div>
+                      <span className="text-xs font-mono text-slate-500">#{loc.code}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400">Realtime Stream:</span>
-                <Badge variant={isWsConnected ? 'success' : 'info'} size="sm">
-                  {isWsConnected ? 'Active (WebSocket)' : 'Active (Polling Fallback)'}
-                </Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400">Database Engine:</span>
-                <span className="font-semibold text-slate-200">PostgreSQL (Production) / SQLite (Dev)</span>
-              </div>
-            </div>
-            <p className="text-[11px] text-slate-500 italic">
-              All client requests dynamically communicate through environment variables without hardcoded URLs.
-            </p>
+            )}
           </div>
         </Card>
+
+        {/* Right Column: Inventory Categories & System Architecture */}
+        <div className="space-y-6">
+          {/* Inventory Categories */}
+          <Card
+            title="Inventory Categories"
+            subtitle="Operational product groupings for stock management"
+            action={
+              isAdmin && (
+                <Button variant="secondary" size="sm" onClick={() => setIsCatModalOpen(true)} icon={Plus}>
+                  Add Category
+                </Button>
+              )
+            }
+          >
+            <div className="space-y-2">
+              {categories.map((cat) => (
+                <div
+                  key={cat.id}
+                  className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 flex items-center justify-between"
+                >
+                  <div>
+                    <span className="font-semibold text-slate-100 text-sm">{cat.name}</span>
+                    <p className="text-xs text-slate-400 mt-0.5">{cat.description || 'General category'}</p>
+                  </div>
+                  <span className="text-xs text-slate-400">{cat.items_count || 0} items</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          {/* System & Deployment Architecture Status */}
+          <Card title="Deployment & Architecture Status" subtitle="Vercel Frontend & Django Backend">
+            <div className="space-y-3 text-xs">
+              <div className="p-3.5 bg-slate-950/60 rounded-xl border border-slate-800 space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400">Frontend Deployment:</span>
+                  <span className="font-semibold text-slate-200">Vercel (React + Vite)</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400">Backend API URL:</span>
+                  <span className="font-mono text-slate-300 text-[11px] truncate max-w-[200px]" title={api.baseUrl}>
+                    {api.baseUrl}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400">Realtime Stream:</span>
+                  <Badge variant={isWsConnected ? 'success' : 'info'} size="sm">
+                    {isWsConnected ? 'Active (WebSocket)' : 'Active (Polling Fallback)'}
+                  </Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400">Database Engine:</span>
+                  <span className="font-semibold text-slate-200">PostgreSQL (Production) / SQLite (Dev)</span>
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-500 italic">
+                Account security & user permission controls have been relocated directly to the Dashboard.
+              </p>
+            </div>
+          </Card>
+        </div>
       </div>
 
       {/* Add Location Modal */}
       <Modal
         isOpen={isLocModalOpen}
         onClose={() => setIsLocModalOpen(false)}
-        title="Add Location / Chapel Zone"
+        title="Add Facility / Tag"
         maxWidth="max-w-md"
       >
         <form onSubmit={handleCreateLocation} className="space-y-4">
           <Input
-            label="Location Name"
-            placeholder="e.g. C4 (Chapel 4)"
+            label="Facility / Tag Name"
+            placeholder="e.g. C4 (Chapel 4) or Staging"
             required
             value={locName}
             onChange={(e) => setLocName(e.target.value)}
           />
           <Input
-            label="Location Code"
+            label="Code Slug"
             placeholder="e.g. C4"
             required
             value={locCode}
@@ -307,13 +313,13 @@ export default function SettingsPage() {
           />
           <Input
             label="Description"
-            placeholder="Facility description..."
+            placeholder="Specify if viewing chapel, office, or service tag..."
             value={locDesc}
             onChange={(e) => setLocDesc(e.target.value)}
           />
           <div className="pt-4 flex justify-end gap-3 border-t border-slate-800">
             <Button variant="ghost" onClick={() => setIsLocModalOpen(false)}>Cancel</Button>
-            <Button type="submit" variant="primary">Create Location</Button>
+            <Button type="submit" variant="primary">Create Facility</Button>
           </div>
         </form>
       </Modal>

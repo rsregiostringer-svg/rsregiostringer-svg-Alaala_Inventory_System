@@ -5,13 +5,26 @@ from django.db.models import Sum, Count, Q
 from .models import WaterBill, ElectricityBill
 from .serializers import WaterBillSerializer, ElectricityBillSerializer
 from core.audit import log_audit
+from core.permissions import IsMasterAdmin
 from alaala_backend.realtime import broadcast_event
 
 
 class WaterBillViewSet(viewsets.ModelViewSet):
     queryset = WaterBill.objects.select_related('location').all()
     serializer_class = WaterBillSerializer
-    permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action == 'destroy':
+            return [IsMasterAdmin()]
+        return [permissions.IsAuthenticated()]
+
+    def perform_destroy(self, instance):
+        uid = instance.id
+        loc = instance.location.name
+        period = instance.billing_period
+        instance.delete()
+        log_audit(self.request, 'DELETE', 'WATER', uid, f"{loc} - {period}", f"Deleted water bill for {loc} ({period})")
+        broadcast_event('water.deleted', {'id': uid})
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -69,7 +82,19 @@ class WaterBillViewSet(viewsets.ModelViewSet):
 class ElectricityBillViewSet(viewsets.ModelViewSet):
     queryset = ElectricityBill.objects.select_related('location').all()
     serializer_class = ElectricityBillSerializer
-    permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action == 'destroy':
+            return [IsMasterAdmin()]
+        return [permissions.IsAuthenticated()]
+
+    def perform_destroy(self, instance):
+        uid = instance.id
+        loc = instance.location.name
+        period = instance.billing_period
+        instance.delete()
+        log_audit(self.request, 'DELETE', 'ELECTRICITY', uid, f"{loc} - {period}", f"Deleted electricity bill for {loc} ({period})")
+        broadcast_event('electricity.deleted', {'id': uid})
 
     def get_queryset(self):
         qs = super().get_queryset()

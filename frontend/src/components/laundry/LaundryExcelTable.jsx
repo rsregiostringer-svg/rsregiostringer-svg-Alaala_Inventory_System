@@ -2,7 +2,7 @@ import React from 'react';
 import Badge from '../common/Badge';
 import Button from '../common/Button';
 import { LAUNDRY_STATUS_MAP, formatDate, formatDateTimeDisplay } from '../../utils/formatters';
-import { CheckCircle2, ArrowRightCircle, Eye, Edit2 } from 'lucide-react';
+import { CheckCircle2, ArrowRightCircle, Eye, Edit2, Trash2 } from 'lucide-react';
 
 /**
  * Exact table format required by Alaala Funeral Homes:
@@ -13,6 +13,8 @@ export default function LaundryExcelTable({
   records = [],
   onAdvanceStage,
   onViewDetail,
+  onDeleteRecord,
+  isMasterAdmin = false,
   loading = false,
 }) {
   const renderProcessCell = (date, time, shift, inCharge, stageLabel, stageKey, record) => {
@@ -137,7 +139,24 @@ export default function LaundryExcelTable({
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-800/60 bg-slate-900/40">
-          {records.length === 0 ? (
+          {loading ? (
+            Array.from({ length: 5 }).map((_, rIdx) => (
+              <tr key={rIdx} className="divide-x divide-slate-800/40 animate-pulse">
+                <td className="p-2.5"><div className="h-14 bg-slate-800/50 rounded-md" /></td>
+                <td className="p-2.5"><div className="h-10 bg-slate-800/50 rounded-md" /></td>
+                <td className="p-2.5"><div className="h-6 w-8 mx-auto bg-slate-800/50 rounded" /></td>
+                <td className="p-2"><div className="h-14 bg-slate-800/50 rounded-md" /></td>
+                <td className="p-2"><div className="h-14 bg-slate-800/50 rounded-md" /></td>
+                <td className="p-2"><div className="h-14 bg-slate-800/50 rounded-md" /></td>
+                <td className="p-2"><div className="h-14 bg-slate-800/50 rounded-md" /></td>
+                <td className="p-2"><div className="h-14 bg-slate-800/50 rounded-md" /></td>
+                <td className="p-2.5"><div className="h-14 bg-slate-800/50 rounded-md" /></td>
+                <td className="p-2.5"><div className="h-6 w-20 bg-slate-800/50 rounded" /></td>
+                <td className="p-2.5 text-center"><div className="h-6 w-16 mx-auto bg-slate-800/50 rounded-full" /></td>
+                <td className="p-2.5 text-center"><div className="h-8 w-16 mx-auto bg-slate-800/50 rounded-lg" /></td>
+              </tr>
+            ))
+          ) : records.length === 0 ? (
             <tr>
               <td colSpan={12} className="px-6 py-12 text-center text-slate-500">
                 No laundry records found for the selected date range and filters.
@@ -272,14 +291,27 @@ export default function LaundryExcelTable({
 
                   {/* Operational Actions */}
                   <td className="p-2.5 text-center whitespace-nowrap">
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => onViewDetail && onViewDetail(r)}
-                      icon={Eye}
-                    >
-                      Detail
-                    </Button>
+                    <div className="flex items-center justify-center gap-1.5">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => onViewDetail && onViewDetail(r)}
+                        icon={Eye}
+                      >
+                        Detail
+                      </Button>
+                      {isMasterAdmin && onDeleteRecord && (
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          onClick={() => onDeleteRecord(r)}
+                          icon={Trash2}
+                          title="Delete laundry batch"
+                        >
+                          Delete
+                        </Button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               );

@@ -5,13 +5,25 @@ from django.db.models import Q
 from .models import LaundryRecord
 from .serializers import LaundryRecordSerializer
 from core.audit import log_audit
+from core.permissions import IsMasterAdmin
 from alaala_backend.realtime import broadcast_event
 
 
 class LaundryViewSet(viewsets.ModelViewSet):
     queryset = LaundryRecord.objects.select_related('location').all()
     serializer_class = LaundryRecordSerializer
-    permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action == 'destroy':
+            return [IsMasterAdmin()]
+        return [permissions.IsAuthenticated()]
+
+    def perform_destroy(self, instance):
+        uid = instance.id
+        item = instance.item
+        instance.delete()
+        log_audit(self.request, 'DELETE', 'LAUNDRY', uid, item, f"Deleted laundry batch #{uid} ({item})")
+        broadcast_event('laundry.deleted', {'id': uid, 'item': item})
 
     def get_queryset(self):
         qs = super().get_queryset()

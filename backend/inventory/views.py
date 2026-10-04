@@ -7,7 +7,7 @@ from .models import Category, InventoryItem, InventoryTransaction
 from .serializers import CategorySerializer, InventoryItemSerializer, InventoryTransactionSerializer
 from .services import execute_inventory_transaction
 from core.models import Location
-from core.permissions import IsManagerOrHigher, ReadOnlyOrManager
+from core.permissions import IsMasterAdmin, IsManagerOrHigher, ReadOnlyOrManager
 from core.audit import log_audit
 
 
@@ -28,7 +28,17 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class InventoryItemViewSet(viewsets.ModelViewSet):
     queryset = InventoryItem.objects.select_related('category', 'location').all()
     serializer_class = InventoryItemSerializer
-    permission_classes = [ReadOnlyOrManager]
+
+    def get_permissions(self):
+        if self.action == 'destroy':
+            return [IsMasterAdmin()]
+        return [ReadOnlyOrManager()]
+
+    def perform_destroy(self, instance):
+        uid = instance.id
+        name = instance.item_name
+        instance.delete()
+        log_audit(self.request, 'DELETE', 'INVENTORY', uid, name, f"Deleted inventory item '{name}'")
 
     def get_queryset(self):
         qs = super().get_queryset()

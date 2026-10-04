@@ -4,14 +4,26 @@ from django.db.models import Q
 from .models import Maintenance
 from .serializers import MaintenanceSerializer
 from core.audit import log_audit
+from core.permissions import IsMasterAdmin
 from alaala_backend.realtime import broadcast_event
 
 
 class MaintenanceViewSet(viewsets.ModelViewSet):
     queryset = Maintenance.objects.select_related('location').all()
     serializer_class = MaintenanceSerializer
-    permission_classes = [permissions.IsAuthenticated]
     parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
+
+    def get_permissions(self):
+        if self.action == 'destroy':
+            return [IsMasterAdmin()]
+        return [permissions.IsAuthenticated()]
+
+    def perform_destroy(self, instance):
+        uid = instance.id
+        mid = instance.maintenance_id
+        instance.delete()
+        log_audit(self.request, 'DELETE', 'MAINTENANCE', uid, mid, f"Deleted maintenance ticket '{mid}'")
+        broadcast_event('maintenance.deleted', {'id': uid, 'maintenance_id': mid})
 
     def get_queryset(self):
         qs = super().get_queryset()

@@ -14,6 +14,12 @@
   }
 }
 
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 /* Custom scrollbar for tables and lists */
 ::-webkit-scrollbar {
   width: 8px;

@@ -5,13 +5,25 @@ from django.db.models import Q, Sum, Count
 from .models import Casket, CasketTransaction
 from .serializers import CasketSerializer, CasketTransactionSerializer
 from core.audit import log_audit
+from core.permissions import IsMasterAdmin
 from alaala_backend.realtime import broadcast_event
 
 
 class CasketViewSet(viewsets.ModelViewSet):
     queryset = Casket.objects.select_related('location').prefetch_related('history').all()
     serializer_class = CasketSerializer
-    permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action == 'destroy':
+            return [IsMasterAdmin()]
+        return [permissions.IsAuthenticated()]
+
+    def perform_destroy(self, instance):
+        uid = instance.id
+        repr_val = f"{instance.casket_id} - {instance.model}"
+        instance.delete()
+        log_audit(self.request, 'DELETE', 'CASKETS', uid, repr_val, f"Deleted casket '{repr_val}'")
+        broadcast_event('casket.deleted', {'id': uid, 'casket_id': instance.casket_id})
 
     def get_queryset(self):
         qs = super().get_queryset()

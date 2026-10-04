@@ -3,8 +3,7 @@ import { api } from '../services/api';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import Select from '../components/common/Select';
-import Input from '../components/common/Input';
-import LoadingState from '../components/common/LoadingState';
+import { StatSkeleton, CardSkeleton } from '../components/common/Skeleton';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import {
   Download,
@@ -189,7 +188,10 @@ export default function ReportsPage() {
       </div>
 
       {loading ? (
-        <LoadingState message="Generating report data..." />
+        <div className="space-y-6">
+          <StatSkeleton count={4} />
+          <CardSkeleton rows={5} />
+        </div>
       ) : (
         <div className="space-y-6">
           {/* Executive KPI Overview Cards */}
