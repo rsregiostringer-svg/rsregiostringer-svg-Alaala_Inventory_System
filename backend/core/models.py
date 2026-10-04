@@ -42,6 +42,9 @@ class User(AbstractUser):
         related_name='assigned_users'
     )
 
+    class Meta:
+        ordering = ['-date_joined']
+
     @property
     def is_master_admin(self):
         return self.role == self.Role.MASTER_ADMIN or self.is_superuser

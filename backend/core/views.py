@@ -125,6 +125,15 @@ class UserViewSet(viewsets.ModelViewSet):
         user = serializer.save()
         log_audit(self.request, 'UPDATE', 'USERS', user.id, user.username, f"Updated user '{user.username}'")
 
+    def perform_destroy(self, instance):
+        if instance == self.request.user:
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError({'detail': 'You cannot delete your own active Master Admin account.'})
+        uid = instance.id
+        username = instance.username
+        instance.delete()
+        log_audit(self.request, 'DELETE', 'USERS', uid, username, f"Deleted user '{username}'")
+
 
 class AuditLogViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = AuditLog.objects.all()
