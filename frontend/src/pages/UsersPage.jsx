@@ -24,8 +24,6 @@ import {
   CheckCircle2,
   AlertTriangle,
   Building2,
-  Phone,
-  Mail,
   User,
 } from 'lucide-react';
 
@@ -57,12 +55,10 @@ export default function UsersPage() {
 
   // Form State
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
     first_name: '',
     last_name: '',
+    username: '',
     role: 'STAFF',
-    phone_number: '',
     location: '',
     is_active: true,
     password: '',
@@ -101,14 +97,32 @@ export default function UsersPage() {
     }
   }, [feedback]);
 
+  const handleNameChange = (field, val) => {
+    setFormData((prev) => {
+      const updated = { ...prev, [field]: val };
+      // When creating a new user, auto-suggest a clean username like juan.delacruz
+      if (!editUser) {
+        const first = field === 'first_name' ? val : prev.first_name;
+        const last = field === 'last_name' ? val : prev.last_name;
+        const cleanFirst = first.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+        const cleanLast = last.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+        const prevCleanFirst = prev.first_name.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+        const prevCleanLast = prev.last_name.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+        const prevSuggested = prevCleanFirst && prevCleanLast ? `${prevCleanFirst}.${prevCleanLast}` : prevCleanFirst || prevCleanLast;
+        if (!prev.username || prev.username === prevSuggested) {
+          updated.username = cleanFirst && cleanLast ? `${cleanFirst}.${cleanLast}` : cleanFirst || cleanLast;
+        }
+      }
+      return updated;
+    });
+  };
+
   const handleOpenCreate = () => {
     setFormData({
-      username: '',
-      email: '',
       first_name: '',
       last_name: '',
+      username: '',
       role: 'STAFF',
-      phone_number: '',
       location: '',
       is_active: true,
       password: '',
@@ -120,12 +134,10 @@ export default function UsersPage() {
 
   const handleOpenEdit = (user) => {
     setFormData({
-      username: user.username,
-      email: user.email || '',
       first_name: user.first_name || '',
       last_name: user.last_name || '',
+      username: user.username,
       role: user.role,
-      phone_number: user.phone_number || '',
       location: user.location ? String(user.location) : '',
       is_active: user.is_active,
       password: '',
@@ -140,31 +152,58 @@ export default function UsersPage() {
     setFormLoading(true);
     setFormError('');
 
+    if (!formData.first_name.trim()) {
+      setFormError('First Name / Full Name is required.');
+      setFormLoading(false);
+      return;
+    }
+    if (!formData.last_name.trim()) {
+      setFormError('Last Name is required.');
+      setFormLoading(false);
+      return;
+    }
+    if (!formData.username.trim()) {
+      setFormError('Username is required.');
+      setFormLoading(false);
+      return;
+    }
+
     try {
       const payload = {
-        ...formData,
+        first_name: formData.first_name.trim(),
+        last_name: formData.last_name.trim(),
         username: formData.username.trim(),
+        role: formData.role,
         location: formData.location ? Number(formData.location) : null,
+        is_active: formData.is_active,
       };
 
       if (editUser) {
-        if (!payload.password) delete payload.password;
+        if (formData.password && formData.password.trim()) {
+          if (formData.password.length < 6) {
+            setFormError('Password must be at least 6 characters long.');
+            setFormLoading(false);
+            return;
+          }
+          payload.password = formData.password;
+        }
         await api.put(`/users/${editUser.id}/`, payload);
         setFeedback({
           type: 'success',
-          message: `User account '${payload.username}' updated successfully.`,
+          message: `User account '${payload.username}' (${payload.first_name} ${payload.last_name}) updated successfully.`,
         });
         setEditUser(null);
       } else {
-        if (!payload.password || payload.password.length < 6) {
+        if (!formData.password || formData.password.length < 6) {
           setFormError('Password must be at least 6 characters long.');
           setFormLoading(false);
           return;
         }
+        payload.password = formData.password;
         await api.post('/users/', payload);
         setFeedback({
           type: 'success',
-          message: `New user account '${payload.username}' created successfully!`,
+          message: `New user account '${payload.username}' for ${payload.first_name} ${payload.last_name} created successfully!`,
         });
         setIsCreateOpen(false);
       }
@@ -204,9 +243,7 @@ export default function UsersPage() {
       const matchSearch =
         u.username?.toLowerCase().includes(s) ||
         u.first_name?.toLowerCase().includes(s) ||
-        u.last_name?.toLowerCase().includes(s) ||
-        u.email?.toLowerCase().includes(s) ||
-        u.phone_number?.toLowerCase().includes(s);
+        u.last_name?.toLowerCase().includes(s);
       if (!matchSearch) return false;
     }
 
@@ -233,7 +270,7 @@ export default function UsersPage() {
 
   const columns = [
     {
-      header: 'Name & Username',
+      header: 'Full Name & Username',
       key: 'username',
       render: (row) => (
         <div>
@@ -278,31 +315,22 @@ export default function UsersPage() {
       },
     },
     {
-      header: 'Contact Info',
-      key: 'email',
-      render: (row) => (
-        <div className="space-y-0.5">
-          <div className="text-xs text-slate-200 flex items-center gap-1.5">
-            <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-            <span>{row.email || '—'}</span>
-          </div>
-          {row.phone_number && (
-            <div className="text-[11px] text-slate-400 flex items-center gap-1.5">
-              <Phone className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-              <span>{row.phone_number}</span>
-            </div>
-          )}
-        </div>
-      ),
-    },
-    {
-      header: 'Home Branch / Location',
+      header: 'Assigned Branch / Location',
       key: 'location_details',
       render: (row) => (
         <div className="flex items-center gap-1.5 text-xs text-slate-300">
           <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
           <span>{row.location_details?.name || 'All Branches (Enterprise)'}</span>
         </div>
+      ),
+    },
+    {
+      header: 'Date Created',
+      key: 'date_joined',
+      render: (row) => (
+        <span className="text-xs text-slate-400 font-mono">
+          {formatDate(row.date_joined)}
+        </span>
       ),
     },
     {
@@ -529,23 +557,50 @@ export default function UsersPage() {
             </div>
           )}
 
-          {/* Section: Credentials */}
+          {/* Section 1: Staff Name */}
           <div className="p-3.5 rounded-lg bg-slate-950/60 border border-slate-800 space-y-3">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-              <Lock className="w-3.5 h-3.5" /> Login Credentials
+              <User className="w-3.5 h-3.5" /> Staff Full Name
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Input
+                label="Full Name / First Name"
+                required
+                value={formData.first_name}
+                onChange={(e) => handleNameChange('first_name', e.target.value)}
+                placeholder="e.g. Juan"
+                helperText="Given name or full name"
+              />
+
+              <Input
+                label="Last Name"
+                required
+                value={formData.last_name}
+                onChange={(e) => handleNameChange('last_name', e.target.value)}
+                placeholder="e.g. Dela Cruz"
+                helperText="Family name or surname"
+              />
+            </div>
+          </div>
+
+          {/* Section 2: Login Credentials */}
+          <div className="p-3.5 rounded-lg bg-slate-950/60 border border-slate-800 space-y-3">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+              <Lock className="w-3.5 h-3.5" /> System Login Credentials
             </h3>
 
             <Input
-              label="Username"
+              label="Login Username"
               required
               disabled={!!editUser}
               value={formData.username}
               onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-              placeholder="e.g. maria.santos"
+              placeholder="e.g. juan.delacruz"
               helperText={
                 editUser
                   ? 'Username cannot be modified after account creation.'
-                  : 'Used by the user to log in.'
+                  : 'Auto-suggested from full name. You can also customize it.'
               }
             />
 
@@ -570,47 +625,6 @@ export default function UsersPage() {
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
-            </div>
-          </div>
-
-          {/* Section: Personal Info */}
-          <div className="p-3.5 rounded-lg bg-slate-950/60 border border-slate-800 space-y-3">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-              <User className="w-3.5 h-3.5" /> Staff Profile
-            </h3>
-
-            <div className="grid grid-cols-2 gap-3">
-              <Input
-                label="First Name"
-                value={formData.first_name}
-                onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
-                placeholder="Maria"
-              />
-
-              <Input
-                label="Last Name"
-                value={formData.last_name}
-                onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
-                placeholder="Santos"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <Input
-                type="email"
-                label="Email Address"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="maria@alaalafuneralhomes.com"
-              />
-
-              <Input
-                type="tel"
-                label="Phone Number"
-                value={formData.phone_number}
-                onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
-                placeholder="0917-123-4567"
-              />
             </div>
           </div>
 

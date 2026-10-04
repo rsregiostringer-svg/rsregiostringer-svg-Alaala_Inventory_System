@@ -22,6 +22,18 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserCreateUpdateSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(
+        required=True,
+        allow_blank=False,
+        error_messages={'required': 'First name / full name is required.', 'blank': 'First name / full name cannot be blank.'}
+    )
+    last_name = serializers.CharField(
+        required=True,
+        allow_blank=False,
+        error_messages={'required': 'Last name is required.', 'blank': 'Last name cannot be blank.'}
+    )
+    email = serializers.CharField(required=False, allow_blank=True, default='')
+    phone_number = serializers.CharField(required=False, allow_blank=True, default='')
     password = serializers.CharField(write_only=True, required=False, min_length=6)
     location = serializers.PrimaryKeyRelatedField(
         queryset=Location.objects.all(),
