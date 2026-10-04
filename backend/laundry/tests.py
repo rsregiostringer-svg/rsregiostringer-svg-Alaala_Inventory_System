@@ -16,7 +16,7 @@ class LaundryWorkflowTests(TestCase):
             item='Chapel Curtains',
             quantity=10,
             laundry_in_date=self.today,
-            laundry_in_shift='Morning',
+            laundry_in_shift='8am to 5pm',
             laundry_in_charge='Juan',
             encoded_by='Admin'
         )
@@ -24,35 +24,35 @@ class LaundryWorkflowTests(TestCase):
 
         # 2. Laba
         record.laba_date = self.today
-        record.laba_shift = 'Morning'
+        record.laba_shift = '8am to 5pm'
         record.laba_in_charge = 'Pedro'
         record.save()
         self.assertEqual(record.status, LaundryRecord.Status.FOR_BANLAW)
 
         # 3. Banlaw
         record.banlaw_date = self.today
-        record.banlaw_shift = 'Afternoon'
+        record.banlaw_shift = '4pm to 1am'
         record.banlaw_in_charge = 'Pedro'
         record.save()
         self.assertEqual(record.status, LaundryRecord.Status.FOR_SAMPAY)
 
         # 4. Sampay
         record.sampay_date = self.today
-        record.sampay_shift = 'Afternoon'
+        record.sampay_shift = '4pm to 1am'
         record.sampay_in_charge = 'Maria'
         record.save()
         self.assertEqual(record.status, LaundryRecord.Status.FOR_PINAW)
 
         # 5. Pinaw
         record.pinaw_date = self.today
-        record.pinaw_shift = 'Morning'
+        record.pinaw_shift = '12midnight to 9am'
         record.pinaw_in_charge = 'Elena'
         record.save()
         self.assertEqual(record.status, LaundryRecord.Status.FOR_TIKLOP)
 
         # 6. Tiklop
         record.tiklop_date = self.today
-        record.tiklop_shift = 'Morning'
+        record.tiklop_shift = '8am to 5pm'
         record.tiklop_in_charge = 'Elena'
         record.save()
         self.assertEqual(record.status, LaundryRecord.Status.READY_FOR_RETURN)

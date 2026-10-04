@@ -96,7 +96,7 @@ class LaundryViewSet(viewsets.ModelViewSet):
         record = self.get_object()
         stage = request.data.get('stage')  # 'laba', 'banlaw', 'sampay', 'pinaw', 'tiklop', 'return'
         date_val = request.data.get('date')
-        shift_val = request.data.get('shift', 'Morning')
+        shift_val = request.data.get('shift', '8am to 5pm')
         in_charge_val = request.data.get('in_charge', '')
 
         if not stage or not date_val or not in_charge_val:

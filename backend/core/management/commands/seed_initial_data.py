@@ -166,35 +166,35 @@ class Command(BaseCommand):
             # Batch 1: Completed and Returned
             {
                 'loc': 'C2', 'item': 'Chapel Curtains & Drapes', 'qty': 16,
-                'in_date': three_days_ago, 'in_shift': 'Morning', 'in_charge': 'Juan Dela Cruz',
-                'laba_date': three_days_ago, 'laba_shift': 'Morning', 'laba_in_charge': 'Pedro Santos',
-                'banlaw_date': three_days_ago, 'banlaw_shift': 'Afternoon', 'banlaw_in_charge': 'Pedro Santos',
-                'sampay_date': two_days_ago, 'sampay_shift': 'Morning', 'sampay_in_charge': 'Maria Garcia',
-                'pinaw_date': two_days_ago, 'pinaw_shift': 'Afternoon', 'pinaw_in_charge': 'Elena Reyes',
-                'tiklop_date': yesterday, 'tiklop_shift': 'Morning', 'tiklop_in_charge': 'Elena Reyes',
+                'in_date': three_days_ago, 'in_shift': '8am to 5pm', 'in_charge': 'Juan Dela Cruz',
+                'laba_date': three_days_ago, 'laba_shift': '8am to 5pm', 'laba_in_charge': 'Pedro Santos',
+                'banlaw_date': three_days_ago, 'banlaw_shift': '4pm to 1am', 'banlaw_in_charge': 'Pedro Santos',
+                'sampay_date': two_days_ago, 'sampay_shift': '8am to 5pm', 'sampay_in_charge': 'Maria Garcia',
+                'pinaw_date': two_days_ago, 'pinaw_shift': '4pm to 1am', 'pinaw_in_charge': 'Elena Reyes',
+                'tiklop_date': yesterday, 'tiklop_shift': '8am to 5pm', 'tiklop_in_charge': 'Elena Reyes',
                 'ret_date': yesterday, 'ret_by': 'Juan Dela Cruz',
                 'encoded_by': 'Admin Officer', 'notes': 'Freshly laundered for weekend viewing service.'
             },
             # Batch 2: Folding (Ready for Return)
             {
                 'loc': 'C3', 'item': 'White Bed Sheets & Pillowcases', 'qty': 24,
-                'in_date': two_days_ago, 'in_shift': 'Morning', 'in_charge': 'Maria Garcia',
-                'laba_date': two_days_ago, 'laba_shift': 'Morning', 'laba_in_charge': 'Pedro Santos',
-                'banlaw_date': two_days_ago, 'banlaw_shift': 'Afternoon', 'banlaw_in_charge': 'Pedro Santos',
-                'sampay_date': yesterday, 'sampay_shift': 'Morning', 'sampay_in_charge': 'Maria Garcia',
-                'pinaw_date': yesterday, 'pinaw_shift': 'Afternoon', 'pinaw_in_charge': 'Elena Reyes',
-                'tiklop_date': today, 'tiklop_shift': 'Morning', 'tiklop_in_charge': 'Elena Reyes',
+                'in_date': two_days_ago, 'in_shift': '8am to 5pm', 'in_charge': 'Maria Garcia',
+                'laba_date': two_days_ago, 'laba_shift': '8am to 5pm', 'laba_in_charge': 'Pedro Santos',
+                'banlaw_date': two_days_ago, 'banlaw_shift': '4pm to 1am', 'banlaw_in_charge': 'Pedro Santos',
+                'sampay_date': yesterday, 'sampay_shift': '8am to 5pm', 'sampay_in_charge': 'Maria Garcia',
+                'pinaw_date': yesterday, 'pinaw_shift': '4pm to 1am', 'pinaw_in_charge': 'Elena Reyes',
+                'tiklop_date': today, 'tiklop_shift': '8am to 5pm', 'tiklop_in_charge': 'Elena Reyes',
                 'ret_date': None, 'ret_by': '',
                 'encoded_by': 'Admin Officer', 'notes': 'Folded and bagged, awaiting delivery to C3.'
             },
             # Batch 3: Pinaw (Ironing/Pressing)
             {
                 'loc': 'SERVICES', 'item': 'Velvet Barong Covers & Tablecloths', 'qty': 12,
-                'in_date': yesterday, 'in_shift': 'Morning', 'in_charge': 'Juan Dela Cruz',
-                'laba_date': yesterday, 'laba_shift': 'Morning', 'laba_in_charge': 'Pedro Santos',
-                'banlaw_date': yesterday, 'banlaw_shift': 'Afternoon', 'banlaw_in_charge': 'Pedro Santos',
-                'sampay_date': yesterday, 'sampay_shift': 'Afternoon', 'sampay_in_charge': 'Maria Garcia',
-                'pinaw_date': today, 'pinaw_shift': 'Morning', 'pinaw_in_charge': 'Elena Reyes',
+                'in_date': yesterday, 'in_shift': '8am to 5pm', 'in_charge': 'Juan Dela Cruz',
+                'laba_date': yesterday, 'laba_shift': '8am to 5pm', 'laba_in_charge': 'Pedro Santos',
+                'banlaw_date': yesterday, 'banlaw_shift': '4pm to 1am', 'banlaw_in_charge': 'Pedro Santos',
+                'sampay_date': yesterday, 'sampay_shift': '4pm to 1am', 'sampay_in_charge': 'Maria Garcia',
+                'pinaw_date': today, 'pinaw_shift': '8am to 5pm', 'pinaw_in_charge': 'Elena Reyes',
                 'tiklop_date': None, 'tiklop_shift': '', 'tiklop_in_charge': '',
                 'ret_date': None, 'ret_by': '',
                 'encoded_by': 'Admin Officer', 'notes': 'Delicate barong fabric; steam press carefully.'
@@ -202,10 +202,10 @@ class Command(BaseCommand):
             # Batch 4: Sampay (Hanging/Drying)
             {
                 'loc': 'OFFICE', 'item': 'Staff Uniforms & Aprons', 'qty': 18,
-                'in_date': yesterday, 'in_shift': 'Afternoon', 'in_charge': 'Maria Garcia',
-                'laba_date': yesterday, 'laba_shift': 'Afternoon', 'laba_in_charge': 'Pedro Santos',
-                'banlaw_date': today, 'banlaw_shift': 'Morning', 'banlaw_in_charge': 'Pedro Santos',
-                'sampay_date': today, 'sampay_shift': 'Morning', 'sampay_in_charge': 'Maria Garcia',
+                'in_date': yesterday, 'in_shift': '4pm to 1am', 'in_charge': 'Maria Garcia',
+                'laba_date': yesterday, 'laba_shift': '4pm to 1am', 'laba_in_charge': 'Pedro Santos',
+                'banlaw_date': today, 'banlaw_shift': '8am to 5pm', 'banlaw_in_charge': 'Pedro Santos',
+                'sampay_date': today, 'sampay_shift': '8am to 5pm', 'sampay_in_charge': 'Maria Garcia',
                 'pinaw_date': None, 'pinaw_shift': '', 'pinaw_in_charge': '',
                 'tiklop_date': None, 'tiklop_shift': '', 'tiklop_in_charge': '',
                 'ret_date': None, 'ret_by': '',
@@ -214,8 +214,8 @@ class Command(BaseCommand):
             # Batch 5: Laba (Washing)
             {
                 'loc': 'NC2', 'item': 'Satin Towels & Headrest Linens', 'qty': 30,
-                'in_date': today, 'in_shift': 'Morning', 'in_charge': 'Juan Dela Cruz',
-                'laba_date': today, 'laba_shift': 'Morning', 'laba_in_charge': 'Pedro Santos',
+                'in_date': today, 'in_shift': '8am to 5pm', 'in_charge': 'Juan Dela Cruz',
+                'laba_date': today, 'laba_shift': '8am to 5pm', 'laba_in_charge': 'Pedro Santos',
                 'banlaw_date': None, 'banlaw_shift': '', 'banlaw_in_charge': '',
                 'sampay_date': None, 'sampay_shift': '', 'sampay_in_charge': '',
                 'pinaw_date': None, 'pinaw_shift': '', 'pinaw_in_charge': '',
@@ -226,7 +226,7 @@ class Command(BaseCommand):
             # Batch 6: Newly arrived (For Laba)
             {
                 'loc': 'NC3', 'item': 'Viewing Chapel Runners & Valances', 'qty': 8,
-                'in_date': today, 'in_shift': 'Morning', 'in_charge': 'Juan Dela Cruz',
+                'in_date': today, 'in_shift': '12midnight to 9am', 'in_charge': 'Juan Dela Cruz',
                 'laba_date': None, 'laba_shift': '', 'laba_in_charge': '',
                 'banlaw_date': None, 'banlaw_shift': '', 'banlaw_in_charge': '',
                 'sampay_date': None, 'sampay_shift': '', 'sampay_in_charge': '',

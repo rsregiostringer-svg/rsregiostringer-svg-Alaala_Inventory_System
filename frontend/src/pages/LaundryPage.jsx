@@ -36,7 +36,7 @@ export default function LaundryPage() {
     item: '',
     quantity: 1,
     laundry_in_date: new Date().toISOString().split('T')[0],
-    laundry_in_shift: 'Morning',
+    laundry_in_shift: '8am to 5pm',
     laundry_in_charge: '',
     notes: '',
   });
@@ -122,7 +122,7 @@ export default function LaundryPage() {
       item: '',
       quantity: 1,
       laundry_in_date: new Date().toISOString().split('T')[0],
-      laundry_in_shift: 'Morning',
+      laundry_in_shift: '8am to 5pm',
       laundry_in_charge: defaultStaff,
       notes: '',
     });
@@ -294,9 +294,9 @@ export default function LaundryPage() {
               label="Intake Shift"
               required
               options={[
-                { value: 'Morning', label: 'Morning' },
-                { value: 'Afternoon', label: 'Afternoon' },
-                { value: 'Night', label: 'Night' },
+                { value: '8am to 5pm', label: '8am to 5pm' },
+                { value: '4pm to 1am', label: '4pm to 1am' },
+                { value: '12midnight to 9am', label: '12midnight to 9am' },
               ]}
               value={newBatchData.laundry_in_shift}
               onChange={(e) => setNewBatchData({ ...newBatchData, laundry_in_shift: e.target.value })}

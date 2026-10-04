@@ -220,7 +220,7 @@ export default function LaundryDetailPage() {
                   </h4>
                   {st.completed ? (
                     <p className="text-xs text-slate-400 mt-0.5">
-                      Handled by: <strong className="text-amber-400 font-medium">{st.inCharge || 'Staff'}</strong> ({st.shift} Shift)
+                      Handled by: <strong className="text-amber-400 font-medium">{st.inCharge || 'Staff'}</strong> &bull; Shift: <span className="text-slate-300 font-medium">{st.shift}</span>
                     </p>
                   ) : (
                     <p className="text-xs text-slate-600 mt-0.5">Pending completion</p>

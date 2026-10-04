@@ -35,7 +35,7 @@ export default function LaundryExcelTable({
     return (
       <div className="flex flex-col justify-center p-2 rounded-md bg-slate-950/60 border border-slate-800 text-xs min-w-[130px] leading-tight">
         <span className="font-semibold text-slate-100">{formatDate(date)}</span>
-        <span className="text-slate-400 text-[11px] capitalize mt-0.5">{shift || 'Standard'}</span>
+        <span className="text-slate-400 text-[11px] mt-0.5">{shift || '8am to 5pm'}</span>
         <span className="text-amber-400 font-medium text-[11px] truncate mt-0.5" title={inCharge}>
           {inCharge || 'Staff'}
         </span>
@@ -148,7 +148,7 @@ export default function LaundryExcelTable({
                   <td className="p-2.5">
                     <div className="flex flex-col justify-center p-2 rounded-md bg-slate-950/60 border border-slate-800 text-xs min-w-[140px] leading-tight">
                       <span className="font-semibold text-slate-100">{formatDate(r.laundry_in_date)}</span>
-                      <span className="text-slate-400 text-[11px] capitalize mt-0.5">{r.laundry_in_shift}</span>
+                      <span className="text-slate-400 text-[11px] mt-0.5">{r.laundry_in_shift}</span>
                       <span className="text-amber-400 text-[11px] font-medium mt-0.5 truncate" title={r.laundry_in_charge}>
                         {r.laundry_in_charge}
                       </span>
