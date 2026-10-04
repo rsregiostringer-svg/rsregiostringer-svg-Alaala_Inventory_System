@@ -124,8 +124,18 @@ class ExportCSVView(APIView):
         start_date = request.query_params.get('start_date')
         end_date = request.query_params.get('end_date')
 
+        filename = f"alaala_{module}_report"
+        if module == 'laundry':
+            if start_date and end_date:
+                filename = f"alaala_laundry_{start_date}_to_{end_date}"
+            elif start_date:
+                filename = f"alaala_laundry_from_{start_date}"
+            elif end_date:
+                filename = f"alaala_laundry_until_{end_date}"
+            else:
+                filename = "alaala_laundry_all_records"
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = f'attachment; filename="alaala_{module}_report.csv"'
+        response['Content-Disposition'] = f'attachment; filename="{filename}.csv"'
         writer = csv.writer(response)
 
         if module == 'inventory':
@@ -142,10 +152,10 @@ class ExportCSVView(APIView):
             txs = InventoryTransaction.objects.select_related('item', 'from_location', 'to_location', 'user').all()
             if location_id:
                 txs = txs.filter(Q(from_location_id=location_id) | Q(to_location_id=location_id))
-            if start_date:
-                txs = txs.filter(created_at__date__gte=start_date)
-            if end_date:
-                txs = txs.filter(created_at__date__lte=end_date)
+            if start_date and start_date.strip():
+                txs = txs.filter(created_at__date__gte=start_date.strip())
+            if end_date and end_date.strip():
+                txs = txs.filter(created_at__date__lte=end_date.strip())
             for t in txs:
                 writer.writerow([
                     t.created_at.strftime('%Y-%m-%d %H:%M'),
@@ -176,10 +186,10 @@ class ExportCSVView(APIView):
             recs = LaundryRecord.objects.select_related('location').all()
             if location_id:
                 recs = recs.filter(location_id=location_id)
-            if start_date:
-                recs = recs.filter(laundry_in_date__gte=start_date)
-            if end_date:
-                recs = recs.filter(laundry_in_date__lte=end_date)
+            if start_date and start_date.strip():
+                recs = recs.filter(laundry_in_date__gte=start_date.strip())
+            if end_date and end_date.strip():
+                recs = recs.filter(laundry_in_date__lte=end_date.strip())
             for r in recs:
                 laundry_in_dt = f"{r.laundry_in_date} {r.laundry_in_time}".strip()
                 laundry_in_str = f"{laundry_in_dt} / {r.laundry_in_shift} / {r.laundry_in_charge}"

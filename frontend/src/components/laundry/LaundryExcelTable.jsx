@@ -2,11 +2,12 @@ import React from 'react';
 import Badge from '../common/Badge';
 import Button from '../common/Button';
 import { LAUNDRY_STATUS_MAP, formatDate, formatDateTimeDisplay } from '../../utils/formatters';
-import { CheckCircle2, ArrowRightCircle, Eye } from 'lucide-react';
+import { CheckCircle2, ArrowRightCircle, Eye, Edit2 } from 'lucide-react';
 
 /**
  * Exact table format required by Alaala Funeral Homes:
  * Displays Date, Shift, and In Charge stacked inside process cells.
+ * Allows clicking on any process cell to add or edit the personnel in charge!
  */
 export default function LaundryExcelTable({
   records = [],
@@ -33,8 +34,15 @@ export default function LaundryExcelTable({
     }
 
     return (
-      <div className="flex flex-col justify-center p-2 rounded-md bg-slate-950/60 border border-slate-800 text-xs min-w-[130px] leading-tight">
-        <span className="font-semibold text-slate-100">{formatDateTimeDisplay(date, time)}</span>
+      <div
+        onClick={() => onAdvanceStage && onAdvanceStage(record, stageKey)}
+        className="group relative flex flex-col justify-center p-2 rounded-md bg-slate-950/60 hover:bg-slate-950/90 border border-slate-800 hover:border-amber-500/50 text-xs min-w-[130px] leading-tight cursor-pointer transition-all"
+        title="Click to edit stage or change person in charge"
+      >
+        <div className="flex items-center justify-between gap-1">
+          <span className="font-semibold text-slate-100">{formatDateTimeDisplay(date, time)}</span>
+          <Edit2 className="w-3 h-3 text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+        </div>
         <span className="text-slate-400 text-[11px] mt-0.5">{shift || '8am to 5pm'}</span>
         <span className="text-amber-400 font-medium text-[11px] truncate mt-0.5" title={inCharge}>
           {inCharge || 'Staff'}
@@ -56,7 +64,7 @@ export default function LaundryExcelTable({
           </span>
         </div>
         <span className="text-[11px] text-slate-500 hidden sm:inline">
-          Exact process flow: IN &rarr; Laba &rarr; Banlaw &rarr; Sampay &rarr; Pinaw &rarr; Tiklop &rarr; Returned
+          Tip: Click on any stage cell (Laba, Banlaw, Sampay, etc.) to view or update the person in charge.
         </span>
       </div>
 
@@ -132,7 +140,7 @@ export default function LaundryExcelTable({
           {records.length === 0 ? (
             <tr>
               <td colSpan={12} className="px-6 py-12 text-center text-slate-500">
-                No laundry records found.
+                No laundry records found for the selected date range and filters.
               </td>
             </tr>
           ) : (
@@ -146,14 +154,24 @@ export default function LaundryExcelTable({
                 <tr key={r.id} className="divide-x divide-slate-800/40 hover:bg-slate-800/30 transition-colors">
                   {/* 1. Laundy IN (Date/ Shift/ In Charge) */}
                   <td className="p-2.5">
-                    <div className="flex flex-col justify-center p-2 rounded-md bg-slate-950/60 border border-slate-800 text-xs min-w-[140px] leading-tight">
-                      <span className="font-semibold text-slate-100">{formatDateTimeDisplay(r.laundry_in_date, r.laundry_in_time)}</span>
+                    <div
+                      onClick={() => onAdvanceStage && onAdvanceStage(r, 'in')}
+                      className="group flex flex-col justify-center p-2 rounded-md bg-slate-950/60 hover:bg-slate-950/90 border border-slate-800 hover:border-amber-500/50 text-xs min-w-[140px] leading-tight cursor-pointer transition-all"
+                      title="Click to edit intake details or receiving person"
+                    >
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-semibold text-slate-100">{formatDateTimeDisplay(r.laundry_in_date, r.laundry_in_time)}</span>
+                        <Edit2 className="w-3 h-3 text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                      </div>
                       <span className="text-slate-400 text-[11px] mt-0.5">{r.laundry_in_shift}</span>
                       <span className="text-amber-400 text-[11px] font-medium mt-0.5 truncate" title={r.laundry_in_charge}>
                         {r.laundry_in_charge}
                       </span>
-                      <span className="text-[10px] text-slate-500 font-mono mt-1 pt-1 border-t border-slate-800/80">
-                        #{r.id} &bull; {r.location_details?.name || 'Chapel'}
+                      <span className="text-[10px] text-slate-500 font-mono mt-1 pt-1 border-t border-slate-800/80 flex items-center justify-between">
+                        <span>#{r.id}</span>
+                        <span className="px-1.5 py-0.2 rounded bg-slate-800/80 text-slate-300 font-medium">
+                          {r.location_details?.name || 'NO CODE'}
+                        </span>
                       </span>
                     </div>
                   </td>
@@ -163,8 +181,13 @@ export default function LaundryExcelTable({
                     <div className="font-semibold text-slate-100 max-w-[160px] truncate" title={r.item}>
                       {r.item}
                     </div>
+                    <div className="mt-1 flex items-center gap-1.5">
+                      <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-800/80 text-amber-300 border border-slate-700">
+                        {r.location_details?.name || 'NO CODE'}
+                      </span>
+                    </div>
                     {r.notes && (
-                      <p className="text-[11px] text-slate-400 truncate max-w-[160px] mt-0.5" title={r.notes}>
+                      <p className="text-[11px] text-slate-400 truncate max-w-[160px] mt-1" title={r.notes}>
                         {r.notes}
                       </p>
                     )}
@@ -203,11 +226,18 @@ export default function LaundryExcelTable({
                   {/* 9. Date Returned/ By */}
                   <td className="p-2.5">
                     {r.date_returned ? (
-                      <div className="flex flex-col justify-center p-2 rounded-md bg-emerald-950/20 border border-emerald-900/50 text-xs min-w-[130px] leading-tight">
-                        <span className="font-semibold text-emerald-400 flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                          {formatDateTimeDisplay(r.date_returned, r.returned_time)}
-                        </span>
+                      <div
+                        onClick={() => onAdvanceStage && onAdvanceStage(r, 'return')}
+                        className="group flex flex-col justify-center p-2 rounded-md bg-emerald-950/20 hover:bg-emerald-950/40 border border-emerald-900/50 hover:border-emerald-500/50 text-xs min-w-[130px] leading-tight cursor-pointer transition-all"
+                        title="Click to edit returned date or delivery person"
+                      >
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="font-semibold text-emerald-400 flex items-center gap-1">
+                            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                            {formatDateTimeDisplay(r.date_returned, r.returned_time)}
+                          </span>
+                          <Edit2 className="w-3 h-3 text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                        </div>
                         <span className="text-slate-300 text-[11px] mt-0.5 truncate" title={r.returned_by}>
                           By: {r.returned_by}
                         </span>
@@ -221,7 +251,7 @@ export default function LaundryExcelTable({
                             onClick={() => onAdvanceStage(r, 'return')}
                             className="mt-1 px-2 py-0.5 text-[10px] font-medium text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded transition-colors cursor-pointer"
                           >
-                            Mark Returned
+                            + Return
                           </button>
                         )}
                       </div>
@@ -229,41 +259,27 @@ export default function LaundryExcelTable({
                   </td>
 
                   {/* 10. Encoded By */}
-                  <td className="p-2.5">
-                    <span className="text-slate-300 text-xs font-medium">{r.encoded_by}</span>
+                  <td className="p-2.5 whitespace-nowrap">
+                    <div className="text-xs text-slate-300 font-medium">{r.encoded_by || 'Staff'}</div>
                   </td>
 
-                  {/* Status */}
+                  {/* Operational Status */}
                   <td className="p-2.5 text-center whitespace-nowrap">
                     <Badge variant={statusMeta.variant} size="sm">
                       {statusMeta.label}
                     </Badge>
                   </td>
 
-                  {/* Actions */}
-                  <td className="p-2.5 text-center">
-                    <div className="flex items-center justify-center gap-1.5">
-                      {onViewDetail && (
-                        <button
-                          type="button"
-                          onClick={() => onViewDetail(r)}
-                          title="View Details & Timeline"
-                          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-                      {onAdvanceStage && r.status !== 'RETURNED' && (
-                        <button
-                          type="button"
-                          onClick={() => onAdvanceStage(r)}
-                          title="Advance to Next Stage"
-                          className="p-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 transition-colors cursor-pointer"
-                        >
-                          <ArrowRightCircle className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-                    </div>
+                  {/* Operational Actions */}
+                  <td className="p-2.5 text-center whitespace-nowrap">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => onViewDetail && onViewDetail(r)}
+                      icon={Eye}
+                    >
+                      Detail
+                    </Button>
                   </td>
                 </tr>
               );

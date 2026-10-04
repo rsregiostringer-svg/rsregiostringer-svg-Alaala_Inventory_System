@@ -139,7 +139,7 @@ export default function SettingsPage() {
         {/* Operational Locations */}
         <Card
           title="Operational Locations & Chapels"
-          subtitle="Branches and storage zones (NO COE, SERVICES, C2, C3, NC2, NC3, OFFICE)"
+          subtitle="Branches, chapels, and monitoring codes (NO CODE, SERVICES, C2, C3, NC2, NC3, OFFICE)"
           action={
             isAdmin && (
               <Button variant="secondary" size="sm" onClick={() => setIsLocModalOpen(true)}>

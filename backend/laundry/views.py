@@ -107,7 +107,12 @@ class LaundryViewSet(viewsets.ModelViewSet):
             )
 
         stage = stage.lower()
-        if stage == 'laba':
+        if stage in ['in', 'laundry_in']:
+            record.laundry_in_date = date_val
+            record.laundry_in_time = time_val
+            record.laundry_in_shift = shift_val
+            record.laundry_in_charge = in_charge_val
+        elif stage == 'laba':
             record.laba_date = date_val
             record.laba_time = time_val
             record.laba_shift = shift_val

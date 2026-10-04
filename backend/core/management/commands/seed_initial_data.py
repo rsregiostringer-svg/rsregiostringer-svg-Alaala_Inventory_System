@@ -20,7 +20,7 @@ class Command(BaseCommand):
 
         # 1. Seed Locations
         initial_locations = [
-            {'name': 'NO COE', 'code': 'NO_COE', 'description': 'No Certificate of Embalming storage & staging area'},
+            {'name': 'NO CODE', 'code': 'NO_CODE', 'description': 'Laundry monitoring category for uncoded items and general linen'},
             {'name': 'SERVICES', 'code': 'SERVICES', 'description': 'Main preparation & services facility'},
             {'name': 'C2', 'code': 'C2', 'description': 'Chapel 2 (Air-conditioned viewing chapel)'},
             {'name': 'C3', 'code': 'C3', 'description': 'Chapel 3 (Viewing chapel)'},
@@ -126,8 +126,8 @@ class Command(BaseCommand):
             # NC3 items
             {'item_name': 'White Satin Towels', 'category': cat_map['Linens & Drapery'], 'unit': 'pcs', 'loc': 'NC3', 'qty': 8, 'min': 10, 'cost': Decimal('150.00'), 'sup': 'Manila Textile Corp'}, # Low stock
 
-            # NO COE items
-            {'item_name': 'Hazardous Waste Liners (Roll)', 'category': cat_map['Cleaning & Housekeeping'], 'unit': 'rolls', 'loc': 'NO COE', 'qty': 10, 'min': 4, 'cost': Decimal('280.00'), 'sup': 'Safety First Corp'},
+            # NO CODE items
+            {'item_name': 'Hazardous Waste Liners (Roll)', 'category': cat_map['Cleaning & Housekeeping'], 'unit': 'rolls', 'loc': 'NO CODE', 'qty': 10, 'min': 4, 'cost': Decimal('280.00'), 'sup': 'Safety First Corp'},
         ]
 
         for item_data in sample_items:

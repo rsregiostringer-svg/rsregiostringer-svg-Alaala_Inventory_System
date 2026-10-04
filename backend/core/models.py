@@ -5,7 +5,7 @@ from django.db import models
 class Location(models.Model):
     """
     Physical or operational locations for Alaala Funeral Homes:
-    NO COE, SERVICES, C2, C3, NC2, NC3, OFFICE
+    NO CODE (Laundry monitoring for uncoded items), SERVICES, C2, C3, NC2, NC3, OFFICE
     """
     name = models.CharField(max_length=100, unique=True)
     code = models.SlugField(max_length=50, unique=True)

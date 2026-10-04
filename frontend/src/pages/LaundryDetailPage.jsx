@@ -18,7 +18,8 @@ import {
   User,
   Building2,
   FileText,
-  AlertCircle
+  AlertCircle,
+  Edit2
 } from 'lucide-react';
 
 export default function LaundryDetailPage() {
@@ -82,7 +83,7 @@ export default function LaundryDetailPage() {
     {
       num: 1,
       key: 'in',
-      name: 'Laundry IN (Intake)',
+      name: '1. Laundry IN (Intake & Receiving)',
       date: record.laundry_in_date,
       time: record.laundry_in_time,
       shift: record.laundry_in_shift,
@@ -92,7 +93,7 @@ export default function LaundryDetailPage() {
     {
       num: 2,
       key: 'laba',
-      name: 'Laba (Washing)',
+      name: '4. Laba (Washing)',
       date: record.laba_date,
       time: record.laba_time,
       shift: record.laba_shift,
@@ -102,7 +103,7 @@ export default function LaundryDetailPage() {
     {
       num: 3,
       key: 'banlaw',
-      name: 'Banlaw (Rinsing)',
+      name: '5. Banlaw (Rinsing)',
       date: record.banlaw_date,
       time: record.banlaw_time,
       shift: record.banlaw_shift,
@@ -112,7 +113,7 @@ export default function LaundryDetailPage() {
     {
       num: 4,
       key: 'sampay',
-      name: 'Sampay (Hanging/Drying)',
+      name: '6. Sampay (Hanging/Drying)',
       date: record.sampay_date,
       time: record.sampay_time,
       shift: record.sampay_shift,
@@ -122,7 +123,7 @@ export default function LaundryDetailPage() {
     {
       num: 5,
       key: 'pinaw',
-      name: 'Pinaw (Ironing/Pressing)',
+      name: '7. Pinaw (Ironing/Pressing)',
       date: record.pinaw_date,
       time: record.pinaw_time,
       shift: record.pinaw_shift,
@@ -132,7 +133,7 @@ export default function LaundryDetailPage() {
     {
       num: 6,
       key: 'tiklop',
-      name: 'Tiklop (Folding)',
+      name: '8. Tiklop (Folding)',
       date: record.tiklop_date,
       time: record.tiklop_time,
       shift: record.tiklop_shift,
@@ -142,7 +143,7 @@ export default function LaundryDetailPage() {
     {
       num: 7,
       key: 'return',
-      name: 'Date Returned / By',
+      name: '9. Date Returned / Delivered',
       date: record.date_returned,
       time: record.returned_time,
       shift: 'Delivered',
@@ -181,12 +182,12 @@ export default function LaundryDetailPage() {
             <h1 className="text-xl font-bold text-slate-100">{record.item}</h1>
             <Badge variant={statusMeta.variant}>{statusMeta.label}</Badge>
           </div>
-          <p className="text-xs text-slate-400 mt-1 flex items-center gap-3">
+          <p className="text-xs text-slate-400 mt-1 flex flex-wrap items-center gap-3">
             <span>Batch ID: #{record.id}</span>
             <span>&bull;</span>
             <span>Quantity: <strong className="text-amber-400 font-bold">{record.quantity} pcs</strong></span>
             <span>&bull;</span>
-            <span>Origin: <strong>{record.location_details?.name || 'Chapel'}</strong></span>
+            <span>Origin: <strong className="text-amber-300 font-medium">{record.location_details?.name || 'NO CODE'}</strong></span>
           </p>
         </div>
 
@@ -199,10 +200,10 @@ export default function LaundryDetailPage() {
       {/* Full Process Timeline */}
       <Card
         title="Accountability & Process Progression"
-        subtitle="Chronological audit of personnel responsible for each physical stage."
+        subtitle="Chronological audit of personnel responsible for each stage. Click 'Edit / Add Personnel' to update names for banlaw, sampay, laba, etc."
       >
-        <div className="space-y-4">
-          {stages.map((st, idx) => (
+        <div className="space-y-3.5">
+          {stages.map((st) => (
             <div
               key={st.key}
               className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors ${
@@ -227,7 +228,9 @@ export default function LaundryDetailPage() {
                   </h4>
                   {st.completed ? (
                     <p className="text-xs text-slate-400 mt-0.5">
-                      Handled by: <strong className="text-amber-400 font-medium">{st.inCharge || 'Staff'}</strong> &bull; Shift: <span className="text-slate-300 font-medium">{st.shift}</span>
+                      Handled by:{' '}
+                      <strong className="text-amber-400 font-semibold">{st.inCharge || 'Staff'}</strong> &bull; Shift:{' '}
+                      <span className="text-slate-300 font-medium">{st.shift}</span>
                     </p>
                   ) : (
                     <p className="text-xs text-slate-600 mt-0.5">Pending completion</p>
@@ -236,22 +239,22 @@ export default function LaundryDetailPage() {
               </div>
 
               <div className="flex items-center gap-3 self-end sm:self-center">
-                {st.completed ? (
+                {st.completed && (
                   <span className="text-xs font-mono text-slate-300 font-medium">
                     {formatDateTimeDisplay(st.date, st.time)}
                   </span>
-                ) : (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setSelectedStage(st.key);
-                      setIsAdvanceOpen(true);
-                    }}
-                  >
-                    Complete Stage
-                  </Button>
                 )}
+                <Button
+                  variant={st.completed ? 'secondary' : 'outline'}
+                  size="sm"
+                  onClick={() => {
+                    setSelectedStage(st.key);
+                    setIsAdvanceOpen(true);
+                  }}
+                  icon={st.completed ? Edit2 : null}
+                >
+                  {st.completed ? 'Edit Personnel / Info' : 'Complete Stage'}
+                </Button>
               </div>
             </div>
           ))}
