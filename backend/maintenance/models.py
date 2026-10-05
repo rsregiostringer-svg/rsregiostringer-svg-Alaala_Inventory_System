@@ -27,6 +27,7 @@ class Maintenance(models.Model):
     class Status(models.TextChoices):
         REPORTED = 'REPORTED', 'Reported'
         PENDING = 'PENDING', 'Pending'
+        FOR_REPAIR = 'FOR_REPAIR', 'For Repair'
         IN_PROGRESS = 'IN_PROGRESS', 'In Progress'
         COMPLETED = 'COMPLETED', 'Completed'
         CANCELLED = 'CANCELLED', 'Cancelled'

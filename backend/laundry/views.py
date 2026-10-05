@@ -27,6 +27,10 @@ class LaundryViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()
+        if not self.request.user.is_master_admin:
+            loc_ids = self.request.user.get_accessible_location_ids()
+            qs = qs.filter(location_id__in=loc_ids)
+
         location_id = self.request.query_params.get('location')
         status_filter = self.request.query_params.get('status')
         in_charge = self.request.query_params.get('in_charge')

@@ -1,9 +1,3 @@
-"""
-Django settings for Alaala Funeral Homes Management System.
-Production-ready configuration with PostgreSQL support, Channels/WebSockets,
-Cloud Storage support, Whitenoise static files, and JWT authentication.
-"""
-
 from pathlib import Path
 import os
 from datetime import timedelta
@@ -153,37 +147,63 @@ SIMPLE_JWT = {
 }
 
 # CORS Configuration
-FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5173')
+# FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5173')
 
-# Parse allowed origins from env or default to local dev & vercel preview patterns
-_raw_cors = os.getenv('CORS_ALLOWED_ORIGINS', '')
-if _raw_cors:
-    CORS_ALLOWED_ORIGINS = [origin.strip() for origin in _raw_cors.split(',') if origin.strip()]
-elif DEBUG:
-    CORS_ALLOWED_ORIGINS = [
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-        'http://localhost:3000',
-        'http://127.0.0.1:3000',
-    ]
-else:
-    CORS_ALLOWED_ORIGINS = [FRONTEND_URL]
+# # Parse allowed origins from env or default to local dev & vercel preview patterns
+# _raw_cors = os.getenv('CORS_ALLOWED_ORIGINS', '')
+# if _raw_cors:
+#     CORS_ALLOWED_ORIGINS = [origin.strip() for origin in _raw_cors.split(',') if origin.strip()]
+# elif DEBUG:
+#     CORS_ALLOWED_ORIGINS = [
+#         'http://localhost:5173',
+#         'http://127.0.0.1:5173',
+#         'http://localhost:3000',
+#         'http://127.0.0.1:3000',
+#     ]
+# else:
+#     CORS_ALLOWED_ORIGINS = [FRONTEND_URL]
+
+# CORS_ALLOW_CREDENTIALS = True
+
+# CORS Configuration
+
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5174')
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5174',
+    'http://127.0.0.1:5174',
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+]
 
 CORS_ALLOW_CREDENTIALS = True
 
 # CSRF Configuration
-_raw_csrf = os.getenv('CSRF_TRUSTED_ORIGINS', '')
-if _raw_csrf:
-    CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in _raw_csrf.split(',') if origin.strip()]
-elif DEBUG:
-    CSRF_TRUSTED_ORIGINS = [
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-        'http://localhost:8000',
-        'http://127.0.0.1:8000',
-    ]
-else:
-    CSRF_TRUSTED_ORIGINS = [FRONTEND_URL]
+# _raw_csrf = os.getenv('CSRF_TRUSTED_ORIGINS', '')
+# if _raw_csrf:
+#     CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in _raw_csrf.split(',') if origin.strip()]
+# elif DEBUG:
+#     CSRF_TRUSTED_ORIGINS = [
+#         'http://localhost:5173',
+#         'http://127.0.0.1:5173',
+#         'http://localhost:8000',
+#         'http://127.0.0.1:8000',
+#     ]
+# else:
+#     CSRF_TRUSTED_ORIGINS = [FRONTEND_URL]
+
+# CSRF Configuration
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:5174',
+    'http://127.0.0.1:5174',
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
 
 # Django Channels Layers Configuration
 REDIS_URL = os.getenv('REDIS_URL', '')

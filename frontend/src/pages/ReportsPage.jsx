@@ -16,7 +16,9 @@ import {
   Box,
   Wrench,
   Droplet,
-  Zap
+  Zap,
+  Building2,
+  Heart
 } from 'lucide-react';
 
 const MODULES = [
@@ -24,6 +26,9 @@ const MODULES = [
   { value: 'transactions', label: 'Inventory Transactions', icon: BarChart2 },
   { value: 'laundry', label: 'Laundry Monitoring Records', icon: Shirt },
   { value: 'caskets', label: 'Casket Stock & History', icon: Box },
+  { value: 'casket_sales', label: 'Casket Sales Report', icon: Box },
+  { value: 'lamay', label: 'Lamay / Wake Service Report', icon: Heart },
+  { value: 'chapel_occupancy', label: 'Chapel Occupancy Report', icon: Building2 },
   { value: 'maintenance', label: 'Facility Maintenance', icon: Wrench },
   { value: 'water', label: 'Water Utility Expenses', icon: Droplet },
   { value: 'electricity', label: 'Electricity Utility Expenses', icon: Zap },
@@ -99,6 +104,7 @@ export default function ReportsPage() {
   const inv = summaryData?.inventory || {};
   const laundry = summaryData?.laundry || {};
   const caskets = summaryData?.caskets || {};
+  const chapels = summaryData?.chapels || {};
   const maint = summaryData?.maintenance || {};
   const util = summaryData?.utilities || {};
 
@@ -195,7 +201,7 @@ export default function ReportsPage() {
       ) : (
         <div className="space-y-6">
           {/* Executive KPI Overview Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
             <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
               <span className="text-xs text-slate-400 uppercase font-medium">Inventory Valuation</span>
               <div className="mt-1 text-2xl font-bold text-amber-400">{formatCurrency(inv.valuation || 0)}</div>
@@ -203,15 +209,21 @@ export default function ReportsPage() {
             </div>
 
             <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
-              <span className="text-xs text-slate-400 uppercase font-medium">Laundry In-Process</span>
-              <div className="mt-1 text-2xl font-bold text-sky-400">{laundry.in_process || 0} batches</div>
-              <div className="mt-1 text-[11px] text-slate-400">{laundry.returned || 0} successfully returned</div>
+              <span className="text-xs text-slate-400 uppercase font-medium">Caskets Available</span>
+              <div className="mt-1 text-2xl font-bold text-indigo-400">{caskets.available || 0}</div>
+              <div className="mt-1 text-[11px] text-slate-400">{caskets.reserved || 0} reserved &bull; {caskets.sold || 0} sold</div>
             </div>
 
             <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
-              <span className="text-xs text-slate-400 uppercase font-medium">Caskets Available</span>
-              <div className="mt-1 text-2xl font-bold text-indigo-400">{caskets.available || 0}</div>
-              <div className="mt-1 text-[11px] text-slate-400">{caskets.reserved || 0} currently reserved</div>
+              <span className="text-xs text-slate-400 uppercase font-medium">Chapels & Lamay</span>
+              <div className="mt-1 text-2xl font-bold text-rose-400">{chapels.active_lamay || 0} <span className="text-xs font-normal text-slate-400">Active</span></div>
+              <div className="mt-1 text-[11px] text-slate-400">{chapels.occupied || 0} occupied &bull; {chapels.available || 0} available</div>
+            </div>
+
+            <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
+              <span className="text-xs text-slate-400 uppercase font-medium">Laundry In-Process</span>
+              <div className="mt-1 text-2xl font-bold text-sky-400">{laundry.in_process || 0} batches</div>
+              <div className="mt-1 text-[11px] text-slate-400">{laundry.returned || 0} returned</div>
             </div>
 
             <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
@@ -307,6 +319,32 @@ export default function ReportsPage() {
                 <div className="flex justify-between py-2">
                   <span className="text-slate-400">Unpaid Electricity Bills</span>
                   <span className="font-semibold text-rose-400">{formatCurrency(util.electricity_unpaid)}</span>
+                </div>
+              </div>
+            </Card>
+
+            {/* Chapel & Lamay Wake Operations */}
+            <Card title="Chapel & Lamay Wake Operations">
+              <div className="space-y-3 text-xs">
+                <div className="flex justify-between py-2 border-b border-slate-800">
+                  <span className="text-slate-400">Total Configured Chapels</span>
+                  <span className="font-semibold text-slate-100">{chapels.total || 0} chapels</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-slate-800">
+                  <span className="text-slate-400">Currently Occupied / Active Lamay</span>
+                  <span className="font-semibold text-rose-400">{chapels.occupied || 0} chapels</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-slate-800">
+                  <span className="text-slate-400">Currently Available Chapels</span>
+                  <span className="font-semibold text-sky-400">{chapels.available || 0} chapels</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-slate-800">
+                  <span className="text-slate-400">Cleaning & Turnover in Progress</span>
+                  <span className="font-semibold text-amber-400">{chapels.cleaning || 0} chapels</span>
+                </div>
+                <div className="flex justify-between py-2">
+                  <span className="text-slate-400">Active Wake Services Ongoing</span>
+                  <span className="font-bold text-rose-300">{chapels.active_lamay || 0} services</span>
                 </div>
               </div>
             </Card>

@@ -4,7 +4,7 @@ import Button from '../common/Button';
 import Input from '../common/Input';
 import Select from '../common/Select';
 import { api } from '../../services/api';
-import { User, CheckCircle2, Clock, Calendar, Sparkles } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 
 const STAGES = [
   { value: 'laba', label: '4. Laba (Washing)' },
@@ -176,22 +176,22 @@ export default function AdvanceStageModal({
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs rounded-lg">
+          <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg">
             {error}
           </div>
         )}
 
         {/* Batch Overview pill */}
-        <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 text-xs text-slate-300 flex items-center justify-between">
+        <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs text-slate-700 flex items-center justify-between">
           <div>
-            <span className="text-slate-400">Chapel / Tag: </span>
-            <span className="font-semibold text-amber-400">
+            <span className="text-slate-500">Chapel / Tag: </span>
+            <span className="font-bold text-slate-900">
               {record.location_details?.name || 'NO CODE'}
             </span>
           </div>
           <div>
-            <span className="text-slate-400">Status: </span>
-            <span className="font-semibold text-slate-200">{record.status_display || record.status}</span>
+            <span className="text-slate-500">Status: </span>
+            <span className="font-bold text-blue-600">{record.status_display || record.status}</span>
           </div>
         </div>
 
@@ -205,10 +205,10 @@ export default function AdvanceStageModal({
             onChange={(e) => handleStageSelect(e.target.value)}
           />
           {isCurrentStageRecorded && (
-            <p className="mt-1 text-[11px] text-amber-400 flex items-center gap-1 font-medium">
-              <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
-              This stage already has data: <strong>{getStagePersonnel(stage)}</strong>. You can update or replace the name below.
-            </p>
+            <div className="mt-2 p-2 rounded-md bg-blue-50 border border-blue-200 text-xs text-blue-700 flex items-center gap-1.5 font-medium">
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-blue-600" />
+              <span>Current recorded personnel: <strong>{getStagePersonnel(stage)}</strong></span>
+            </div>
           )}
         </div>
 
@@ -247,7 +247,7 @@ export default function AdvanceStageModal({
           <Input
             label={
               stage === 'return'
-                ? 'Returned By (Person who delivered/returned)'
+                ? 'Returned By (Delivered By)'
                 : stage === 'laba'
                 ? 'In Charge of Laba (Washing)'
                 : stage === 'banlaw'
@@ -264,7 +264,7 @@ export default function AdvanceStageModal({
             required
             value={inCharge}
             onChange={(e) => setInCharge(e.target.value)}
-            helperText="The personnel accountable for physically performing this laundry step."
+            helperText="The personnel accountable for physically performing this step."
             list="staff-datalist"
           />
 
@@ -278,7 +278,7 @@ export default function AdvanceStageModal({
           {/* Quick Staff Suggestion Badges */}
           {staffList.length > 0 && (
             <div className="pt-1">
-              <span className="text-[11px] text-slate-400 block mb-1">Quick Select Staff:</span>
+              <span className="text-[11px] text-slate-500 block mb-1">Quick Select Staff:</span>
               <div className="flex flex-wrap gap-1.5">
                 {staffList.slice(0, 6).map((s) => {
                   const name = `${s.first_name || ''} ${s.last_name || ''}`.trim() || s.username;
@@ -288,10 +288,10 @@ export default function AdvanceStageModal({
                       key={s.id}
                       type="button"
                       onClick={() => setInCharge(name)}
-                      className={`px-2 py-0.5 text-[11px] rounded-md border transition-colors cursor-pointer ${
+                      className={`px-2 py-0.5 text-xs rounded-md border transition-colors cursor-pointer ${
                         isSelected
-                          ? 'bg-amber-500/20 border-amber-500/40 text-amber-300 font-semibold'
-                          : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-700'
+                          ? 'bg-blue-50 border-blue-300 text-blue-700 font-semibold'
+                          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
                       }`}
                     >
                       {name}
@@ -303,8 +303,8 @@ export default function AdvanceStageModal({
           )}
         </div>
 
-        <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-800">
-          <Button variant="ghost" onClick={onClose} disabled={loading}>
+        <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-200">
+          <Button variant="secondary" onClick={onClose} disabled={loading}>
             Cancel
           </Button>
           <Button type="submit" variant="primary" loading={loading}>

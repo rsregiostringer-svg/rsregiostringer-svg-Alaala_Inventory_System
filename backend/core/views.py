@@ -1,13 +1,22 @@
+import datetime
 from rest_framework import viewsets, status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError, PermissionDenied
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
-from django.db.models import Sum, Count, Q
-from .models import User, Location, AuditLog
-from .serializers import UserSerializer, UserCreateUpdateSerializer, LocationSerializer, AuditLogSerializer
-from .permissions import IsMasterAdmin, IsAdminOrHigher, IsManagerOrHigher
+from django.db.models import Sum, Count, Q, Avg, F
+from .models import User, Location, AuditLog, SystemSetting
+from .serializers import (
+    UserSerializer, UserCreateUpdateSerializer, UserProfileSerializer,
+    LocationSerializer, AuditLogSerializer
+)
+from .permissions import (
+    IsMasterAdmin, IsSimpleAdmin, IsStaff, CanManageUsers,
+    CanViewAuditLogs, CanViewReports, CanViewAnalytics, CanManageSettings,
+    CanManageLocations, CanManageShifts, CanAccessWater, CanAccessElectricity
+)
 from .audit import log_audit
 
 
@@ -31,9 +40,15 @@ class LoginView(APIView):
                 status=status.HTTP_401_UNAUTHORIZED
             )
 
-        if not user.is_active:
+        if not user.is_active or user.status == User.Status.INACTIVE:
             return Response(
                 {'detail': 'User account has been deactivated.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        if user.status == User.Status.SUSPENDED:
+            return Response(
+                {'detail': 'User account is currently suspended. Please contact the Master Admin.'},
                 status=status.HTTP_403_FORBIDDEN
             )
 
@@ -61,6 +76,26 @@ class CurrentUserView(APIView):
         return Response(UserSerializer(request.user).data)
 
 
+class UserProfileView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        return Response(UserSerializer(request.user).data)
+
+    def put(self, request):
+        serializer = UserProfileSerializer(request.user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        log_audit(request, 'UPDATE', 'AUTH', user.id, user.username, f"User {user.username} updated profile details.")
+        return Response({
+            'detail': 'Profile updated successfully.',
+            'user': UserSerializer(user).data
+        })
+
+    def patch(self, request):
+        return self.put(request)
+
+
 class ChangePasswordView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -85,13 +120,21 @@ class ChangePasswordView(APIView):
 
 
 class LocationViewSet(viewsets.ModelViewSet):
-    queryset = Location.objects.all()
     serializer_class = LocationSerializer
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [IsAdminOrHigher()]
+            return [CanManageLocations()]
         return [permissions.IsAuthenticated()]
+
+    def get_queryset(self):
+        qs = Location.objects.all().order_by('name')
+        if not self.request.user.is_master_admin:
+            # If user has specifically assigned locations, constrain to them
+            if self.request.user.assigned_locations.exists() or self.request.user.location_id:
+                loc_ids = self.request.user.get_accessible_location_ids()
+                qs = qs.filter(id__in=loc_ids)
+        return qs
 
     def perform_create(self, serializer):
         loc = serializer.save()
@@ -101,34 +144,62 @@ class LocationViewSet(viewsets.ModelViewSet):
         loc = serializer.save()
         log_audit(self.request, 'UPDATE', 'LOCATIONS', loc.id, loc.name, f"Updated location '{loc.name}'")
 
+    def perform_destroy(self, instance):
+        uid = instance.id
+        name = instance.name
+        instance.delete()
+        log_audit(self.request, 'DELETE', 'LOCATIONS', uid, name, f"Deleted location '{name}'")
+
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+    queryset = User.objects.all().order_by('-date_joined')
+    permission_classes = [CanManageUsers]
 
     def get_serializer_class(self):
         if self.action in ['create', 'update', 'partial_update']:
             return UserCreateUpdateSerializer
         return UserSerializer
 
-    def get_permissions(self):
-        if self.action in ['create', 'destroy']:
-            return [IsMasterAdmin()]
-        elif self.action in ['update', 'partial_update']:
-            return [IsAdminOrHigher()]
-        return [IsAdminOrHigher()]
-
     def perform_create(self, serializer):
         user = serializer.save()
         log_audit(self.request, 'CREATE', 'USERS', user.id, user.username, f"Created user '{user.username}' with role {user.role}")
 
     def perform_update(self, serializer):
+        instance = self.get_object()
+        new_role = serializer.validated_data.get('role', instance.role)
+        new_status = serializer.validated_data.get('status', instance.status)
+        new_is_active = serializer.validated_data.get('is_active', instance.is_active)
+
+        # Safety Check: Prevent accidental lockout by demoting or deactivating the last active Master Admin
+        if instance.is_master_admin and (new_role != User.Role.MASTER_ADMIN or new_status != User.Status.ACTIVE or not new_is_active):
+            active_master_count = User.objects.filter(
+                role=User.Role.MASTER_ADMIN,
+                status=User.Status.ACTIVE,
+                is_active=True
+            ).exclude(id=instance.id).count()
+
+            if active_master_count == 0:
+                raise ValidationError({
+                    'detail': 'WARNING: Cannot deactivate, suspend, or remove Master Admin role from the last active Master Admin account. Doing so would permanently lock out administrative access.'
+                })
+
         user = serializer.save()
-        log_audit(self.request, 'UPDATE', 'USERS', user.id, user.username, f"Updated user '{user.username}'")
+        log_audit(self.request, 'UPDATE', 'USERS', user.id, user.username, f"Updated user '{user.username}' (Role: {user.role}, Status: {user.status})")
 
     def perform_destroy(self, instance):
-        if instance == self.request.user:
-            from rest_framework.exceptions import ValidationError
-            raise ValidationError({'detail': 'You cannot delete your own active Master Admin account.'})
+        # Safety Check: Prevent deleting the last active Master Admin account
+        if instance.is_master_admin:
+            active_master_count = User.objects.filter(
+                role=User.Role.MASTER_ADMIN,
+                status=User.Status.ACTIVE,
+                is_active=True
+            ).exclude(id=instance.id).count()
+
+            if active_master_count == 0:
+                raise ValidationError({
+                    'detail': 'WARNING: Cannot delete the last active Master Admin account. Doing so would lock out system administration.'
+                })
+
         uid = instance.id
         username = instance.username
         instance.delete()
@@ -136,22 +207,287 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class AuditLogViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = AuditLog.objects.all()
+    queryset = AuditLog.objects.all().order_by('-timestamp')
     serializer_class = AuditLogSerializer
-    permission_classes = [IsAdminOrHigher]
+    permission_classes = [CanViewAuditLogs]
 
     def get_queryset(self):
         qs = super().get_queryset()
         module = self.request.query_params.get('module')
         action = self.request.query_params.get('action')
         search = self.request.query_params.get('search')
+        start_date = self.request.query_params.get('start_date')
+        end_date = self.request.query_params.get('end_date')
+
         if module:
             qs = qs.filter(module__iexact=module)
         if action:
             qs = qs.filter(action__iexact=action)
+        if start_date:
+            qs = qs.filter(timestamp__date__gte=start_date)
+        if end_date:
+            qs = qs.filter(timestamp__date__lte=end_date)
         if search:
-            qs = qs.filter(Q(description__icontains=search) | Q(user_repr__icontains=search) | Q(record_repr__icontains=search))
+            qs = qs.filter(
+                Q(description__icontains=search) |
+                Q(user_repr__icontains=search) |
+                Q(record_repr__icontains=search)
+            )
         return qs
+
+
+class SettingsView(APIView):
+    permission_classes = [CanManageSettings]
+
+    def get(self, request):
+        settings_qs = SystemSetting.objects.all()
+        data = {s.key: s.value for s in settings_qs}
+        # Provide sensible defaults
+        defaults = {
+            'company_info': {
+                'name': 'Alaala Funeral Homes',
+                'tagline': 'Dignified & Compassionate Service',
+                'contact_email': 'contact@alaalafuneral.ph',
+                'contact_phone': '+63 912 345 6789',
+                'address': 'Main Highway, Batangas City, Philippines',
+            },
+            'shift_schedules': [
+                {'name': 'Morning Shift', 'time': '8am to 5pm'},
+                {'name': 'Afternoon / Evening Shift', 'time': '4pm to 1am'},
+                {'name': 'Graveyard / Night Shift', 'time': '12midnight to 9am'}
+            ],
+            'system_preferences': {
+                'currency': 'PHP',
+                'low_stock_default': 5,
+                'audit_logging_enabled': True,
+                'session_timeout_minutes': 60,
+                'dark_mode_allowed': True
+            }
+        }
+        for k, v in defaults.items():
+            if k not in data:
+                data[k] = v
+        return Response(data)
+
+    def post(self, request):
+        for key, val in request.data.items():
+            SystemSetting.objects.update_or_create(
+                key=key,
+                defaults={'value': val, 'description': f"Setting for {key}"}
+            )
+        log_audit(request, 'UPDATE', 'SETTINGS', 'SYSTEM', 'Preferences', "Updated system configuration settings.")
+        return Response({'detail': 'Settings saved successfully.'})
+
+    def put(self, request):
+        return self.post(request)
+
+
+class AnalyticsView(APIView):
+    permission_classes = [CanViewAnalytics]
+
+    def get(self, request):
+        from inventory.models import InventoryItem, InventoryTransaction
+        from laundry.models import LaundryRecord
+        from caskets.models import Casket
+        from maintenance.models import Maintenance
+        from utilities.models import WaterBill, ElectricityBill
+
+        # 1. Inventory Analytics
+        active_items = InventoryItem.objects.filter(is_active=True)
+        total_items = active_items.count()
+        total_quantity = active_items.aggregate(total=Sum('current_quantity'))['total'] or 0
+        low_stock = active_items.filter(status='LOW_STOCK').count()
+        out_of_stock = active_items.filter(status='OUT_OF_STOCK').count()
+        inventory_valuation = sum(item.current_quantity * float(item.cost) for item in active_items)
+
+        # Inventory stock movements
+        txs = InventoryTransaction.objects.all()
+        stock_in_total = txs.filter(transaction_type='IN').aggregate(Sum('quantity'))['quantity__sum'] or 0
+        stock_out_total = txs.filter(transaction_type='OUT').aggregate(Sum('quantity'))['quantity__sum'] or 0
+        transfers_total = txs.filter(transaction_type='TRANSFER').aggregate(Sum('quantity'))['quantity__sum'] or 0
+        damaged_total = txs.filter(reason__icontains='damage').aggregate(Sum('quantity'))['quantity__sum'] or 0
+        consumed_total = txs.filter(reason__icontains='consume').aggregate(Sum('quantity'))['quantity__sum'] or 0
+        lost_total = txs.filter(reason__icontains='lost').aggregate(Sum('quantity'))['quantity__sum'] or 0
+
+        # 2. Laundry Analytics
+        laundry_all = LaundryRecord.objects.all()
+        laundry_total = laundry_all.count()
+        laundry_in_count = laundry_all.filter(laundry_in_date__isnull=False).count()
+        laba_count = laundry_all.filter(laba_date__isnull=False).count()
+        banlaw_count = laundry_all.filter(banlaw_date__isnull=False).count()
+        sampay_count = laundry_all.filter(sampay_date__isnull=False).count()
+        pinaw_count = laundry_all.filter(pinaw_date__isnull=False).count()
+        tiklop_count = laundry_all.filter(tiklop_date__isnull=False).count()
+        returned_count = laundry_all.filter(status='RETURNED').count()
+        in_process_count = laundry_all.exclude(status='RETURNED').count()
+
+        laundry_by_stage = list(laundry_all.values('status').annotate(count=Count('id')).order_by('status'))
+        laundry_by_shift = list(laundry_all.values('laundry_in_shift').annotate(count=Count('id')).order_by('-count'))
+        laundry_by_location = list(
+            laundry_all.values('location__name').annotate(count=Count('id'), total_qty=Sum('quantity')).order_by('-count')
+        )
+
+        # 3. Casket Analytics
+        caskets_all = Casket.objects.all()
+        total_caskets = caskets_all.count()
+        caskets_available = caskets_all.filter(status='AVAILABLE').aggregate(Sum('quantity'))['quantity__sum'] or 0
+        caskets_reserved = caskets_all.filter(status='RESERVED').aggregate(Sum('quantity'))['quantity__sum'] or 0
+        caskets_sold = caskets_all.filter(status='SOLD').aggregate(Sum('quantity'))['quantity__sum'] or 0
+        caskets_used = caskets_all.filter(status='USED').aggregate(Sum('quantity'))['quantity__sum'] or 0
+        caskets_repair = caskets_all.filter(status='FOR_REPAIR').aggregate(Sum('quantity'))['quantity__sum'] or 0
+        caskets_out_of_stock = caskets_all.filter(quantity=0).count()
+        caskets_by_type = list(caskets_all.values('casket_type').annotate(count=Count('id')).order_by('-count'))
+        caskets_by_location = list(caskets_all.values('location__name').annotate(count=Count('id'), total_qty=Sum('quantity')).order_by('-count'))
+
+        # 4. Maintenance Analytics
+        maint_all = Maintenance.objects.all()
+        open_maintenance = maint_all.filter(status__in=['REPORTED', 'PENDING', 'FOR_REPAIR', 'IN_PROGRESS']).count()
+        completed_maintenance = maint_all.filter(status='COMPLETED').count()
+        pending_maintenance = maint_all.filter(status='PENDING').count()
+        repair_maintenance = maint_all.filter(status='FOR_REPAIR').count()
+        urgent_maintenance = maint_all.filter(status__in=['REPORTED', 'PENDING', 'FOR_REPAIR', 'IN_PROGRESS'], priority__in=['URGENT', 'HIGH']).count()
+        total_maint_cost = maint_all.aggregate(Sum('cost'))['cost__sum'] or 0
+        maint_by_location = list(maint_all.values('location__name').annotate(count=Count('id'), cost=Sum('cost')).order_by('-count'))
+        maint_by_category = list(maint_all.values('category').annotate(count=Count('id')).order_by('-count'))
+
+        # 5. Utilities Analytics
+        water_bills = WaterBill.objects.all()
+        total_water_bills = water_bills.count()
+        water_paid = water_bills.filter(payment_status='PAID').aggregate(Sum('amount'))['amount__sum'] or 0
+        water_unpaid = water_bills.filter(payment_status='UNPAID').aggregate(Sum('amount'))['amount__sum'] or 0
+        water_overdue = water_bills.filter(payment_status='OVERDUE').aggregate(Sum('amount'))['amount__sum'] or 0
+        water_consumption = water_bills.aggregate(Sum('consumption'))['consumption__sum'] or 0
+        water_expenses = water_bills.aggregate(Sum('amount'))['amount__sum'] or 0
+
+        elec_bills = ElectricityBill.objects.all()
+        total_elec_bills = elec_bills.count()
+        elec_paid = elec_bills.filter(payment_status='PAID').aggregate(Sum('amount'))['amount__sum'] or 0
+        elec_unpaid = elec_bills.filter(payment_status='UNPAID').aggregate(Sum('amount'))['amount__sum'] or 0
+        elec_overdue = elec_bills.filter(payment_status='OVERDUE').aggregate(Sum('amount'))['amount__sum'] or 0
+        elec_consumption = elec_bills.aggregate(Sum('consumption'))['consumption__sum'] or 0
+        elec_expenses = elec_bills.aggregate(Sum('amount'))['amount__sum'] or 0
+
+        # 6. Location Consolidated Analytics
+        locations = Location.objects.filter(is_active=True)
+        location_metrics = []
+        for loc in locations:
+            loc_items = active_items.filter(location=loc)
+            loc_laundry = laundry_all.filter(location=loc)
+            loc_caskets = caskets_all.filter(location=loc)
+            loc_maint = maint_all.filter(location=loc)
+            loc_water = water_bills.filter(location=loc).aggregate(Sum('amount'))['amount__sum'] or 0
+            loc_elec = elec_bills.filter(location=loc).aggregate(Sum('amount'))['amount__sum'] or 0
+
+            location_metrics.append({
+                'location_id': loc.id,
+                'location_name': loc.name,
+                'inventory_items': loc_items.count(),
+                'inventory_qty': loc_items.aggregate(Sum('current_quantity'))['current_quantity__sum'] or 0,
+                'laundry_count': loc_laundry.count(),
+                'caskets_count': loc_caskets.count(),
+                'open_maintenance': loc_maint.filter(status__in=['REPORTED', 'PENDING', 'IN_PROGRESS']).count(),
+                'water_expenses': float(loc_water),
+                'electricity_expenses': float(loc_elec),
+                'total_utility_cost': float(loc_water + loc_elec)
+            })
+
+        # 7. Employee / Activity Analytics
+        employee_laundry = list(
+            laundry_all.exclude(encoded_by='').values('encoded_by').annotate(
+                count=Count('id'),
+                total_qty=Sum('quantity')
+            ).order_by('-count')[:10]
+        )
+        employee_inventory_tx = list(
+            txs.exclude(user__isnull=True).values('user__username', 'user__first_name', 'user__last_name').annotate(
+                count=Count('id'),
+                total_qty=Sum('quantity')
+            ).order_by('-count')[:10]
+        )
+        employee_maintenance = list(
+            maint_all.exclude(assigned_to='').values('assigned_to').annotate(
+                count=Count('id')
+            ).order_by('-count')[:10]
+        )
+
+        return Response({
+            'inventory': {
+                'total_items': total_items,
+                'total_quantity': total_quantity,
+                'valuation': float(inventory_valuation),
+                'low_stock': low_stock,
+                'out_of_stock': out_of_stock,
+                'movement': {
+                    'stock_in': stock_in_total,
+                    'stock_out': stock_out_total,
+                    'transfers': transfers_total,
+                    'damaged': damaged_total,
+                    'lost': lost_total,
+                    'consumed': consumed_total
+                }
+            },
+            'laundry': {
+                'total': laundry_total,
+                'in_process': in_process_count,
+                'returned': returned_count,
+                'stages': {
+                    'laundry_in': laundry_in_count,
+                    'laba': laba_count,
+                    'banlaw': banlaw_count,
+                    'sampay': sampay_count,
+                    'pinaw': pinaw_count,
+                    'tiklop': tiklop_count,
+                    'returned': returned_count
+                },
+                'by_stage': laundry_by_stage,
+                'by_shift': laundry_by_shift,
+                'by_location': laundry_by_location
+            },
+            'caskets': {
+                'total': total_caskets,
+                'available': caskets_available,
+                'reserved': caskets_reserved,
+                'sold': caskets_sold,
+                'used': caskets_used,
+                'for_repair': caskets_repair,
+                'out_of_stock': caskets_out_of_stock,
+                'by_type': caskets_by_type,
+                'by_location': caskets_by_location
+            },
+            'maintenance': {
+                'open': open_maintenance,
+                'completed': completed_maintenance,
+                'pending': pending_maintenance,
+                'urgent': urgent_maintenance,
+                'total_cost': float(total_maint_cost),
+                'by_location': maint_by_location,
+                'by_category': maint_by_category
+            },
+            'utilities': {
+                'water': {
+                    'total_bills': total_water_bills,
+                    'paid': float(water_paid),
+                    'unpaid': float(water_unpaid),
+                    'overdue': float(water_overdue),
+                    'consumption': float(water_consumption),
+                    'expenses': float(water_expenses)
+                },
+                'electricity': {
+                    'total_bills': total_elec_bills,
+                    'paid': float(elec_paid),
+                    'unpaid': float(elec_unpaid),
+                    'overdue': float(elec_overdue),
+                    'consumption': float(elec_consumption),
+                    'expenses': float(elec_expenses)
+                }
+            },
+            'locations': location_metrics,
+            'employees': {
+                'laundry_handled': employee_laundry,
+                'inventory_transactions': employee_inventory_tx,
+                'maintenance_activities': employee_maintenance
+            }
+        })
 
 
 class DashboardStatsView(APIView):
@@ -160,44 +496,116 @@ class DashboardStatsView(APIView):
     def get(self, request):
         from inventory.models import InventoryItem
         from laundry.models import LaundryRecord
-        from caskets.models import Casket
+        from caskets.models import Casket, Chapel, LamayRecord, CasketSale
         from maintenance.models import Maintenance
         from utilities.models import WaterBill, ElectricityBill
 
+        user = request.user
+        accessible_loc_ids = user.get_accessible_location_ids()
+
+        # Strict Queryset isolation: If not Master Admin, filter by accessible locations
+        if user.is_master_admin:
+            active_items = InventoryItem.objects.filter(is_active=True)
+            caskets_qs = Casket.objects.all()
+            laundry_qs = LaundryRecord.objects.all()
+            maint_qs = Maintenance.objects.all()
+            locations_qs = Location.objects.filter(is_active=True)
+            water_qs = WaterBill.objects.all()
+            elec_qs = ElectricityBill.objects.all()
+            chapels_qs = Chapel.objects.filter(is_active=True)
+            lamay_qs = LamayRecord.objects.all()
+        else:
+            active_items = InventoryItem.objects.filter(is_active=True, location_id__in=accessible_loc_ids)
+            caskets_qs = Casket.objects.filter(location_id__in=accessible_loc_ids)
+            laundry_qs = LaundryRecord.objects.filter(location_id__in=accessible_loc_ids)
+            maint_qs = Maintenance.objects.filter(location_id__in=accessible_loc_ids)
+            locations_qs = Location.objects.filter(is_active=True, id__in=accessible_loc_ids)
+            chapels_qs = Chapel.objects.filter(is_active=True)
+            lamay_qs = LamayRecord.objects.all()
+
+            # Utilities access check: Staff without custom perm cannot see water or electricity
+            has_water = user.is_simple_admin or user.has_custom_perm('water')
+            has_elec = user.is_simple_admin or user.has_custom_perm('electricity')
+            water_qs = WaterBill.objects.filter(location_id__in=accessible_loc_ids) if has_water else WaterBill.objects.none()
+            elec_qs = ElectricityBill.objects.filter(location_id__in=accessible_loc_ids) if has_elec else ElectricityBill.objects.none()
+
         # 1. Total Inventory
-        active_items = InventoryItem.objects.filter(is_active=True)
         total_items = active_items.count()
         total_quantity = active_items.aggregate(total=Sum('current_quantity'))['total'] or 0
         low_stock_count = active_items.filter(status='LOW_STOCK').count()
         out_of_stock_count = active_items.filter(status='OUT_OF_STOCK').count()
 
         # 2. Caskets
-        caskets_available = Casket.objects.filter(status='AVAILABLE').aggregate(total=Sum('quantity'))['total'] or 0
-        caskets_reserved = Casket.objects.filter(status='RESERVED').aggregate(total=Sum('quantity'))['total'] or 0
-        caskets_repair = Casket.objects.filter(status='FOR_REPAIR').aggregate(total=Sum('quantity'))['total'] or 0
+        caskets_available = caskets_qs.filter(status='AVAILABLE').aggregate(total=Sum('quantity'))['total'] or 0
+        caskets_reserved = caskets_qs.filter(status='RESERVED').aggregate(total=Sum('quantity'))['total'] or 0
+        caskets_sold_used = caskets_qs.filter(status__in=['SOLD', 'USED']).count() + CasketSale.objects.count()
+        caskets_repair = caskets_qs.filter(status='FOR_REPAIR').aggregate(total=Sum('quantity'))['total'] or 0
+
+        # 2b. Chapels & Lamay
+        total_chapels = chapels_qs.count()
+        chapels_available = chapels_qs.filter(status=Chapel.Status.AVAILABLE).count()
+        chapels_occupied = chapels_qs.filter(status=Chapel.Status.OCCUPIED).count()
+        chapels_cleaning = chapels_qs.filter(status=Chapel.Status.CLEANING).count()
+        chapels_maintenance = chapels_qs.filter(status__in=[Chapel.Status.MAINTENANCE, Chapel.Status.OUT_OF_SERVICE]).count()
+
+        active_lamays_qs = lamay_qs.filter(status=LamayRecord.Status.ACTIVE).select_related(
+            'chapel', 'deceased', 'buyer', 'casket'
+        ).order_by('-lamay_start_date')
+        current_lamay_count = active_lamays_qs.count()
+        current_lamay_list = [
+            {
+                'id': l.id,
+                'lamay_id': l.lamay_id,
+                'chapel_id': l.chapel.id if l.chapel else None,
+                'chapel_name': l.chapel.name if l.chapel else (f"Residence ({l.residence_address})" if l.residence_address else 'Residence / Home Viewing'),
+                'is_residence': l.is_residence,
+                'residence_address': l.residence_address,
+                'deceased_name': l.deceased.full_name,
+                'deceased_age': l.deceased.age,
+                'deceased_sex': l.deceased.sex,
+                'deceased_date_of_death': str(l.deceased.date_of_death) if l.deceased.date_of_death else '',
+                'funeral_case_id': l.funeral_case_id or l.deceased.funeral_case_id,
+                'buyer_name': l.buyer.full_name,
+                'buyer_contact': l.buyer.contact_number,
+                'buyer_address': l.buyer.address,
+                'buyer_relationship': l.buyer.relationship_to_deceased,
+                'casket_id': l.casket.casket_id if l.casket else '',
+                'casket_model': l.casket.model if l.casket else '',
+                'casket_info': f"{l.casket.casket_id} - {l.casket.model}" if l.casket else 'Standard Package',
+                'lamay_start_date': str(l.lamay_start_date),
+                'lamay_start_time': str(l.lamay_start_time) if l.lamay_start_time else '',
+                'expected_end_date': str(l.expected_end_date) if l.expected_end_date else '',
+                'expected_burial_date': str(l.expected_burial_date) if l.expected_burial_date else '',
+                'burial_time': str(l.burial_time) if l.burial_time else '',
+                'status': l.status,
+                'status_display': l.get_status_display(),
+                'notes': l.notes,
+                'encoded_by': l.encoded_by.get_full_name() or l.encoded_by.username if l.encoded_by else 'System'
+            }
+            for l in active_lamays_qs
+        ]
 
         # 3. Laundry in Process
-        laundry_in_process = LaundryRecord.objects.exclude(status='RETURNED').count()
-        laundry_by_status = LaundryRecord.objects.values('status').annotate(count=Count('id')).order_by('status')
+        laundry_in_process = laundry_qs.exclude(status='RETURNED').count()
+        laundry_by_status = laundry_qs.values('status').annotate(count=Count('id')).order_by('status')
 
         # 4. Open Maintenance
-        open_maintenance = Maintenance.objects.filter(status__in=['REPORTED', 'PENDING', 'IN_PROGRESS']).count()
-        urgent_maintenance = Maintenance.objects.filter(status__in=['REPORTED', 'PENDING', 'IN_PROGRESS'], priority__in=['URGENT', 'HIGH']).count()
+        open_maintenance = maint_qs.filter(status__in=['REPORTED', 'PENDING', 'FOR_REPAIR', 'IN_PROGRESS']).count()
+        urgent_maintenance = maint_qs.filter(status__in=['REPORTED', 'PENDING', 'FOR_REPAIR', 'IN_PROGRESS'], priority__in=['URGENT', 'HIGH']).count()
 
         # 5. Utilities
-        unpaid_water = WaterBill.objects.filter(payment_status__in=['UNPAID', 'OVERDUE']).aggregate(
+        unpaid_water = water_qs.filter(payment_status__in=['UNPAID', 'OVERDUE']).aggregate(
             count=Count('id'), total=Sum('amount')
         )
-        unpaid_electricity = ElectricityBill.objects.filter(payment_status__in=['UNPAID', 'OVERDUE']).aggregate(
+        unpaid_electricity = elec_qs.filter(payment_status__in=['UNPAID', 'OVERDUE']).aggregate(
             count=Count('id'), total=Sum('amount')
         )
         total_unpaid_bills_amount = (unpaid_water['total'] or 0) + (unpaid_electricity['total'] or 0)
         total_unpaid_bills_count = (unpaid_water['count'] or 0) + (unpaid_electricity['count'] or 0)
 
         # 6. Inventory By Location
-        locations = Location.objects.filter(is_active=True)
         inventory_by_location = []
-        for loc in locations:
+        for loc in locations_qs:
             loc_items = active_items.filter(location=loc)
             qty = loc_items.aggregate(total=Sum('current_quantity'))['total'] or 0
             items_count = loc_items.count()
@@ -252,7 +660,7 @@ class DashboardStatsView(APIView):
                 'status': m.status,
                 'date_reported': m.date_reported
             }
-            for m in Maintenance.objects.filter(status__in=['REPORTED', 'PENDING', 'IN_PROGRESS']).order_by('-priority', '-date_reported')[:5]
+            for m in maint_qs.filter(status__in=['REPORTED', 'PENDING', 'FOR_REPAIR', 'IN_PROGRESS']).order_by('-priority', '-date_reported')[:5]
         ]
 
         # 9. Recent bills
@@ -266,7 +674,7 @@ class DashboardStatsView(APIView):
                 'due_date': b.due_date,
                 'payment_status': b.payment_status
             }
-            for b in WaterBill.objects.all().order_by('-due_date')[:5]
+            for b in water_qs.order_by('-due_date')[:5]
         ]
 
         recent_electricity_bills = [
@@ -279,7 +687,7 @@ class DashboardStatsView(APIView):
                 'due_date': b.due_date,
                 'payment_status': b.payment_status
             }
-            for b in ElectricityBill.objects.all().order_by('-due_date')[:5]
+            for b in elec_qs.order_by('-due_date')[:5]
         ]
 
         return Response({
@@ -290,7 +698,14 @@ class DashboardStatsView(APIView):
                 'out_of_stock_count': out_of_stock_count,
                 'caskets_available': caskets_available,
                 'caskets_reserved': caskets_reserved,
+                'caskets_sold_used': caskets_sold_used,
                 'caskets_for_repair': caskets_repair,
+                'total_chapels': total_chapels,
+                'chapels_available': chapels_available,
+                'chapels_occupied': chapels_occupied,
+                'chapels_cleaning': chapels_cleaning,
+                'chapels_maintenance': chapels_maintenance,
+                'current_lamay_count': current_lamay_count,
                 'laundry_in_process': laundry_in_process,
                 'open_maintenance': open_maintenance,
                 'urgent_maintenance': urgent_maintenance,
@@ -299,6 +714,14 @@ class DashboardStatsView(APIView):
                 'unpaid_water_amount': float(unpaid_water['total'] or 0),
                 'unpaid_electricity_amount': float(unpaid_electricity['total'] or 0),
             },
+            'chapels_summary': {
+                'total': total_chapels,
+                'available': chapels_available,
+                'occupied': chapels_occupied,
+                'cleaning': chapels_cleaning,
+                'maintenance': chapels_maintenance
+            },
+            'current_lamay': current_lamay_list,
             'inventory_by_location': inventory_by_location,
             'low_stock_items': low_stock_items,
             'out_of_stock_items': out_of_stock_items,

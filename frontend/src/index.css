@@ -7,8 +7,8 @@
 
   body {
     font-family: var(--font-sans);
-    background-color: #0b1120;
-    color: #f8fafc;
+    background-color: #f8fafc;
+    color: #0f172a;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
   }
@@ -22,21 +22,21 @@
 
 /* Custom scrollbar for tables and lists */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(51, 65, 85, 0.8);
+  background: #cbd5e1;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 1);
+  background: #94a3b8;
 }
 
 /* Printable report styles */

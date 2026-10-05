@@ -27,7 +27,7 @@ export default function WaterPage() {
   const [editBill, setEditBill] = useState(null);
   const [formData, setFormData] = useState({
     location: '',
-    provider: 'Maynilad Water Services',
+    provider: 'Prime Water',
     meter_number: '',
     previous_reading: '',
     current_reading: '',
@@ -85,7 +85,7 @@ export default function WaterPage() {
 
     setFormData({
       location: locations[0]?.id || '',
-      provider: 'Maynilad Water Services',
+      provider: 'Prime Water',
       meter_number: '',
       previous_reading: '',
       current_reading: '',
@@ -160,8 +160,8 @@ export default function WaterPage() {
       key: 'location_details',
       render: (row) => (
         <div>
-          <div className="font-semibold text-slate-100">{row.location_details?.name}</div>
-          <div className="text-xs text-slate-400 mt-0.5">
+          <div className="font-semibold text-black-100">{row.location_details?.name}</div>
+          <div className="text-xs text-black-400 mt-0.5">
             {row.billing_period} &bull; {row.provider}
           </div>
         </div>
@@ -172,8 +172,8 @@ export default function WaterPage() {
       key: 'meter_number',
       render: (row) => (
         <div>
-          <div className="font-mono text-xs text-slate-300">Meter: {row.meter_number}</div>
-          <div className="text-[11px] text-slate-500">
+          <div className="font-mono text-xs text-black-300">Meter: {row.meter_number}</div>
+          <div className="text-[11px] text-black-500">
             {row.previous_reading} &rarr; {row.current_reading}
           </div>
         </div>
@@ -184,7 +184,7 @@ export default function WaterPage() {
       key: 'consumption',
       render: (row) => (
         <span className="font-bold text-sky-400">
-          {row.consumption} <span className="text-xs font-normal text-slate-400">m³</span>
+          {row.consumption} <span className="text-xs font-normal text--400">m³</span>
         </span>
       ),
     },
@@ -193,8 +193,8 @@ export default function WaterPage() {
       key: 'amount',
       render: (row) => (
         <div>
-          <div className="text-xs font-bold text-slate-100">{formatCurrency(row.amount)}</div>
-          <div className="text-[11px] text-slate-400">Due: {formatDate(row.due_date)}</div>
+          <div className="text-xs font-bold text-black-100">{formatCurrency(row.amount)}</div>
+          <div className="text-[11px] text-black-400">Due: {formatDate(row.due_date)}</div>
         </div>
       ),
     },

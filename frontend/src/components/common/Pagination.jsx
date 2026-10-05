@@ -17,14 +17,14 @@ export default function Pagination({
   const endRecord = Math.min(currentPage * pageSize, totalCount);
 
   return (
-    <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 py-4 px-2 border-t border-slate-800 text-xs text-slate-400 ${className}`}>
+    <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 py-4 px-2 border-t border-slate-200 text-xs text-slate-600 ${className}`}>
       <div>
-        Showing <span className="font-semibold text-slate-200">{startRecord}</span> to{' '}
-        <span className="font-semibold text-slate-200">{endRecord}</span> of{' '}
-        <span className="font-semibold text-slate-200">{totalCount}</span> results
+        Showing <span className="font-semibold text-slate-900">{startRecord}</span> to{' '}
+        <span className="font-semibold text-slate-900">{endRecord}</span> of{' '}
+        <span className="font-semibold text-slate-900">{totalCount}</span> records
       </div>
 
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-2">
         <Button
           variant="secondary"
           size="sm"
@@ -35,8 +35,8 @@ export default function Pagination({
           Previous
         </Button>
 
-        <span className="px-3 py-1 bg-slate-900 border border-slate-800 rounded-md text-slate-200 font-medium">
-          {currentPage} / {totalPages}
+        <span className="px-3 py-1 bg-blue-600 text-white rounded-md font-semibold text-xs shadow-xs">
+          Page {currentPage} of {totalPages}
         </span>
 
         <Button

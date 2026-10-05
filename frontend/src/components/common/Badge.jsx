@@ -1,14 +1,18 @@
 import React from 'react';
 
 const VARIANT_STYLES = {
-  success: 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30',
-  warning: 'bg-amber-500/15 text-amber-400 border border-amber-500/30',
-  danger: 'bg-rose-500/15 text-rose-400 border border-rose-500/30',
-  info: 'bg-sky-500/15 text-sky-400 border border-sky-500/30',
-  primary: 'bg-indigo-500/15 text-indigo-400 border border-indigo-500/30',
-  accent: 'bg-purple-500/15 text-purple-400 border border-purple-500/30',
-  secondary: 'bg-slate-500/15 text-slate-300 border border-slate-500/30',
-  neutral: 'bg-gray-500/15 text-gray-400 border border-gray-500/30',
+  blue: 'bg-blue-50 text-blue-700 border border-blue-200',
+  yellow: 'bg-amber-50 text-amber-800 border border-amber-200',
+  red: 'bg-red-50 text-red-700 border border-red-200',
+  neutral: 'bg-slate-100 text-slate-700 border border-slate-200',
+  // Backward compatibility mappings:
+  success: 'bg-blue-50 text-blue-700 border border-blue-200',
+  primary: 'bg-blue-50 text-blue-700 border border-blue-200',
+  info: 'bg-blue-50 text-blue-700 border border-blue-200',
+  accent: 'bg-blue-50 text-blue-700 border border-blue-200',
+  warning: 'bg-amber-50 text-amber-800 border border-amber-200',
+  danger: 'bg-red-50 text-red-700 border border-red-200',
+  secondary: 'bg-slate-100 text-slate-700 border border-slate-200',
 };
 
 export default function Badge({ children, variant = 'neutral', className = '', size = 'md' }) {
@@ -17,7 +21,7 @@ export default function Badge({ children, variant = 'neutral', className = '', s
 
   return (
     <span
-      className={`inline-flex items-center font-medium rounded-full tracking-wide shadow-xs ${sizeClasses} ${variantClass} ${className}`}
+      className={`inline-flex items-center font-medium rounded-full tracking-wide ${sizeClasses} ${variantClass} ${className}`}
     >
       {children}
     </span>

@@ -172,8 +172,8 @@ export default function ElectricityPage() {
       key: 'meter_number',
       render: (row) => (
         <div>
-          <div className="font-mono text-xs text-slate-300">Meter: {row.meter_number}</div>
-          <div className="text-[11px] text-slate-500">
+          <div className="font-mono text-xs text-black-300">Meter: {row.meter_number}</div>
+          <div className="text-[11px] text-black-500">
             {row.previous_reading} &rarr; {row.current_reading}
           </div>
         </div>
@@ -184,7 +184,7 @@ export default function ElectricityPage() {
       key: 'consumption',
       render: (row) => (
         <span className="font-bold text-amber-400">
-          {row.consumption} <span className="text-xs font-normal text-slate-400">kWh</span>
+          {row.consumption} <span className="text-xs font-normal text--400">kWh</span>
         </span>
       ),
     },
@@ -193,8 +193,8 @@ export default function ElectricityPage() {
       key: 'amount',
       render: (row) => (
         <div>
-          <div className="text-xs font-bold text-slate-100">{formatCurrency(row.amount)}</div>
-          <div className="text-[11px] text-slate-400">Due: {formatDate(row.due_date)}</div>
+          <div className="text-xs font-bold text-black-100">{formatCurrency(row.amount)}</div>
+          <div className="text-[11px] text-black-400">Due: {formatDate(row.due_date)}</div>
         </div>
       ),
     },
@@ -231,7 +231,7 @@ export default function ElectricityPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-serif font-bold text-slate-100 tracking-wide">
+          <h1 className="text-2xl font-serif font-bold text-yellow-600 tracking-wide">
             Electricity Utility Monitoring
           </h1>
           <p className="text-xs text-slate-400 mt-0.5">
@@ -271,7 +271,7 @@ export default function ElectricityPage() {
       )}
 
       {/* Filter Toolbar */}
-      <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row items-center gap-3">
+      <div className="p-4 rounded-xl bg-slate-700 border border-slate-800 flex flex-col md:flex-row items-center gap-3">
         <SearchInput
           value={search}
           onChange={setSearch}

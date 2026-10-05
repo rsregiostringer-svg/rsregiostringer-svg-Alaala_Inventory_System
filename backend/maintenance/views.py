@@ -27,6 +27,10 @@ class MaintenanceViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()
+        if not self.request.user.is_master_admin:
+            loc_ids = self.request.user.get_accessible_location_ids()
+            qs = qs.filter(location_id__in=loc_ids)
+
         location_id = self.request.query_params.get('location')
         category = self.request.query_params.get('category')
         priority = self.request.query_params.get('priority')
@@ -43,7 +47,7 @@ class MaintenanceViewSet(viewsets.ModelViewSet):
         if status_filter:
             qs = qs.filter(status=status_filter)
         if is_open and is_open.lower() in ('true', '1'):
-            qs = qs.filter(status__in=['REPORTED', 'PENDING', 'IN_PROGRESS'])
+            qs = qs.filter(status__in=['REPORTED', 'PENDING', 'FOR_REPAIR', 'IN_PROGRESS'])
         if search:
             qs = qs.filter(
                 Q(maintenance_id__icontains=search) |

@@ -289,8 +289,11 @@ export default function MaintenancePage() {
             <Select
               options={[
                 { value: 'REPORTED', label: 'Reported' },
+                { value: 'PENDING', label: 'Pending' },
+                { value: 'FOR_REPAIR', label: 'For Repair' },
                 { value: 'IN_PROGRESS', label: 'In Progress' },
                 { value: 'COMPLETED', label: 'Completed' },
+                { value: 'CANCELLED', label: 'Cancelled' },
               ]}
               placeholder="All Status"
               value={selectedStatus}
@@ -382,6 +385,7 @@ export default function MaintenancePage() {
               options={[
                 { value: 'REPORTED', label: 'Reported' },
                 { value: 'PENDING', label: 'Pending' },
+                { value: 'FOR_REPAIR', label: 'For Repair' },
                 { value: 'IN_PROGRESS', label: 'In Progress' },
                 { value: 'COMPLETED', label: 'Completed' },
                 { value: 'CANCELLED', label: 'Cancelled' },

@@ -5,7 +5,7 @@ from django.db.models import Sum, Count, Q
 from .models import WaterBill, ElectricityBill
 from .serializers import WaterBillSerializer, ElectricityBillSerializer
 from core.audit import log_audit
-from core.permissions import IsMasterAdmin
+from core.permissions import IsMasterAdmin, CanAccessWater, CanAccessElectricity
 from alaala_backend.realtime import broadcast_event
 
 
@@ -16,7 +16,7 @@ class WaterBillViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action == 'destroy':
             return [IsMasterAdmin()]
-        return [permissions.IsAuthenticated()]
+        return [CanAccessWater()]
 
     def perform_destroy(self, instance):
         uid = instance.id
@@ -28,6 +28,10 @@ class WaterBillViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()
+        if not self.request.user.is_master_admin:
+            loc_ids = self.request.user.get_accessible_location_ids()
+            qs = qs.filter(location_id__in=loc_ids)
+
         location_id = self.request.query_params.get('location')
         payment_status = self.request.query_params.get('payment_status')
         period = self.request.query_params.get('billing_period')
@@ -86,7 +90,7 @@ class ElectricityBillViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action == 'destroy':
             return [IsMasterAdmin()]
-        return [permissions.IsAuthenticated()]
+        return [CanAccessElectricity()]
 
     def perform_destroy(self, instance):
         uid = instance.id
@@ -98,6 +102,10 @@ class ElectricityBillViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()
+        if not self.request.user.is_master_admin:
+            loc_ids = self.request.user.get_accessible_location_ids()
+            qs = qs.filter(location_id__in=loc_ids)
+
         location_id = self.request.query_params.get('location')
         payment_status = self.request.query_params.get('payment_status')
         period = self.request.query_params.get('billing_period')

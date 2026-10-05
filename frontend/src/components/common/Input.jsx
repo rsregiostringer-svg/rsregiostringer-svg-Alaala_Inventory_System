@@ -16,8 +16,8 @@ export default function Input({
   return (
     <div className={`w-full ${containerClassName}`}>
       {label && (
-        <label htmlFor={inputId} className="block text-xs font-medium text-slate-300 mb-1.5">
-          {label} {required && <span className="text-amber-500">*</span>}
+        <label htmlFor={inputId} className="block text-xs font-semibold text-slate-800 mb-1.5">
+          {label} {required && <span className="text-red-600">*</span>}
         </label>
       )}
       <div className="relative rounded-lg shadow-xs">
@@ -28,14 +28,16 @@ export default function Input({
         )}
         <input
           id={inputId}
-          className={`block w-full rounded-lg bg-slate-950/60 border ${
-            error ? 'border-rose-500/80 focus:border-rose-500' : 'border-slate-800 focus:border-amber-500/80'
-          } ${Icon ? 'pl-9' : 'pl-3.5'} pr-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-hidden focus:ring-1 focus:ring-amber-500/30 transition-colors disabled:opacity-50 disabled:bg-slate-900/50 ${className}`}
+          className={`block w-full rounded-lg bg-white border ${
+            error
+              ? 'border-red-500 focus:border-red-600 focus:ring-1 focus:ring-red-600'
+              : 'border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600'
+          } ${Icon ? 'pl-9' : 'pl-3.5'} pr-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none transition-colors disabled:opacity-50 disabled:bg-slate-100 ${className}`}
           {...props}
         />
       </div>
-      {error && <p className="mt-1 text-xs text-rose-400">{error}</p>}
-      {!error && helperText && <p className="mt-1 text-xs text-slate-400">{helperText}</p>}
+      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+      {!error && helperText && <p className="mt-1 text-xs text-slate-500">{helperText}</p>}
     </div>
   );
 }

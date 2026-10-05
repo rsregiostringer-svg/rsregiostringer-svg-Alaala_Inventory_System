@@ -3,8 +3,13 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import LoadingState from '../components/common/LoadingState';
 
-export default function ProtectedRoute({ children, adminOnly = false }) {
-  const { isAuthenticated, loading, isAdmin } = useAuth();
+export default function ProtectedRoute({
+  children,
+  masterAdminOnly = false,
+  adminOnly = false,
+  checkPermission = null,
+}) {
+  const { isAuthenticated, loading, isMasterAdmin, isAdmin, user } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -19,8 +24,34 @@ export default function ProtectedRoute({ children, adminOnly = false }) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  if (masterAdminOnly && !isMasterAdmin) {
+    return (
+      <Navigate
+        to="/dashboard"
+        state={{ error: 'You do not have permission to access this page.' }}
+        replace
+      />
+    );
+  }
+
   if (adminOnly && !isAdmin) {
-    return <Navigate to="/dashboard" replace />;
+    return (
+      <Navigate
+        to="/dashboard"
+        state={{ error: 'You do not have permission to access this page.' }}
+        replace
+      />
+    );
+  }
+
+  if (checkPermission && !checkPermission(user)) {
+    return (
+      <Navigate
+        to="/dashboard"
+        state={{ error: 'You do not have permission to access this page.' }}
+        replace
+      />
+    );
   }
 
   return children;

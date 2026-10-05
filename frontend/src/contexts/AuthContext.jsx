@@ -60,10 +60,21 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const updateUser = (updatedUser) => {
+    setUser(updatedUser);
+    localStorage.setItem('alaala_user', JSON.stringify(updatedUser));
+  };
+
   const isMasterAdmin = user?.role === 'MASTER_ADMIN';
-  const isAdmin = user?.role === 'MASTER_ADMIN' || user?.role === 'ADMIN';
-  const isManager = user?.role === 'MASTER_ADMIN' || user?.role === 'ADMIN' || user?.role === 'MANAGER';
+  const isSimpleAdmin = user?.role === 'ADMIN' && !isMasterAdmin;
+  const isStaffRole = user?.role === 'STAFF';
+  const isAdmin = isMasterAdmin || user?.role === 'ADMIN';
+  const isManager = isMasterAdmin || user?.role === 'ADMIN' || user?.role === 'MANAGER';
   const isStaff = !!user;
+
+  const canAccessWater = isMasterAdmin || isSimpleAdmin || Boolean(user?.custom_permissions?.water);
+  const canAccessElectricity = isMasterAdmin || isSimpleAdmin || Boolean(user?.custom_permissions?.electricity);
+  const canViewReports = isMasterAdmin || Boolean(user?.custom_permissions?.reports);
 
   return (
     <AuthContext.Provider
@@ -72,12 +83,18 @@ export function AuthProvider({ children }) {
         loading,
         login,
         logout,
+        updateUser,
         fetchCurrentUser,
         isAuthenticated: !!user,
         isMasterAdmin,
+        isSimpleAdmin,
+        isStaffRole,
         isAdmin,
         isManager,
         isStaff,
+        canAccessWater,
+        canAccessElectricity,
+        canViewReports,
       }}
     >
       {children}

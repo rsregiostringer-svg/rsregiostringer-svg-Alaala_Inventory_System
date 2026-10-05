@@ -12,8 +12,6 @@ import { ROLE_LABELS, formatDate } from '../utils/formatters';
 import {
   UserPlus,
   Users,
-  Shield,
-  ShieldAlert,
   ShieldCheck,
   RefreshCw,
   Edit2,
@@ -30,7 +28,7 @@ import {
 const ROLES = [
   { value: 'MASTER_ADMIN', label: 'Master Admin (Full System & User Control)' },
   { value: 'ADMIN', label: 'Admin (Operations & Reports Management)' },
-  { value: 'MANAGER', label: 'Manager (Branch Operations & Records)' },
+  { value: 'MANAGER', label: 'Manager (Office Operations & Records)' },
   { value: 'STAFF', label: 'Staff (Daily Shift Tasks & Basic Operations)' },
 ];
 
@@ -38,13 +36,11 @@ export default function UsersPage() {
   const { user: currentUser, isMasterAdmin } = useAuth();
 
   const [users, setUsers] = useState([]);
-  const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Filters
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('ALL');
-  const [locationFilter, setLocationFilter] = useState('ALL');
   const [statusFilter, setStatusFilter] = useState('ALL');
 
   // Modals
@@ -53,13 +49,12 @@ export default function UsersPage() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  // Form State
+  // Form State - NO branch assignment, only office
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
     username: '',
     role: 'STAFF',
-    location: '',
     is_active: true,
     password: '',
   });
@@ -71,12 +66,8 @@ export default function UsersPage() {
   const loadUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const [uRes, lRes] = await Promise.all([
-        api.get('/users/'),
-        api.get('/locations/'),
-      ]);
+      const uRes = await api.get('/users/');
       setUsers(uRes.results || uRes);
-      setLocations(lRes.results || lRes);
     } catch (err) {
       console.error('Error loading users:', err);
       setFeedback({ type: 'error', message: 'Failed to load user accounts.' });
@@ -100,7 +91,6 @@ export default function UsersPage() {
   const handleNameChange = (field, val) => {
     setFormData((prev) => {
       const updated = { ...prev, [field]: val };
-      // When creating a new user, auto-suggest a clean username like juan.delacruz
       if (!editUser) {
         const first = field === 'first_name' ? val : prev.first_name;
         const last = field === 'last_name' ? val : prev.last_name;
@@ -123,7 +113,6 @@ export default function UsersPage() {
       last_name: '',
       username: '',
       role: 'STAFF',
-      location: '',
       is_active: true,
       password: '',
     });
@@ -138,7 +127,6 @@ export default function UsersPage() {
       last_name: user.last_name || '',
       username: user.username,
       role: user.role,
-      location: user.location ? String(user.location) : '',
       is_active: user.is_active,
       password: '',
     });
@@ -153,7 +141,7 @@ export default function UsersPage() {
     setFormError('');
 
     if (!formData.first_name.trim()) {
-      setFormError('First Name / Full Name is required.');
+      setFormError('First Name is required.');
       setFormLoading(false);
       return;
     }
@@ -174,7 +162,7 @@ export default function UsersPage() {
         last_name: formData.last_name.trim(),
         username: formData.username.trim(),
         role: formData.role,
-        location: formData.location ? Number(formData.location) : null,
+        location: null, // No branch assignment, only office
         is_active: formData.is_active,
       };
 
@@ -190,7 +178,7 @@ export default function UsersPage() {
         await api.put(`/users/${editUser.id}/`, payload);
         setFeedback({
           type: 'success',
-          message: `User account '${payload.username}' (${payload.first_name} ${payload.last_name}) updated successfully.`,
+          message: `User '${payload.username}' (${payload.first_name} ${payload.last_name}) updated successfully.`,
         });
         setEditUser(null);
       } else {
@@ -203,7 +191,7 @@ export default function UsersPage() {
         await api.post('/users/', payload);
         setFeedback({
           type: 'success',
-          message: `New user account '${payload.username}' for ${payload.first_name} ${payload.last_name} created successfully!`,
+          message: `New user '${payload.username}' for ${payload.first_name} ${payload.last_name} created successfully.`,
         });
         setIsCreateOpen(false);
       }
@@ -252,15 +240,6 @@ export default function UsersPage() {
       return false;
     }
 
-    // Location filter
-    if (locationFilter !== 'ALL') {
-      if (locationFilter === 'UNASSIGNED') {
-        if (u.location) return false;
-      } else if (String(u.location) !== String(locationFilter)) {
-        return false;
-      }
-    }
-
     // Status filter
     if (statusFilter === 'ACTIVE' && !u.is_active) return false;
     if (statusFilter === 'INACTIVE' && u.is_active) return false;
@@ -274,79 +253,68 @@ export default function UsersPage() {
       key: 'username',
       render: (row) => (
         <div>
-          <div className="font-semibold text-slate-100 flex items-center gap-1.5">
+          <div className="font-semibold text-slate-900 flex items-center gap-1.5">
             {row.first_name || row.last_name
               ? `${row.first_name} ${row.last_name}`
               : row.username}
             {currentUser?.id === row.id && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono">
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-medium">
                 You
               </span>
             )}
           </div>
-          <div className="text-xs text-slate-400 font-mono flex items-center gap-1 mt-0.5">
-            <span>@{row.username}</span>
+          <div className="text-xs text-slate-500 font-mono mt-0.5">
+            @{row.username}
           </div>
         </div>
       ),
     },
     {
-      header: 'Assigned Role',
+      header: 'Role',
       key: 'role',
       render: (row) => {
-        let variant = 'secondary';
-        let icon = null;
+        let variant = 'neutral';
         if (row.role === 'MASTER_ADMIN') {
-          variant = 'warning';
-          icon = <ShieldCheck className="w-3.5 h-3.5 inline mr-1 text-amber-400" />;
+          variant = 'blue';
         } else if (row.role === 'ADMIN') {
-          variant = 'primary';
-          icon = <Shield className="w-3.5 h-3.5 inline mr-1 text-indigo-400" />;
+          variant = 'blue';
         } else if (row.role === 'MANAGER') {
-          variant = 'success';
+          variant = 'neutral';
         }
 
         return (
-          <Badge variant={variant} className="font-medium">
-            {icon}
+          <Badge variant={variant}>
             {ROLE_LABELS[row.role] || row.role}
           </Badge>
         );
       },
     },
     {
-      header: 'Assigned Branch / Location',
-      key: 'location_details',
-      render: (row) => (
-        <div className="flex items-center gap-1.5 text-xs text-slate-300">
+      header: 'Office',
+      key: 'office',
+      render: () => (
+        <div className="flex items-center gap-1.5 text-xs text-slate-700">
           <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-          <span>{row.location_details?.name || 'All Branches (Enterprise)'}</span>
+          <span>Main Office</span>
         </div>
-      ),
-    },
-    {
-      header: 'Date Created',
-      key: 'date_joined',
-      render: (row) => (
-        <span className="text-xs text-slate-400 font-mono">
-          {formatDate(row.date_joined)}
-        </span>
       ),
     },
     {
       header: 'Status',
       key: 'is_active',
       render: (row) => (
-        <Badge variant={row.is_active ? 'success' : 'danger'}>
+        <Badge variant={row.is_active ? 'blue' : 'red'}>
           {row.is_active ? 'Active' : 'Inactive'}
         </Badge>
       ),
     },
     {
-      header: 'Joined Date',
+      header: 'Date Created',
       key: 'date_joined',
       render: (row) => (
-        <span className="text-xs text-slate-400">{formatDate(row.date_joined)}</span>
+        <span className="text-xs text-slate-600 font-mono">
+          {formatDate(row.date_joined)}
+        </span>
       ),
     },
     {
@@ -386,41 +354,18 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-6">
-      {/* Top Banner / Privilege Status */}
-      <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-start md:items-center gap-3">
-          <div
-            className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
-              isMasterAdmin
-                ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
-                : 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/40'
-            }`}
-          >
-            {isMasterAdmin ? (
-              <ShieldCheck className="w-5 h-5 text-amber-400" />
-            ) : (
-              <Shield className="w-5 h-5 text-indigo-400" />
-            )}
+      {/* Top Header Card */}
+      <div className="p-5 rounded-xl bg-white border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center shrink-0">
+            <Users className="w-5 h-5" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-serif font-bold text-slate-100 tracking-wide">
-                User Accounts & Permissions
-              </h1>
-              {isMasterAdmin ? (
-                <span className="px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300">
-                  Master Admin Mode
-                </span>
-              ) : (
-                <span className="px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-slate-800 border border-slate-700 text-slate-400">
-                  Admin View
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-slate-400 mt-0.5">
-              {isMasterAdmin
-                ? 'As Master Admin, you have full authority to create, edit, assign roles, and manage users across all branches.'
-                : 'Account creation and permanent removal require Master Admin privileges.'}
+            <h1 className="text-xl font-bold text-slate-900">
+              Users & Access Management
+            </h1>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Manage system access and office user accounts.
             </p>
           </div>
         </div>
@@ -429,43 +374,39 @@ export default function UsersPage() {
           <Button variant="secondary" size="sm" onClick={loadUsers} icon={RefreshCw}>
             Refresh
           </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={handleOpenCreate}
-            icon={UserPlus}
-            disabled={!isMasterAdmin}
-            title={
-              isMasterAdmin
-                ? 'Create a new user account'
-                : 'Only Master Admin can create new user accounts'
-            }
-          >
-            New User
-          </Button>
+          {isMasterAdmin && (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleOpenCreate}
+              icon={UserPlus}
+            >
+              Add User
+            </Button>
+          )}
         </div>
       </div>
 
-      {/* Feedback Toast Banner */}
+      {/* Feedback Alert */}
       {feedback && (
         <div
-          className={`p-3.5 rounded-lg border text-xs flex items-center justify-between transition-all ${
+          className={`p-3.5 rounded-lg border text-sm flex items-center justify-between transition-all ${
             feedback.type === 'success'
-              ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
-              : 'bg-rose-500/15 border-rose-500/30 text-rose-300'
+              ? 'bg-blue-50 border-blue-200 text-blue-800'
+              : 'bg-red-50 border-red-200 text-red-800'
           }`}
         >
           <div className="flex items-center gap-2">
             {feedback.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-blue-600" />
             ) : (
-              <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400" />
+              <AlertTriangle className="w-4 h-4 shrink-0 text-red-600" />
             )}
             <span>{feedback.message}</span>
           </div>
           <button
             onClick={() => setFeedback(null)}
-            className="text-xs underline hover:text-white ml-4 cursor-pointer"
+            className="text-xs font-semibold underline hover:opacity-80 ml-4 cursor-pointer"
           >
             Dismiss
           </button>
@@ -473,12 +414,12 @@ export default function UsersPage() {
       )}
 
       {/* Filter and Search Bar */}
-      <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+      <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-3">
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
           <SearchInput
             value={search}
             onChange={setSearch}
-            placeholder="Search by name, username, email, phone..."
+            placeholder="Search by name or username..."
             className="flex-1 max-w-md"
           />
 
@@ -486,7 +427,7 @@ export default function UsersPage() {
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="bg-slate-950 border border-slate-800 text-slate-200 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-amber-500"
+              className="bg-white border border-slate-300 text-slate-900 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-blue-600"
             >
               <option value="ALL">All Roles</option>
               <option value="MASTER_ADMIN">Master Admin</option>
@@ -496,30 +437,16 @@ export default function UsersPage() {
             </select>
 
             <select
-              value={locationFilter}
-              onChange={(e) => setLocationFilter(e.target.value)}
-              className="bg-slate-950 border border-slate-800 text-slate-200 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-amber-500"
-            >
-              <option value="ALL">All Branches</option>
-              <option value="UNASSIGNED">Enterprise (All Branches)</option>
-              {locations.map((loc) => (
-                <option key={loc.id} value={loc.id}>
-                  {loc.name}
-                </option>
-              ))}
-            </select>
-
-            <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-slate-950 border border-slate-800 text-slate-200 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-amber-500"
+              className="bg-white border border-slate-300 text-slate-900 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-blue-600"
             >
               <option value="ALL">All Status</option>
               <option value="ACTIVE">Active Only</option>
               <option value="INACTIVE">Inactive Only</option>
             </select>
 
-            <span className="text-xs text-slate-400 font-medium ml-2">
+            <span className="text-xs text-slate-500 font-medium ml-2">
               {filteredUsers.length} Users
             </span>
           </div>
@@ -531,15 +458,15 @@ export default function UsersPage() {
         columns={columns}
         data={filteredUsers}
         loading={loading}
-        emptyTitle="No users match your criteria"
+        emptyTitle="No users found"
         emptyDescription={
           isMasterAdmin
-            ? 'Click "New User" above to create an account for your staff.'
+            ? 'Click "Add User" above to create an account.'
             : 'No user accounts found matching current filters.'
         }
       />
 
-      {/* User Create/Edit Modal */}
+      {/* User Create/Edit Modal - NO branch assignment, only office */}
       <Modal
         isOpen={isCreateOpen || !!editUser}
         onClose={() => {
@@ -551,26 +478,25 @@ export default function UsersPage() {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           {formError && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs rounded-lg flex items-center gap-2">
+            <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 shrink-0" />
               <span>{formError}</span>
             </div>
           )}
 
           {/* Section 1: Staff Name */}
-          <div className="p-3.5 rounded-lg bg-slate-950/60 border border-slate-800 space-y-3">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-              <User className="w-3.5 h-3.5" /> Staff Full Name
+          <div className="p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-3">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+              <User className="w-3.5 h-3.5 text-blue-600" /> Staff Full Name
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Input
-                label="Full Name / First Name"
+                label="First Name"
                 required
                 value={formData.first_name}
                 onChange={(e) => handleNameChange('first_name', e.target.value)}
                 placeholder="e.g. Juan"
-                helperText="Given name or full name"
               />
 
               <Input
@@ -579,19 +505,18 @@ export default function UsersPage() {
                 value={formData.last_name}
                 onChange={(e) => handleNameChange('last_name', e.target.value)}
                 placeholder="e.g. Dela Cruz"
-                helperText="Family name or surname"
               />
             </div>
           </div>
 
           {/* Section 2: Login Credentials */}
-          <div className="p-3.5 rounded-lg bg-slate-950/60 border border-slate-800 space-y-3">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-              <Lock className="w-3.5 h-3.5" /> System Login Credentials
+          <div className="p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-3">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+              <Lock className="w-3.5 h-3.5 text-blue-600" /> Login Credentials
             </h3>
 
             <Input
-              label="Login Username"
+              label="Username"
               required
               disabled={!!editUser}
               value={formData.username}
@@ -600,7 +525,7 @@ export default function UsersPage() {
               helperText={
                 editUser
                   ? 'Username cannot be modified after account creation.'
-                  : 'Auto-suggested from full name. You can also customize it.'
+                  : 'Auto-suggested from full name.'
               }
             />
 
@@ -609,29 +534,28 @@ export default function UsersPage() {
                 label={
                   editUser
                     ? 'Reset Password (Leave blank to keep existing)'
-                    : 'Account Password'
+                    : 'Password'
                 }
                 type={showPassword ? 'text' : 'password'}
                 required={!editUser}
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 placeholder="Minimum 6 characters"
-                helperText="Must be at least 6 characters long."
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-8 text-slate-400 hover:text-slate-200 cursor-pointer"
+                className="absolute right-3 top-8 text-slate-400 hover:text-slate-600 cursor-pointer"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
           </div>
 
-          {/* Section: Roles and Location */}
-          <div className="p-3.5 rounded-lg bg-slate-950/60 border border-slate-800 space-y-3">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-              <Shield className="w-3.5 h-3.5" /> Permissions & Branch Assignment
+          {/* Section 3: Role Assignment - Only Office */}
+          <div className="p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-3">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-blue-600" /> Role & Office
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -643,13 +567,15 @@ export default function UsersPage() {
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
               />
 
-              <Select
-                label="Assigned Branch"
-                options={locations.map((l) => ({ value: l.id, label: l.name }))}
-                placeholder="All Branches (Enterprise)"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              />
+              <div>
+                <label className="block text-xs font-semibold text-slate-800 mb-1.5">
+                  Office Location
+                </label>
+                <div className="h-10 px-3 flex items-center text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-lg">
+                  <Building2 className="w-3.5 h-3.5 mr-2 text-slate-400" />
+                  Main Office
+                </div>
+              </div>
             </div>
 
             <div className="pt-2 flex items-center gap-2">
@@ -658,18 +584,18 @@ export default function UsersPage() {
                 id="is_active_toggle"
                 checked={formData.is_active}
                 onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                className="w-4 h-4 rounded border-slate-700 bg-slate-900 text-amber-500 focus:ring-amber-500/20 cursor-pointer"
+                className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
               />
-              <label htmlFor="is_active_toggle" className="text-xs text-slate-300 cursor-pointer">
-                Account Active (Allows the user to sign in to the Alaala system)
+              <label htmlFor="is_active_toggle" className="text-xs text-slate-700 cursor-pointer">
+                Account Active (Allows the user to sign in to the system)
               </label>
             </div>
           </div>
 
           {/* Modal Actions */}
-          <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-800">
+          <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-200">
             <Button
-              variant="ghost"
+              variant="secondary"
               onClick={() => {
                 setIsCreateOpen(false);
                 setEditUser(null);
@@ -679,7 +605,7 @@ export default function UsersPage() {
               Cancel
             </Button>
             <Button type="submit" variant="primary" loading={formLoading} icon={editUser ? null : UserPlus}>
-              {editUser ? 'Save Changes' : 'Create User Account'}
+              {editUser ? 'Save Changes' : 'Create User'}
             </Button>
           </div>
         </form>
@@ -689,17 +615,17 @@ export default function UsersPage() {
       <Modal
         isOpen={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
-        title="Confirm User Account Deletion"
+        title="Delete User Account"
         maxWidth="max-w-md"
       >
         <div className="space-y-4">
-          <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
-            <div className="text-xs text-rose-300">
-              <p className="font-semibold text-rose-200">Warning: This action cannot be undone.</p>
+          <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+            <div className="text-xs text-red-800">
+              <p className="font-semibold text-red-900">This action cannot be undone.</p>
               <p className="mt-1">
-                You are about to permanently delete the user account{' '}
-                <strong className="text-white">@{deleteTarget?.username}</strong>
+                You are about to permanently delete user account{' '}
+                <strong>@{deleteTarget?.username}</strong>
                 {deleteTarget?.first_name || deleteTarget?.last_name
                   ? ` (${deleteTarget?.first_name} ${deleteTarget?.last_name})`
                   : ''}
@@ -708,14 +634,9 @@ export default function UsersPage() {
             </div>
           </div>
 
-          <p className="text-xs text-slate-400">
-            The user will immediately lose access to all modules. An entry will be permanently logged
-            in the system audit log with your Master Admin signature.
-          </p>
-
-          <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-800">
+          <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-200">
             <Button
-              variant="ghost"
+              variant="secondary"
               onClick={() => setDeleteTarget(null)}
               disabled={deleteLoading}
             >
@@ -727,7 +648,7 @@ export default function UsersPage() {
               loading={deleteLoading}
               icon={Trash2}
             >
-              Permanently Delete User
+              Delete User
             </Button>
           </div>
         </div>

@@ -342,7 +342,7 @@ export default function LaundryPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-serif font-bold text-slate-100 tracking-wide">
+          <h1 className="text-2xl font-serif font-bold text-black-100 tracking-wide">
             Laundry Monitoring Sheet
           </h1>
           <p className="text-xs text-slate-400 mt-0.5">
@@ -377,55 +377,50 @@ export default function LaundryPage() {
             <button
               type="button"
               onClick={() => setRangeMode('ALL')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
-                rangeMode === 'ALL'
-                  ? 'bg-amber-500 text-slate-950 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${rangeMode === 'ALL'
+                ? 'bg-amber-500 text-slate-950 shadow-sm'
+                : 'text-slate-400 hover:text-slate-200'
+                }`}
             >
               All Records
             </button>
             <button
               type="button"
               onClick={() => setRangeMode('MONTH')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
-                rangeMode === 'MONTH'
-                  ? 'bg-amber-500 text-slate-950 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${rangeMode === 'MONTH'
+                ? 'bg-amber-500 text-slate-950 shadow-sm'
+                : 'text-slate-400 hover:text-slate-200'
+                }`}
             >
               Month Range
             </button>
             <button
               type="button"
               onClick={() => setRangeMode('WEEK')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
-                rangeMode === 'WEEK'
-                  ? 'bg-amber-500 text-slate-950 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${rangeMode === 'WEEK'
+                ? 'bg-amber-500 text-slate-950 shadow-sm'
+                : 'text-slate-400 hover:text-slate-200'
+                }`}
             >
               Weeks
             </button>
             <button
               type="button"
               onClick={() => setRangeMode('DAY')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
-                rangeMode === 'DAY'
-                  ? 'bg-amber-500 text-slate-950 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${rangeMode === 'DAY'
+                ? 'bg-amber-500 text-slate-950 shadow-sm'
+                : 'text-slate-400 hover:text-slate-200'
+                }`}
             >
               Days
             </button>
             <button
               type="button"
               onClick={() => setRangeMode('CUSTOM')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
-                rangeMode === 'CUSTOM'
-                  ? 'bg-amber-500 text-slate-950 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${rangeMode === 'CUSTOM'
+                ? 'bg-amber-500 text-slate-950 shadow-sm'
+                : 'text-slate-400 hover:text-slate-200'
+                }`}
             >
               Custom Range
             </button>

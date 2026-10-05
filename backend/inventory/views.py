@@ -42,6 +42,10 @@ class InventoryItemViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()
+        if not self.request.user.is_master_admin:
+            loc_ids = self.request.user.get_accessible_location_ids()
+            qs = qs.filter(location_id__in=loc_ids)
+
         location_id = self.request.query_params.get('location')
         category_id = self.request.query_params.get('category')
         item_status = self.request.query_params.get('status')
@@ -143,6 +147,10 @@ class InventoryTransactionViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()
+        if not self.request.user.is_master_admin:
+            loc_ids = self.request.user.get_accessible_location_ids()
+            qs = qs.filter(Q(from_location_id__in=loc_ids) | Q(to_location_id__in=loc_ids))
+
         item_id = self.request.query_params.get('item')
         tx_type = self.request.query_params.get('type')
         location_id = self.request.query_params.get('location')
