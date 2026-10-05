@@ -1,38 +1,33 @@
-# Environment variables and secrets
-.env
-.env.local
-.env.*.local
-*.env
-
-# Python / Django
+# Python
 __pycache__/
 *.py[cod]
-*$py.class
-*.sqlite3
-db.sqlite3
-staticfiles/
-media/
-*.log
-local_settings.py
-.venv/
-venv/
-ENV/
-env/
+*.pyo
 
-# Node / Frontend
+# Virtual environments
+venv/
+.venv/
+
+# Django
+db.sqlite3
+*.sqlite3
+media/
+staticfiles/
+
+# Environment variables
+.env
+.env.*
+
+# Node
 node_modules/
 dist/
-dist-ssr/
-*.local
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
 
-# IDE & OS
+# Vite
+.vite/
+
+# IDE
 .vscode/
 .idea/
-*.swp
-*.swo
+
+# OS
 .DS_Store
 Thumbs.db
