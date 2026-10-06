@@ -45,7 +45,7 @@ export default function LoginPage() {
   return (
     <div 
       className="min-h-screen bg-[#F0F2F5] flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: `url(${bgImage})` }}
+      style={{ backgroundImage: `url("${bgImage}")` }}
     >
       {/* Optional dark overlay to make text more readable against the background */}
       <div className="absolute inset-0 bg-slate-900/50 pointer-events-none" />
