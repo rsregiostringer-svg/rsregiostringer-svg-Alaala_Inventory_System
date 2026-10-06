@@ -9,7 +9,8 @@ import Select from '../components/common/Select';
 import Modal from '../components/common/Modal';
 import Input from '../components/common/Input';
 import { formatCurrency, formatDate, PAYMENT_STATUS_MAP } from '../utils/formatters';
-import { Plus, RefreshCw, Zap } from 'lucide-react';
+import { Plus, RefreshCw, Zap, Download } from 'lucide-react';
+import { handleExportExcel } from '../utils/exportUtils';
 
 export default function ElectricityPage() {
   const [bills, setBills] = useState([]);
@@ -239,6 +240,24 @@ export default function ElectricityPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={async () => {
+              try {
+                await handleExportExcel('electricity', { 
+                  search, 
+                  location: locationFilter,
+                  payment_status: statusFilter
+                }, 'electricity');
+              } catch (e) {
+                alert('Export failed.');
+              }
+            }}
+            icon={Download}
+          >
+            Export CSV
+          </Button>
           <Button variant="secondary" size="sm" onClick={loadData} icon={RefreshCw}>
             Refresh
           </Button>
