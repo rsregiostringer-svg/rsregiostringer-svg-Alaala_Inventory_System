@@ -514,13 +514,15 @@ export default function MainLayout() {
                       <span>My Profile</span>
                     </button>
 
-                    <button
-                      onClick={handleOpenPasswordModal}
-                      className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
-                    >
-                      <KeyRound className="w-4 h-4 text-slate-500" />
-                      <span>Change Password</span>
-                    </button>
+                    {isMasterAdmin && (
+                      <button
+                        onClick={handleOpenPasswordModal}
+                        className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
+                      >
+                        <KeyRound className="w-4 h-4 text-slate-500" />
+                        <span>Change Password</span>
+                      </button>
+                    )}
 
                     {isMasterAdmin && (
                       <button

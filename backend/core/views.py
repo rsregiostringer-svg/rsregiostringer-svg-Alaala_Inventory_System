@@ -97,7 +97,7 @@ class UserProfileView(APIView):
 
 
 class ChangePasswordView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsMasterAdmin]
 
     def post(self, request):
         user = request.user
