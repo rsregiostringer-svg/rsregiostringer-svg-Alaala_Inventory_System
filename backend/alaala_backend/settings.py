@@ -14,7 +14,14 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-alaala-funeral-homes-manag
 
 DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 't')
 
-ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '*').split(',') if h.strip()]
+ALLOWED_HOSTS = [
+    h.strip()
+    for h in os.getenv(
+        'ALLOWED_HOSTS',
+        'localhost,127.0.0.1,alaala-inventory-backend.onrender.com'
+    ).split(',')
+    if h.strip()
+]
 
 # Application definition
 INSTALLED_APPS = [
@@ -152,12 +159,16 @@ SIMPLE_JWT = {
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5174')
 
 CORS_ALLOWED_ORIGINS = [
+    # Local development
     'http://localhost:5174',
     'http://127.0.0.1:5174',
     'http://localhost:5173',
     'http://127.0.0.1:5173',
     'http://localhost:3000',
     'http://127.0.0.1:3000',
+
+    # Production - Vercel
+    'https://rsregiostringer-svg-alaala-inventor.vercel.app',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -179,12 +190,16 @@ CORS_ALLOW_CREDENTIALS = True
 # CSRF Configuration
 
 CSRF_TRUSTED_ORIGINS = [
+    # Local development
     'http://localhost:5174',
     'http://127.0.0.1:5174',
     'http://localhost:5173',
     'http://127.0.0.1:5173',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
+
+    # Production - Vercel
+    'https://rsregiostringer-svg-alaala-inventor.vercel.app',
 ]
 
 # Django Channels Layers Configuration
