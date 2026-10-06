@@ -121,6 +121,7 @@ class ChangePasswordView(APIView):
 
 class LocationViewSet(viewsets.ModelViewSet):
     serializer_class = LocationSerializer
+    pagination_class = None
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:

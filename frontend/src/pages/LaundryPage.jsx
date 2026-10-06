@@ -220,8 +220,12 @@ export default function LaundryPage() {
   }, [loadLaundry, pollTick]);
 
   useEffect(() => {
-    const unsub = subscribe('laundry.*', () => loadLaundry());
-    return () => unsub();
+    const unsubLaundry = subscribe('laundry.*', () => loadLaundry());
+    const unsubLocations = subscribe('locations.*', () => loadLaundry());
+    return () => {
+      unsubLaundry();
+      unsubLocations();
+    };
   }, [subscribe, loadLaundry]);
 
   const handleFilterChange = (key, value) => {
