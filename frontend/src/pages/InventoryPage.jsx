@@ -11,8 +11,7 @@ import Modal from '../components/common/Modal';
 import Input from '../components/common/Input';
 import TransactModal from '../components/inventory/TransactModal';
 import { formatCurrency, INVENTORY_STATUS_MAP } from '../utils/formatters';
-import { Plus, ArrowLeftRight, Edit2, Filter, RefreshCw, Download } from 'lucide-react';
-import { handleExportExcel } from '../utils/exportUtils';
+import { Plus, ArrowLeftRight, Edit2, Filter, RefreshCw } from 'lucide-react';
 
 export default function InventoryPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -258,20 +257,6 @@ export default function InventoryPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={async () => {
-              try {
-                await handleExportExcel('inventory', { location: selectedLocation, search, category: selectedCategory, status: selectedStatus }, 'inventory');
-              } catch (e) {
-                alert('Export failed.');
-              }
-            }}
-            icon={Download}
-          >
-            Export CSV
-          </Button>
           <Button variant="secondary" size="sm" onClick={loadData} icon={RefreshCw}>
             Refresh
           </Button>

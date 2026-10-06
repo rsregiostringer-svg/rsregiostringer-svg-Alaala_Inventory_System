@@ -8,8 +8,7 @@ import SearchInput from '../components/common/SearchInput';
 import Select from '../components/common/Select';
 import Input from '../components/common/Input';
 import { formatDateTime } from '../utils/formatters';
-import { RefreshCw, Filter, ArrowRight, Download } from 'lucide-react';
-import { handleExportExcel } from '../utils/exportUtils';
+import { RefreshCw, Filter, ArrowRight } from 'lucide-react';
 
 const TRANSACTION_BADGES = {
   STOCK_IN: { label: 'Stock In', variant: 'success' },
@@ -150,25 +149,9 @@ export default function InventoryTransactionsPage() {
             Immutable audit trail of all stock movements, intakes, transfers, and deductions.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={async () => {
-              try {
-                await handleExportExcel('transactions', { location: locationFilter, type: typeFilter, start_date: startDate, end_date: endDate }, 'transactions');
-              } catch (e) {
-                alert('Export failed.');
-              }
-            }}
-            icon={Download}
-          >
-            Export CSV
-          </Button>
-          <Button variant="secondary" size="sm" onClick={loadTransactions} icon={RefreshCw}>
-            Refresh Ledger
-          </Button>
-        </div>
+        <Button variant="secondary" size="sm" onClick={loadTransactions} icon={RefreshCw}>
+          Refresh Ledger
+        </Button>
       </div>
 
       {/* Filter Bar */}

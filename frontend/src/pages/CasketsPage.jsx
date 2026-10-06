@@ -31,11 +31,9 @@ import {
   MapPin,
   Edit3,
   Trash2,
-  Settings,
-  Download
+  Settings
 } from 'lucide-react';
 import ConfirmDialog from '../components/common/ConfirmDialog';
-import { handleExportExcel } from '../utils/exportUtils';
 
 export default function CasketsPage() {
   const [caskets, setCaskets] = useState([]);
@@ -502,20 +500,6 @@ export default function CasketsPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={async () => {
-              try {
-                await handleExportExcel('caskets', { location: locationFilter, search, status: statusFilter, condition: conditionFilter }, 'caskets');
-              } catch (e) {
-                alert('Export failed.');
-              }
-            }}
-            icon={Download}
-          >
-            Export CSV
-          </Button>
           <Button variant="secondary" size="sm" onClick={loadCaskets} icon={RefreshCw}>
             Refresh
           </Button>

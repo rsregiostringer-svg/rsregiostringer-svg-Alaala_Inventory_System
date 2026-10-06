@@ -9,8 +9,7 @@ import Select from '../components/common/Select';
 import Modal from '../components/common/Modal';
 import Input from '../components/common/Input';
 import { formatCurrency, formatDate, MAINTENANCE_STATUS_MAP, MAINTENANCE_PRIORITY_MAP } from '../utils/formatters';
-import { Plus, RefreshCw, Wrench, Edit3, CheckCircle2, Download } from 'lucide-react';
-import { handleExportExcel } from '../utils/exportUtils';
+import { Plus, RefreshCw, Wrench, Edit3, CheckCircle2 } from 'lucide-react';
 
 const CATEGORIES = [
   'Electrical', 'Plumbing', 'Water', 'Air Conditioning', 'Lighting',
@@ -235,26 +234,6 @@ export default function MaintenancePage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={async () => {
-              try {
-                await handleExportExcel('maintenance', { 
-                  search, 
-                  location: selectedLocation,
-                  category: selectedCategory,
-                  priority: selectedPriority,
-                  status: selectedStatus
-                }, 'maintenance');
-              } catch (e) {
-                alert('Export failed.');
-              }
-            }}
-            icon={Download}
-          >
-            Export CSV
-          </Button>
           <Button variant="secondary" size="sm" onClick={loadMaintenance} icon={RefreshCw}>
             Refresh
           </Button>

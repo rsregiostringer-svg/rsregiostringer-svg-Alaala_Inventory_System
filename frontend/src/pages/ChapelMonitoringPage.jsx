@@ -27,10 +27,8 @@ import {
   HeartHandshake,
   Edit3,
   Trash2,
-  Download
 } from 'lucide-react';
 import ConfirmDialog from '../components/common/ConfirmDialog';
-import { handleExportExcel } from '../utils/exportUtils';
 import {
   formatDate,
   formatDateTimeDisplay,
@@ -431,21 +429,6 @@ export default function ChapelMonitoringPage() {
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={async () => {
-              try {
-                // chapels / lamay data
-                await handleExportExcel('lamay', { search, status: filterStatus }, 'lamay');
-              } catch (e) {
-                alert('Export failed.');
-              }
-            }}
-            icon={Download}
-          >
-            Export CSV
-          </Button>
           <Button
             variant="secondary"
             size="sm"

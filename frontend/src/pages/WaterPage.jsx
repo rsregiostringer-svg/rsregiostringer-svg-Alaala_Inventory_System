@@ -9,8 +9,7 @@ import Select from '../components/common/Select';
 import Modal from '../components/common/Modal';
 import Input from '../components/common/Input';
 import { formatCurrency, formatDate, PAYMENT_STATUS_MAP } from '../utils/formatters';
-import { Plus, RefreshCw, Droplet, CreditCard, AlertCircle, Download } from 'lucide-react';
-import { handleExportExcel } from '../utils/exportUtils';
+import { Plus, RefreshCw, Droplet, CreditCard, AlertCircle } from 'lucide-react';
 
 export default function WaterPage() {
   const [bills, setBills] = useState([]);
@@ -240,24 +239,6 @@ export default function WaterPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={async () => {
-              try {
-                await handleExportExcel('water', { 
-                  search, 
-                  location: locationFilter,
-                  payment_status: statusFilter
-                }, 'water');
-              } catch (e) {
-                alert('Export failed.');
-              }
-            }}
-            icon={Download}
-          >
-            Export CSV
-          </Button>
           <Button variant="secondary" size="sm" onClick={loadData} icon={RefreshCw}>
             Refresh
           </Button>
