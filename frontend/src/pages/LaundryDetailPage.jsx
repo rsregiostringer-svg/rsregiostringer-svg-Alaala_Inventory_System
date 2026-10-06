@@ -91,7 +91,7 @@ export default function LaundryDetailPage() {
           </Button>
         </div>
 
-        <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl space-y-3">
+        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xl space-y-3">
           <div className="flex items-center gap-3">
             <Skeleton className="h-7 w-48" />
             <Skeleton className="h-5 w-24 rounded-full" />
@@ -115,7 +115,7 @@ export default function LaundryDetailPage() {
       <div className="text-center py-12 max-w-md mx-auto">
         <AlertCircle className="w-10 h-10 text-rose-400 mx-auto mb-3" />
         <h3 className="text-base font-semibold text-slate-100">Record Not Found</h3>
-        <p className="text-xs text-slate-400 mt-1 mb-4">{error || 'Laundry record does not exist.'}</p>
+        <p className="text-xs text-slate-500 mt-1 mb-4">{error || 'Laundry record does not exist.'}</p>
         <Button variant="secondary" onClick={() => navigate('/laundry')} icon={ArrowLeft}>
           Back to Laundry Sheet
         </Button>
@@ -235,23 +235,23 @@ export default function LaundryDetailPage() {
       </div>
 
       {/* Batch Overview Header */}
-      <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
             <h1 className="text-xl font-bold text-slate-100">{record.item}</h1>
             <Badge variant={statusMeta.variant}>{statusMeta.label}</Badge>
           </div>
-          <p className="text-xs text-slate-400 mt-1 flex flex-wrap items-center gap-3">
+          <p className="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-3">
             <span>Batch ID: #{record.id}</span>
             <span>&bull;</span>
-            <span>Quantity: <strong className="text-amber-400 font-bold">{record.quantity} pcs</strong></span>
+            <span>Quantity: <strong className="text-blue-500 font-bold">{record.quantity} pcs</strong></span>
             <span>&bull;</span>
             <span>Origin: <strong className="text-amber-300 font-medium">{record.location_details?.name || 'NO CODE'}</strong></span>
           </p>
         </div>
 
-        <div className="text-right text-xs text-slate-400">
-          <p>Encoded by: <span className="font-semibold text-slate-200">{record.encoded_by}</span></p>
+        <div className="text-right text-xs text-slate-500">
+          <p>Encoded by: <span className="font-semibold text-slate-700">{record.encoded_by}</span></p>
           <p className="text-[11px] text-slate-500 mt-0.5 font-mono">Logged: {formatDateTime(record.created_at)}</p>
         </div>
       </div>
@@ -267,8 +267,8 @@ export default function LaundryDetailPage() {
               key={st.key}
               className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors ${
                 st.completed
-                  ? 'bg-slate-950/60 border-slate-800'
-                  : 'bg-slate-950/20 border-dashed border-slate-800/80'
+                  ? 'bg-[#F0F2F5]/60 border-slate-200'
+                  : 'bg-[#F0F2F5]/20 border-dashed border-slate-200/80'
               }`}
             >
               <div className="flex items-center gap-3.5">
@@ -276,22 +276,22 @@ export default function LaundryDetailPage() {
                   className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 ${
                     st.completed
                       ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                      : 'bg-slate-800 text-slate-500'
+                      : 'bg-white text-slate-500'
                   }`}
                 >
                   {st.completed ? <CheckCircle2 className="w-5 h-5 text-emerald-400" /> : st.num}
                 </div>
                 <div>
-                  <h4 className={`text-sm font-semibold ${st.completed ? 'text-slate-100' : 'text-slate-400'}`}>
+                  <h4 className={`text-sm font-semibold ${st.completed ? 'text-slate-100' : 'text-slate-500'}`}>
                     {st.name}
                   </h4>
                   {st.completed ? (
-                    <p className="text-xs text-slate-400 mt-0.5">
+                    <p className="text-xs text-slate-500 mt-0.5">
                       Handled by:{' '}
-                      <strong className="text-amber-400 font-semibold">{st.inCharge || 'Staff'}</strong>
+                      <strong className="text-blue-500 font-semibold">{st.inCharge || 'Staff'}</strong>
                       {st.shift && (
                         <>
-                          {' '}&bull; Shift: <span className="text-slate-300 font-medium">{st.shift}</span>
+                          {' '}&bull; Shift: <span className="text-slate-600 font-medium">{st.shift}</span>
                         </>
                       )}
                     </p>
@@ -303,7 +303,7 @@ export default function LaundryDetailPage() {
 
               <div className="flex items-center gap-3 self-end sm:self-center">
                 {st.completed && (
-                  <span className="text-xs font-mono text-slate-300 font-medium">
+                  <span className="text-xs font-mono text-slate-600 font-medium">
                     {formatDateTimeDisplay(st.date, st.time)}
                   </span>
                 )}
@@ -327,7 +327,7 @@ export default function LaundryDetailPage() {
       {/* Batch Notes & Additional Details */}
       {record.notes && (
         <Card title="Special Washing & Handling Notes">
-          <p className="text-xs text-slate-300 leading-relaxed bg-slate-950/40 p-4 rounded-xl border border-slate-800">
+          <p className="text-xs text-slate-600 leading-relaxed bg-[#F0F2F5]/40 p-4 rounded-xl border border-slate-200">
             {record.notes}
           </p>
         </Card>

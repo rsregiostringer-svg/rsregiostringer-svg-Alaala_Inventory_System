@@ -99,16 +99,16 @@ export default function TransactModal({
         )}
 
         {/* Current Info */}
-        <div className="p-3 bg-slate-950/40 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-1">
+        <div className="p-3 bg-[#F0F2F5]/40 rounded-xl border border-slate-200 text-xs text-slate-600 space-y-1">
           <div className="flex justify-between">
-            <span className="text-slate-400">Current Stock:</span>
-            <span className="font-bold text-amber-400">
+            <span className="text-slate-500">Current Stock:</span>
+            <span className="font-bold text-blue-500">
               {item.current_quantity} {item.unit}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-slate-400">Minimum Threshold:</span>
-            <span className="font-semibold text-slate-200">
+            <span className="text-slate-500">Minimum Threshold:</span>
+            <span className="font-semibold text-slate-700">
               {item.minimum_stock} {item.unit}
             </span>
           </div>
@@ -159,7 +159,7 @@ export default function TransactModal({
           onChange={(e) => setNotes(e.target.value)}
         />
 
-        <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-800">
+        <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-200">
           <Button variant="ghost" onClick={onClose} disabled={loading}>
             Cancel
           </Button>

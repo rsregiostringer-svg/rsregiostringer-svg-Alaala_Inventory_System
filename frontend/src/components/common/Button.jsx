@@ -6,7 +6,7 @@ const VARIANTS = {
   secondary: 'bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-medium shadow-xs active:scale-[0.99]',
   outline: 'bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-medium active:scale-[0.99]',
   danger: 'bg-red-600 hover:bg-red-700 text-white font-medium shadow-xs active:scale-[0.99]',
-  warning: 'bg-amber-500 hover:bg-amber-600 text-white font-medium shadow-xs active:scale-[0.99]',
+  warning: 'bg-[#0866FF] hover:bg-blue-700 text-white font-medium shadow-xs active:scale-[0.99]',
   ghost: 'bg-transparent hover:bg-slate-100 text-slate-700 font-medium',
   success: 'bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-xs active:scale-[0.99]',
 };

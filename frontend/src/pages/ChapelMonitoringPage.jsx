@@ -389,7 +389,7 @@ export default function ChapelMonitoringPage() {
         <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Chapels</p>
           <p className="text-2xl font-bold text-slate-900 mt-1">{summary?.total_chapels ?? chapels.length}</p>
-          <span className="text-[11px] text-slate-400 mt-1 block">Facility Units</span>
+          <span className="text-[11px] text-slate-500 mt-1 block">Facility Units</span>
         </div>
 
         <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
@@ -439,7 +439,7 @@ export default function ChapelMonitoringPage() {
 
         {activeLamays.length === 0 ? (
           <div className="py-8 text-center text-slate-500">
-            <HeartHandshake className="w-8 h-8 mx-auto text-slate-400 mb-2" />
+            <HeartHandshake className="w-8 h-8 mx-auto text-slate-500 mb-2" />
             <p className="text-sm font-semibold text-slate-800">No wake services are currently active.</p>
             <p className="text-xs text-slate-500 mt-1">All chapels are either available, cleaning, or reserved.</p>
           </div>
@@ -556,7 +556,7 @@ export default function ChapelMonitoringPage() {
                         <button
                           type="button"
                           onClick={() => setDeletingLamay(lamay)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                          className="p-1.5 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                           title="Cancel/Delete Lamay"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -653,7 +653,7 @@ export default function ChapelMonitoringPage() {
                             <button
                               type="button"
                               onClick={() => setEditingChapel({ ...chapel })}
-                              className="p-1 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                              className="p-1 rounded-md text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
                               title="Edit Chapel"
                             >
                               <Edit3 className="w-3.5 h-3.5" />
@@ -661,7 +661,7 @@ export default function ChapelMonitoringPage() {
                             <button
                               type="button"
                               onClick={() => setDeletingChapel(chapel)}
-                              className="p-1 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                              className="p-1 rounded-md text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                               title="Delete Chapel"
                             >
                               <Trash2 className="w-3.5 h-3.5" />

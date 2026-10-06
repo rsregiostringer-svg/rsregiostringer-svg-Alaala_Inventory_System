@@ -20,7 +20,7 @@ export default function LaundryExcelTable({
     if (!date) {
       return (
         <div className="flex flex-col items-center justify-center p-2 rounded-md bg-slate-50 border border-dashed border-slate-200 text-xs min-h-[64px]">
-          <span className="text-slate-400 font-mono">—</span>
+          <span className="text-slate-500 font-mono">—</span>
           {onAdvanceStage && record.status !== 'RETURNED' && (
             <button
               type="button"
@@ -42,7 +42,7 @@ export default function LaundryExcelTable({
       >
         <div className="flex items-center justify-between gap-1">
           <span className="font-semibold text-slate-900">{formatDateTimeDisplay(date, time)}</span>
-          <Edit2 className="w-3 h-3 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+          <Edit2 className="w-3 h-3 text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
         </div>
         <span className="text-slate-500 text-[11px] mt-0.5">{shift || '8am to 5pm'}</span>
         <span className="text-slate-700 font-medium text-[11px] truncate mt-0.5" title={inCharge}>
@@ -179,7 +179,7 @@ export default function LaundryExcelTable({
                     >
                       <div className="flex items-center justify-between gap-1">
                         <span className="font-semibold text-slate-900">{formatDateTimeDisplay(r.laundry_in_date, r.laundry_in_time)}</span>
-                        <Edit2 className="w-3 h-3 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                        <Edit2 className="w-3 h-3 text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                       </div>
                       <span className="text-slate-500 text-[11px] mt-0.5">{r.laundry_in_shift}</span>
                       <span className="text-slate-700 text-[11px] font-medium mt-0.5 truncate" title={r.laundry_in_charge}>
@@ -254,7 +254,7 @@ export default function LaundryExcelTable({
                             <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-blue-600" />
                             {formatDateTimeDisplay(r.date_returned, r.returned_time)}
                           </span>
-                          <Edit2 className="w-3 h-3 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                          <Edit2 className="w-3 h-3 text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                         </div>
                         <span className="text-slate-600 text-[11px] mt-0.5 truncate" title={r.returned_by}>
                           By: {r.returned_by}
@@ -262,7 +262,7 @@ export default function LaundryExcelTable({
                       </div>
                     ) : (
                       <div className="flex flex-col items-center justify-center p-2 rounded-md bg-slate-50 border border-dashed border-slate-200 text-xs min-h-[64px]">
-                        <span className="text-slate-400 font-mono">—</span>
+                        <span className="text-slate-500 font-mono">—</span>
                         {onAdvanceStage && (
                           <button
                             type="button"

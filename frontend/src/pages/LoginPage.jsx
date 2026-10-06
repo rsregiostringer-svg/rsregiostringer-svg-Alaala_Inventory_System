@@ -42,29 +42,29 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden">
+    <div className="min-h-screen bg-[#F0F2F5] flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden">
       {/* Background Ambient Lighting */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-72 h-72 bg-sky-500/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="w-full max-w-md relative z-10">
         {/* Brand Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500/30 to-amber-700/20 border border-amber-500/50 items-center justify-center shadow-xl mb-4">
-            <span className="font-serif font-black text-3xl text-amber-400">A</span>
+          <div className="inline-flex w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500/30 to-amber-700/20 border border-[#0866FF]/50 items-center justify-center shadow-xl mb-4">
+            <span className="font-serif font-black text-3xl text-blue-500">A</span>
           </div>
           <h1 className="text-2xl font-serif font-bold tracking-wider text-slate-100">
             ALAALA FUNERAL HOMES
           </h1>
-          <p className="text-xs uppercase tracking-widest text-amber-400/90 font-medium mt-1">
+          <p className="text-xs uppercase tracking-widest text-blue-500/90 font-medium mt-1">
             Operations & Inventory Management System
           </p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl">
+        <div className="bg-white/80 backdrop-blur-md border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-2xl">
           <h2 className="text-lg font-semibold text-slate-100 mb-1">System Authentication</h2>
-          <p className="text-xs text-slate-400 mb-6">Enter your authorized credentials to access records.</p>
+          <p className="text-xs text-slate-500 mb-6">Enter your authorized credentials to access records.</p>
 
           {error && (
             <div className="mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-3 text-xs text-rose-400">
@@ -104,30 +104,30 @@ export default function LoginPage() {
           </form>
 
           {/* Quick Demo Access Bar */}
-          <div className="mt-8 pt-6 border-t border-slate-800/80">
-            <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-3">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              <span className="font-medium text-slate-300">Quick Demo Logins:</span>
+          <div className="mt-8 pt-6 border-t border-slate-200/80">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-3">
+              <Sparkles className="w-3.5 h-3.5 text-blue-500" />
+              <span className="font-medium text-slate-600">Quick Demo Logins:</span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => setDemoCredentials('admin', 'Admin123!')}
-                className="px-2.5 py-1.5 rounded-lg bg-slate-950/60 hover:bg-slate-800 border border-slate-800 text-[11px] font-medium text-slate-300 hover:text-white transition-colors cursor-pointer"
+                className="px-2.5 py-1.5 rounded-lg bg-[#F0F2F5]/60 hover:bg-slate-100 border border-slate-200 text-[11px] font-medium text-slate-600 hover:text-white transition-colors cursor-pointer"
               >
                 Admin
               </button>
               <button
                 type="button"
                 onClick={() => setDemoCredentials('manager', 'Manager123!')}
-                className="px-2.5 py-1.5 rounded-lg bg-slate-950/60 hover:bg-slate-800 border border-slate-800 text-[11px] font-medium text-slate-300 hover:text-white transition-colors cursor-pointer"
+                className="px-2.5 py-1.5 rounded-lg bg-[#F0F2F5]/60 hover:bg-slate-100 border border-slate-200 text-[11px] font-medium text-slate-600 hover:text-white transition-colors cursor-pointer"
               >
                 Manager
               </button>
               <button
                 type="button"
                 onClick={() => setDemoCredentials('staff', 'Staff123!')}
-                className="px-2.5 py-1.5 rounded-lg bg-slate-950/60 hover:bg-slate-800 border border-slate-800 text-[11px] font-medium text-slate-300 hover:text-white transition-colors cursor-pointer"
+                className="px-2.5 py-1.5 rounded-lg bg-[#F0F2F5]/60 hover:bg-slate-100 border border-slate-200 text-[11px] font-medium text-slate-600 hover:text-white transition-colors cursor-pointer"
               >
                 Staff
               </button>

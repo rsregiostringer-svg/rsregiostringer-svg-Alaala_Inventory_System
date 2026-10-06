@@ -160,11 +160,11 @@ export default function MaintenancePage() {
         <div>
           <div className="font-semibold text-slate-100 flex items-center gap-2">
             <span>{row.issue}</span>
-            <span className="font-mono text-xs text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded">
+            <span className="font-mono text-xs text-slate-500 bg-white px-1.5 py-0.5 rounded">
               {row.maintenance_id}
             </span>
           </div>
-          <div className="text-xs text-slate-400 mt-0.5">
+          <div className="text-xs text-slate-500 mt-0.5">
             {row.category} &bull; Reported {formatDate(row.date_reported)} by {row.reported_by}
           </div>
         </div>
@@ -173,7 +173,7 @@ export default function MaintenancePage() {
     {
       header: 'Location',
       key: 'location_details',
-      render: (row) => <span className="font-medium text-slate-200">{row.location_details?.name}</span>,
+      render: (row) => <span className="font-medium text-slate-700">{row.location_details?.name}</span>,
     },
     {
       header: 'Priority',
@@ -188,8 +188,8 @@ export default function MaintenancePage() {
       key: 'assigned_to',
       render: (row) => (
         <div>
-          <div className="text-xs text-slate-200">{row.assigned_to || 'Unassigned'}</div>
-          <div className="text-[11px] text-amber-400/90 font-mono">Cost: {formatCurrency(row.cost)}</div>
+          <div className="text-xs text-slate-700">{row.assigned_to || 'Unassigned'}</div>
+          <div className="text-[11px] text-blue-500/90 font-mono">Cost: {formatCurrency(row.cost)}</div>
         </div>
       ),
     },
@@ -229,7 +229,7 @@ export default function MaintenancePage() {
           <h1 className="text-2xl font-serif font-bold text-slate-100 tracking-wide">
             Chapel & Facility Maintenance
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Log and resolve facility issues (AC, plumbing, electrical, fixtures) across viewing chapels.
           </p>
         </div>
@@ -244,7 +244,7 @@ export default function MaintenancePage() {
       </div>
 
       {/* Filter Toolbar */}
-      <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row items-center gap-3">
+      <div className="p-4 rounded-xl bg-white border border-slate-200 flex flex-col md:flex-row items-center gap-3">
         <SearchInput
           value={search}
           onChange={setSearch}
@@ -437,7 +437,7 @@ export default function MaintenancePage() {
             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
           />
 
-          <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-800">
+          <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-200">
             <Button
               variant="ghost"
               onClick={() => {

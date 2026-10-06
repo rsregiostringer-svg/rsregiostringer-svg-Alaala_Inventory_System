@@ -32,7 +32,7 @@ export default function Modal({
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-slate-900/50 transition-opacity duration-200"
+        className="fixed inset-0 bg-white/50 transition-opacity duration-200"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -52,7 +52,7 @@ export default function Modal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              className="rounded-lg p-1.5 text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>

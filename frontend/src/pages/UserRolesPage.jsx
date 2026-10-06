@@ -384,10 +384,10 @@ export default function UserRolesPage() {
   return (
     <div className="space-y-6">
       {/* Top Banner & Title: Section 29 Spec */}
-      <div className="p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900/95 to-slate-950 border border-slate-800 shadow-xl space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
+      <div className="p-6 rounded-2xl bg-gradient-to-r from-white via-slate-900/95 to-[#F0F2F5] border border-slate-200 shadow-xl space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200/80">
           <div className="flex items-center gap-3.5">
-            <div className="p-3 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-xs">
+            <div className="p-3 rounded-xl bg-blue-600/10 text-blue-500 border border-[#0866FF]/20 shadow-xs">
               <ShieldCheck className="w-7 h-7" />
             </div>
             <div>
@@ -399,7 +399,7 @@ export default function UserRolesPage() {
                   MASTER ADMIN / VERIFIED
                 </Badge>
               </div>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-500 mt-1">
                 Role authorization rules governing user account creation, profile edits, deletions, and administrative credentials.
               </p>
             </div>
@@ -443,9 +443,9 @@ export default function UserRolesPage() {
         {/* 4 Authority Summary Cards: Section 29 Spec */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           {/* Card 1: ACTIVE SESSION */}
-          <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col justify-between shadow-xs">
+          <div className="p-4 rounded-xl bg-[#F0F2F5]/70 border border-slate-200 flex flex-col justify-between shadow-xs">
             <div>
-              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+              <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
                 ACTIVE SESSION
               </span>
               <div className="text-sm font-bold text-slate-100 mt-1">
@@ -453,56 +453,56 @@ export default function UserRolesPage() {
                   ? `${currentUser.first_name} ${currentUser.last_name || ''}`.trim()
                   : currentUser?.username || 'Master Administrator'}
               </div>
-              <div className="text-xs text-amber-400 font-mono mt-0.5">@{currentUser?.username}</div>
+              <div className="text-xs text-blue-500 font-mono mt-0.5">@{currentUser?.username}</div>
             </div>
-            <div className="mt-3 pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+            <div className="mt-3 pt-2.5 border-t border-slate-200/80 flex items-center justify-between text-[11px] text-slate-500">
               <span>Security Level:</span>
               <span className="font-bold text-emerald-400">MASTER ADMIN / VERIFIED</span>
             </div>
           </div>
 
           {/* Card 2: CREATE USERS & ADMINS */}
-          <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 shadow-xs">
-            <div className="flex items-center justify-between text-slate-400 mb-1">
+          <div className="p-4 rounded-xl bg-[#F0F2F5]/70 border border-slate-200 shadow-xs">
+            <div className="flex items-center justify-between text-slate-500 mb-1">
               <span className="text-[10px] uppercase font-bold tracking-wider">CREATE USERS & ADMINS</span>
               <UserPlus className="w-4 h-4 text-emerald-400" />
             </div>
             <div className="text-xs font-bold text-slate-100 mt-1">Full Provisioning Authority</div>
-            <p className="text-[11px] text-slate-400 mt-1">
+            <p className="text-[11px] text-slate-500 mt-1">
               Only Master Admin can create: Master Admin, Admin / Simple Admin, Manager, and Staff.
             </p>
           </div>
 
           {/* Card 3: EDIT & UPDATE PROFILES */}
-          <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 shadow-xs">
-            <div className="flex items-center justify-between text-slate-400 mb-1">
+          <div className="p-4 rounded-xl bg-[#F0F2F5]/70 border border-slate-200 shadow-xs">
+            <div className="flex items-center justify-between text-slate-500 mb-1">
               <span className="text-[10px] uppercase font-bold tracking-wider">EDIT & UPDATE PROFILES</span>
-              <Edit3 className="w-4 h-4 text-amber-400" />
+              <Edit3 className="w-4 h-4 text-blue-500" />
             </div>
             <div className="text-xs font-bold text-slate-100 mt-1">All Accounts & Self-Profile</div>
-            <p className="text-[11px] text-slate-400 mt-1">
+            <p className="text-[11px] text-slate-500 mt-1">
               Modify account details, contact information, branch assignments, roles, permissions, and shifts.
             </p>
           </div>
 
           {/* Card 4: DELETE ACCOUNTS & RECORDS */}
-          <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 shadow-xs">
-            <div className="flex items-center justify-between text-slate-400 mb-1">
+          <div className="p-4 rounded-xl bg-[#F0F2F5]/70 border border-slate-200 shadow-xs">
+            <div className="flex items-center justify-between text-slate-500 mb-1">
               <span className="text-[10px] uppercase font-bold tracking-wider">DELETE ACCOUNTS & RECORDS</span>
               <Trash2 className="w-4 h-4 text-rose-400" />
             </div>
             <div className="text-xs font-bold text-slate-100 mt-1">Permanent Deletions Only</div>
-            <p className="text-[11px] text-slate-400 mt-1">
+            <p className="text-[11px] text-slate-500 mt-1">
               Restricted for normal users. Only Master Admin can perform permanent deletions with warnings.
             </p>
           </div>
         </div>
 
         {/* Master Authority Matrix Table: Section 29 Spec */}
-        <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/40">
+        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-[#F0F2F5]/40">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-b border-slate-800 bg-slate-900/80 text-slate-300">
+              <tr className="border-b border-slate-200 bg-white/80 text-slate-600">
                 <th className="py-3 px-4 font-bold">System Role</th>
                 <th className="py-3 px-4 font-bold">Create Users / Admins</th>
                 <th className="py-3 px-4 font-bold">Edit & Update</th>
@@ -511,10 +511,10 @@ export default function UserRolesPage() {
                 <th className="py-3 px-4 font-bold">Operational Authority</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
-              <tr className="hover:bg-slate-900/50 transition-colors bg-amber-500/5">
-                <td className="py-3 px-4 font-bold text-amber-400 flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-amber-400" />
+            <tbody className="divide-y divide-slate-200/60">
+              <tr className="hover:bg-white/50 transition-colors bg-[#0866FF]/5">
+                <td className="py-3 px-4 font-bold text-blue-500 flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-blue-500" />
                   MASTER ADMIN
                 </td>
                 <td className="py-3 px-4 text-emerald-400 font-semibold">
@@ -529,15 +529,15 @@ export default function UserRolesPage() {
                 <td className="py-3 px-4 text-rose-400 font-semibold">
                   Batches, Caskets & Records
                 </td>
-                <td className="py-3 px-4 text-slate-200">
+                <td className="py-3 px-4 text-slate-700">
                   Total system ownership & configuration
                 </td>
               </tr>
-              <tr className="hover:bg-slate-900/40 transition-colors">
-                <td className="py-3 px-4 font-semibold text-slate-200">
+              <tr className="hover:bg-white/40 transition-colors">
+                <td className="py-3 px-4 font-semibold text-slate-700">
                   ADMIN / SIMPLE ADMIN
                 </td>
-                <td className="py-3 px-4 text-slate-400">
+                <td className="py-3 px-4 text-slate-500">
                   No — Master Admin Only
                 </td>
                 <td className="py-3 px-4 text-amber-300">
@@ -549,18 +549,18 @@ export default function UserRolesPage() {
                 <td className="py-3 px-4 text-slate-500">
                   Restricted
                 </td>
-                <td className="py-3 px-4 text-slate-300">
+                <td className="py-3 px-4 text-slate-600">
                   Day-to-day operations & reports
                 </td>
               </tr>
-              <tr className="hover:bg-slate-900/40 transition-colors">
-                <td className="py-3 px-4 font-semibold text-slate-300">
+              <tr className="hover:bg-white/40 transition-colors">
+                <td className="py-3 px-4 font-semibold text-slate-600">
                   MANAGER
                 </td>
                 <td className="py-3 px-4 text-slate-500">
                   Restricted
                 </td>
-                <td className="py-3 px-4 text-slate-400">
+                <td className="py-3 px-4 text-slate-500">
                   Self Profile Only
                 </td>
                 <td className="py-3 px-4 text-slate-500">
@@ -569,12 +569,12 @@ export default function UserRolesPage() {
                 <td className="py-3 px-4 text-slate-500">
                   Restricted
                 </td>
-                <td className="py-3 px-4 text-slate-300">
+                <td className="py-3 px-4 text-slate-600">
                   Inventory replenishment & department supervision
                 </td>
               </tr>
-              <tr className="hover:bg-slate-900/40 transition-colors">
-                <td className="py-3 px-4 font-semibold text-slate-400">
+              <tr className="hover:bg-white/40 transition-colors">
+                <td className="py-3 px-4 font-semibold text-slate-500">
                   STAFF
                 </td>
                 <td className="py-3 px-4 text-slate-500">
@@ -589,7 +589,7 @@ export default function UserRolesPage() {
                 <td className="py-3 px-4 text-slate-500">
                   Restricted
                 </td>
-                <td className="py-3 px-4 text-slate-300">
+                <td className="py-3 px-4 text-slate-600">
                   Data entry, shift tracking & laundry stage advancing
                 </td>
               </tr>
@@ -679,10 +679,10 @@ export default function UserRolesPage() {
         </div>
 
         {/* Users Table */}
-        <div className="overflow-x-auto rounded-xl border border-slate-800">
+        <div className="overflow-x-auto rounded-xl border border-slate-200">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-slate-800 bg-slate-950/60 text-slate-400">
+              <tr className="border-b border-slate-200 bg-[#F0F2F5]/60 text-slate-500">
                 <th className="py-3 px-4 font-semibold">User</th>
                 <th className="py-3 px-4 font-semibold">System Role</th>
                 <th className="py-3 px-4 font-semibold">Assigned Locations</th>
@@ -692,7 +692,7 @@ export default function UserRolesPage() {
                 <th className="py-3 px-4 font-semibold text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-slate-200/60">
               {filteredUsers.length === 0 ? (
                 <tr>
                   <td colSpan="7" className="py-8 text-center text-slate-500">
@@ -705,17 +705,17 @@ export default function UserRolesPage() {
                   const assignedLocs = u.assigned_location_details || [];
 
                   return (
-                    <tr key={u.id} className="hover:bg-slate-900/40 transition-colors">
+                    <tr key={u.id} className="hover:bg-white/40 transition-colors">
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-amber-400">
+                          <div className="w-8 h-8 rounded-full bg-white border border-slate-300 flex items-center justify-center font-bold text-blue-500">
                             {u.first_name ? u.first_name[0].toUpperCase() : u.username[0].toUpperCase()}
                           </div>
                           <div>
-                            <div className="font-semibold text-slate-200 flex items-center gap-1.5">
+                            <div className="font-semibold text-slate-700 flex items-center gap-1.5">
                               <span>{u.first_name ? `${u.first_name} ${u.last_name || ''}` : u.username}</span>
                               {isCurrent && (
-                                <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                <span className="px-1.5 py-0.5 rounded text-[10px] bg-blue-600/20 text-amber-300 border border-[#0866FF]/30">
                                   You
                                 </span>
                               )}
@@ -734,7 +734,7 @@ export default function UserRolesPage() {
                         </Badge>
                       </td>
 
-                      <td className="py-3 px-4 text-slate-300">
+                      <td className="py-3 px-4 text-slate-600">
                         {u.role === 'MASTER_ADMIN' ? (
                           <span className="text-emerald-400 font-semibold text-[11px]">ALL LOCATIONS (UNRESTRICTED)</span>
                         ) : assignedLocs.length > 0 ? (
@@ -742,7 +742,7 @@ export default function UserRolesPage() {
                             {assignedLocs.map((loc) => (
                               <span
                                 key={loc.id}
-                                className="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300 border border-slate-700"
+                                className="px-1.5 py-0.5 rounded bg-white text-[10px] text-slate-600 border border-slate-300"
                               >
                                 {loc.name}
                               </span>
@@ -753,7 +753,7 @@ export default function UserRolesPage() {
                         )}
                       </td>
 
-                      <td className="py-3 px-4 text-slate-300">
+                      <td className="py-3 px-4 text-slate-600">
                         <span className="text-[11px]">{u.shift || '8am to 5pm'}</span>
                       </td>
 
@@ -765,7 +765,7 @@ export default function UserRolesPage() {
                             </span>
                           )}
                           {u.custom_permissions?.electricity && (
-                            <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px]">
+                            <span className="px-1.5 py-0.5 rounded bg-blue-600/10 text-blue-500 border border-[#0866FF]/20 text-[10px]">
                               Elec
                             </span>
                           )}
@@ -807,7 +807,7 @@ export default function UserRolesPage() {
                               setIsDeleteModalOpen(true);
                             }}
                             title="Delete User Account"
-                            className="text-slate-400 hover:text-rose-400"
+                            className="text-slate-500 hover:text-rose-400"
                           />
                         </div>
                       </td>
@@ -869,7 +869,7 @@ export default function UserRolesPage() {
             placeholder="Re-enter new password"
           />
 
-          <div className="pt-4 flex justify-end gap-3 border-t border-slate-800">
+          <div className="pt-4 flex justify-end gap-3 border-t border-slate-200">
             <Button
               type="button"
               variant="ghost"
@@ -905,8 +905,8 @@ export default function UserRolesPage() {
             </div>
           )}
 
-          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 flex items-center gap-2.5">
-            <ShieldCheck className="w-4 h-4 shrink-0 text-amber-400" />
+          <div className="p-3 rounded-xl bg-blue-600/10 border border-[#0866FF]/20 text-xs text-amber-300 flex items-center gap-2.5">
+            <ShieldCheck className="w-4 h-4 shrink-0 text-blue-500" />
             <span>You are editing your active Master Admin account. Keep your login username memorable.</span>
           </div>
 
@@ -950,7 +950,7 @@ export default function UserRolesPage() {
             placeholder="+63 9XX XXX XXXX"
           />
 
-          <div className="pt-4 flex justify-end gap-3 border-t border-slate-800">
+          <div className="pt-4 flex justify-end gap-3 border-t border-slate-200">
             <Button
               type="button"
               variant="ghost"
@@ -1013,7 +1013,7 @@ export default function UserRolesPage() {
             />
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-600 mb-1.5">
                 {editingUser ? 'Change Password (Leave empty to keep)' : 'Initial Password *'}
               </label>
               <div className="relative">
@@ -1023,12 +1023,12 @@ export default function UserRolesPage() {
                   value={userForm.password}
                   onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
                   placeholder={editingUser ? 'Enter new password if changing' : 'Min 6 characters'}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500 pr-10"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-[#0866FF] pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowUserPassword(!showUserPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700"
                 >
                   {showUserPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -1062,25 +1062,25 @@ export default function UserRolesPage() {
           {/* Assigned Locations Checklist */}
           {userForm.role !== 'MASTER_ADMIN' && (
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-600 mb-1.5">
                 Assigned Operational Locations (Data Isolation Enforced)
               </label>
-              <p className="text-[11px] text-slate-400 mb-2">
+              <p className="text-[11px] text-slate-500 mb-2">
                 This user will only have access to records and dashboards belonging to the checked locations.
               </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-3 rounded-xl bg-slate-950/60 border border-slate-800">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-3 rounded-xl bg-[#F0F2F5]/60 border border-slate-200">
                 {locations.map((loc) => {
                   const isChecked = userForm.assigned_locations.includes(loc.id);
                   return (
                     <label
                       key={loc.id}
-                      className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-900 cursor-pointer text-xs text-slate-300"
+                      className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white cursor-pointer text-xs text-slate-600"
                     >
                       <input
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => toggleLocation(loc.id)}
-                        className="rounded border-slate-700 text-amber-500 focus:ring-amber-500"
+                        className="rounded border-slate-300 text-[#0866FF] focus:ring-[#0866FF]"
                       />
                       <span>{loc.name}</span>
                     </label>
@@ -1093,11 +1093,11 @@ export default function UserRolesPage() {
           {/* Custom Permissions Checkboxes */}
           {userForm.role !== 'MASTER_ADMIN' && (
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-600 mb-1.5">
                 Optional Permissions for Staff / Simple Admin
               </label>
-              <div className="grid grid-cols-3 gap-3 p-3 rounded-xl bg-slate-950/60 border border-slate-800">
-                <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+              <div className="grid grid-cols-3 gap-3 p-3 rounded-xl bg-[#F0F2F5]/60 border border-slate-200">
+                <label className="flex items-center gap-2 text-xs text-slate-600 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={userForm.custom_permissions.water}
@@ -1107,12 +1107,12 @@ export default function UserRolesPage() {
                         custom_permissions: { ...userForm.custom_permissions, water: e.target.checked }
                       })
                     }
-                    className="rounded border-slate-700 text-amber-500 focus:ring-amber-500"
+                    className="rounded border-slate-300 text-[#0866FF] focus:ring-[#0866FF]"
                   />
                   <span>Water Monitoring</span>
                 </label>
 
-                <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                <label className="flex items-center gap-2 text-xs text-slate-600 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={userForm.custom_permissions.electricity}
@@ -1122,12 +1122,12 @@ export default function UserRolesPage() {
                         custom_permissions: { ...userForm.custom_permissions, electricity: e.target.checked }
                       })
                     }
-                    className="rounded border-slate-700 text-amber-500 focus:ring-amber-500"
+                    className="rounded border-slate-300 text-[#0866FF] focus:ring-[#0866FF]"
                   />
                   <span>Electricity Monitoring</span>
                 </label>
 
-                <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                <label className="flex items-center gap-2 text-xs text-slate-600 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={userForm.custom_permissions.reports}
@@ -1137,7 +1137,7 @@ export default function UserRolesPage() {
                         custom_permissions: { ...userForm.custom_permissions, reports: e.target.checked }
                       })
                     }
-                    className="rounded border-slate-700 text-amber-500 focus:ring-amber-500"
+                    className="rounded border-slate-300 text-[#0866FF] focus:ring-[#0866FF]"
                   />
                   <span>View Reports</span>
                 </label>
@@ -1145,7 +1145,7 @@ export default function UserRolesPage() {
             </div>
           )}
 
-          <div className="pt-4 flex justify-end gap-3 border-t border-slate-800">
+          <div className="pt-4 flex justify-end gap-3 border-t border-slate-200">
             <Button
               type="button"
               variant="ghost"
@@ -1185,11 +1185,11 @@ export default function UserRolesPage() {
             </div>
           </div>
 
-          <p className="text-xs text-slate-300">
+          <p className="text-xs text-slate-600">
             Are you completely sure you want to continue with this action?
           </p>
 
-          <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+          <div className="flex justify-end gap-3 pt-3 border-t border-slate-200">
             <Button
               variant="ghost"
               onClick={() => setIsWarningModalOpen(false)}
@@ -1227,7 +1227,7 @@ export default function UserRolesPage() {
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+          <div className="flex justify-end gap-3 pt-3 border-t border-slate-200">
             <Button
               variant="ghost"
               onClick={() => setIsDeleteModalOpen(false)}

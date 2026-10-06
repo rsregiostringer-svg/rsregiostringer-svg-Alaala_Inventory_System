@@ -158,7 +158,7 @@ export default function InventoryPage() {
       render: (row) => (
         <div>
           <div className="font-semibold text-slate-100">{row.item_name}</div>
-          <div className="text-xs text-slate-400 mt-0.5">
+          <div className="text-xs text-slate-500 mt-0.5">
             {row.category_name} &bull; {row.supplier || 'Standard Supplier'}
           </div>
         </div>
@@ -168,7 +168,7 @@ export default function InventoryPage() {
       header: 'Location',
       key: 'location_details',
       render: (row) => (
-        <span className="font-medium text-slate-200">
+        <span className="font-medium text-slate-700">
           {row.location_details?.name || '—'}
         </span>
       ),
@@ -178,8 +178,8 @@ export default function InventoryPage() {
       key: 'current_quantity',
       render: (row) => (
         <div>
-          <div className="font-bold text-amber-400 text-sm">
-            {row.current_quantity} <span className="text-xs font-normal text-slate-400">{row.unit}</span>
+          <div className="font-bold text-blue-500 text-sm">
+            {row.current_quantity} <span className="text-xs font-normal text-slate-500">{row.unit}</span>
           </div>
           <div className="text-[11px] text-slate-500">
             Min: {row.minimum_stock} | Max: {row.maximum_stock}
@@ -194,8 +194,8 @@ export default function InventoryPage() {
         const totalVal = row.current_quantity * parseFloat(row.cost || 0);
         return (
           <div>
-            <div className="text-xs font-medium text-slate-200">{formatCurrency(row.cost)}</div>
-            <div className="text-[11px] text-slate-400 font-mono">
+            <div className="text-xs font-medium text-slate-700">{formatCurrency(row.cost)}</div>
+            <div className="text-[11px] text-slate-500 font-mono">
               Total: {formatCurrency(totalVal)}
             </div>
           </div>
@@ -234,7 +234,7 @@ export default function InventoryPage() {
               e.stopPropagation();
               handleOpenEdit(row);
             }}
-            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg bg-white hover:bg-slate-200 text-slate-500 hover:text-white transition-colors cursor-pointer"
             title="Edit Details"
           >
             <Edit2 className="w-3.5 h-3.5" />
@@ -252,7 +252,7 @@ export default function InventoryPage() {
           <h1 className="text-2xl font-serif font-bold text-black-100 tracking-wide">
             General Inventory
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Manage stock, monitor minimum thresholds, and record multi-branch movements.
           </p>
         </div>
@@ -267,7 +267,7 @@ export default function InventoryPage() {
       </div>
 
       {/* Filter Toolbar */}
-      <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row items-center gap-3">
+      <div className="p-4 rounded-xl bg-white border border-slate-200 flex flex-col md:flex-row items-center gap-3">
         <SearchInput
           value={search}
           onChange={(val) => {
@@ -439,7 +439,7 @@ export default function InventoryPage() {
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           />
 
-          <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-800">
+          <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-200">
             <Button
               variant="ghost"
               onClick={() => {

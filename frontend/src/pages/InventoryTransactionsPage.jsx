@@ -66,7 +66,7 @@ export default function InventoryTransactionsPage() {
       header: 'Date & Time',
       key: 'created_at',
       render: (row) => (
-        <span className="text-xs text-slate-300 font-mono">
+        <span className="text-xs text-slate-600 font-mono">
           {formatDateTime(row.created_at)}
         </span>
       ),
@@ -92,8 +92,8 @@ export default function InventoryTransactionsPage() {
       header: 'Quantity',
       key: 'quantity',
       render: (row) => (
-        <span className="font-bold text-amber-400">
-          {row.quantity} <span className="text-xs font-normal text-slate-400">{row.item_unit}</span>
+        <span className="font-bold text-blue-500">
+          {row.quantity} <span className="text-xs font-normal text-slate-500">{row.item_unit}</span>
         </span>
       ),
     },
@@ -104,14 +104,14 @@ export default function InventoryTransactionsPage() {
         if (row.transaction_type === 'TRANSFER') {
           return (
             <div className="flex items-center gap-1.5 text-xs">
-              <span className="text-slate-300 font-medium">{row.from_location_name}</span>
-              <ArrowRight className="w-3.5 h-3.5 text-amber-400" />
-              <span className="text-amber-400 font-semibold">{row.to_location_name}</span>
+              <span className="text-slate-600 font-medium">{row.from_location_name}</span>
+              <ArrowRight className="w-3.5 h-3.5 text-blue-500" />
+              <span className="text-blue-500 font-semibold">{row.to_location_name}</span>
             </div>
           );
         }
         return (
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-slate-500">
             {row.to_location_name || row.from_location_name || '—'}
           </span>
         );
@@ -122,7 +122,7 @@ export default function InventoryTransactionsPage() {
       key: 'reason',
       render: (row) => (
         <div>
-          <p className="text-xs text-slate-200">{row.reason}</p>
+          <p className="text-xs text-slate-700">{row.reason}</p>
           {row.notes && <p className="text-[11px] text-slate-500 mt-0.5">{row.notes}</p>}
         </div>
       ),
@@ -131,7 +131,7 @@ export default function InventoryTransactionsPage() {
       header: 'Operator',
       key: 'user_name',
       render: (row) => (
-        <span className="text-xs text-slate-300 font-medium">
+        <span className="text-xs text-slate-600 font-medium">
           {row.user_name || 'System'}
         </span>
       ),
@@ -145,7 +145,7 @@ export default function InventoryTransactionsPage() {
           <h1 className="text-2xl font-serif font-bold text-slate-100 tracking-wide">
             Inventory Transactions
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Immutable audit trail of all stock movements, intakes, transfers, and deductions.
           </p>
         </div>
@@ -155,7 +155,7 @@ export default function InventoryTransactionsPage() {
       </div>
 
       {/* Filter Bar */}
-      <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-wrap items-center gap-3">
+      <div className="p-4 rounded-xl bg-white border border-slate-200 flex flex-wrap items-center gap-3">
         <div className="w-48">
           <Select
             options={[

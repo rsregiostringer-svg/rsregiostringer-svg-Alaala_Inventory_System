@@ -328,7 +328,7 @@ export default function MainLayout() {
       {/* Backdrop for Mobile Drawer */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-slate-900/40 z-30 md:hidden"
+          className="fixed inset-0 bg-white/40 z-30 md:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
@@ -382,7 +382,7 @@ export default function MainLayout() {
                 {isWsConnected ? 'System Connected' : 'Sync Active'}
               </span>
             </div>
-            <Radio className={`w-3.5 h-3.5 shrink-0 ${isWsConnected ? 'text-blue-600' : 'text-slate-400'}`} />
+            <Radio className={`w-3.5 h-3.5 shrink-0 ${isWsConnected ? 'text-blue-600' : 'text-slate-500'}`} />
           </div>
         )}
 
@@ -391,7 +391,7 @@ export default function MainLayout() {
           {navSections.map((section) => (
             <div key={section.title} className="space-y-1">
               {!isCollapsed && (
-                <div className="px-3 pb-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                <div className="px-3 pb-1 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                   {section.title}
                 </div>
               )}
@@ -420,7 +420,7 @@ export default function MainLayout() {
 
                     {/* Collapsed Tooltip floating on hover */}
                     {isCollapsed && (
-                      <div className="hidden group-hover:block absolute left-full ml-2 px-2.5 py-1 bg-slate-900 text-white text-xs font-medium rounded-md shadow-lg whitespace-nowrap z-50 pointer-events-none">
+                      <div className="hidden group-hover:block absolute left-full ml-2 px-2.5 py-1 bg-white text-white text-xs font-medium rounded-md shadow-lg whitespace-nowrap z-50 pointer-events-none">
                         {item.label}
                       </div>
                     )}
@@ -465,7 +465,7 @@ export default function MainLayout() {
               <span className="font-bold text-base text-slate-900 tracking-wide">
                 ALAALA FUNERAL HOMES
               </span>
-              <span className="text-slate-300">|</span>
+              <span className="text-slate-600">|</span>
               <span className="text-xs text-slate-500 font-medium">Management System</span>
             </div>
           </div>

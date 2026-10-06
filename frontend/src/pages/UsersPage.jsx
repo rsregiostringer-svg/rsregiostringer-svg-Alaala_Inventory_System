@@ -294,7 +294,7 @@ export default function UsersPage() {
       key: 'office',
       render: () => (
         <div className="flex items-center gap-1.5 text-xs text-slate-700">
-          <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+          <Building2 className="w-3.5 h-3.5 text-slate-500 shrink-0" />
           <span>Main Office</span>
         </div>
       ),
@@ -545,7 +545,7 @@ export default function UsersPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-8 text-slate-400 hover:text-slate-600 cursor-pointer"
+                className="absolute right-3 top-8 text-slate-500 hover:text-slate-600 cursor-pointer"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -572,7 +572,7 @@ export default function UsersPage() {
                   Office Location
                 </label>
                 <div className="h-10 px-3 flex items-center text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-lg">
-                  <Building2 className="w-3.5 h-3.5 mr-2 text-slate-400" />
+                  <Building2 className="w-3.5 h-3.5 mr-2 text-slate-500" />
                   Main Office
                 </div>
               </div>

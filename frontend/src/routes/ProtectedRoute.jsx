@@ -14,7 +14,7 @@ export default function ProtectedRoute({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-[#F0F2F5] flex items-center justify-center">
         <LoadingState message="Verifying session security..." />
       </div>
     );

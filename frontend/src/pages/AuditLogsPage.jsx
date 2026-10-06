@@ -44,7 +44,7 @@ export default function AuditLogsPage() {
       header: 'Timestamp',
       key: 'timestamp',
       render: (row) => (
-        <span className="font-mono text-xs text-slate-300">
+        <span className="font-mono text-xs text-slate-600">
           {formatDateTime(row.timestamp)}
         </span>
       ),
@@ -62,7 +62,7 @@ export default function AuditLogsPage() {
       header: 'Module',
       key: 'module',
       render: (row) => (
-        <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">
+        <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-white text-slate-600 border border-slate-300">
           {row.module}
         </span>
       ),
@@ -89,7 +89,7 @@ export default function AuditLogsPage() {
       key: 'description',
       render: (row) => (
         <div className="max-w-md">
-          <p className="text-xs text-slate-200">{row.description}</p>
+          <p className="text-xs text-slate-700">{row.description}</p>
           {row.record_repr && (
             <p className="text-[11px] text-slate-500 font-mono mt-0.5">Ref: {row.record_repr}</p>
           )}
@@ -114,7 +114,7 @@ export default function AuditLogsPage() {
           <h1 className="text-2xl font-serif font-bold text-slate-100 tracking-wide">
             Audit Trail & Accountability
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Immutable log of all operational adjustments, stage advances, transfers, and system events.
           </p>
         </div>
@@ -123,7 +123,7 @@ export default function AuditLogsPage() {
         </Button>
       </div>
 
-      <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-wrap items-center gap-3">
+      <div className="p-4 rounded-xl bg-white border border-slate-200 flex flex-wrap items-center gap-3">
         <SearchInput
           value={search}
           onChange={setSearch}

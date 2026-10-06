@@ -349,7 +349,7 @@ export default function LaundryPage() {
           <h1 className="text-2xl font-serif font-bold text-black-100 tracking-wide">
             Laundry Monitoring Sheet
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Exact 10-column tracking: IN &rarr; Laba &rarr; Banlaw &rarr; Sampay &rarr; Pinaw &rarr; Tiklop &rarr; Returned.
           </p>
         </div>
@@ -374,16 +374,16 @@ export default function LaundryPage() {
       </div>
 
       {/* Date Range Filter Toolbar */}
-      <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3.5">
+      <div className="p-4 rounded-xl bg-white border border-slate-200 space-y-3.5">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           {/* Mode Switcher Tabs */}
-          <div className="flex items-center gap-1.5 p-1 bg-slate-950/80 rounded-lg border border-slate-800 self-start">
+          <div className="flex items-center gap-1.5 p-1 bg-[#F0F2F5]/80 rounded-lg border border-slate-200 self-start">
             <button
               type="button"
               onClick={() => setRangeMode('ALL')}
               className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${rangeMode === 'ALL'
-                ? 'bg-amber-500 text-slate-950 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#0866FF] text-white shadow-sm'
+                : 'text-slate-500 hover:text-slate-700'
                 }`}
             >
               All Records
@@ -392,8 +392,8 @@ export default function LaundryPage() {
               type="button"
               onClick={() => setRangeMode('MONTH')}
               className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${rangeMode === 'MONTH'
-                ? 'bg-amber-500 text-slate-950 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#0866FF] text-white shadow-sm'
+                : 'text-slate-500 hover:text-slate-700'
                 }`}
             >
               Month Range
@@ -402,8 +402,8 @@ export default function LaundryPage() {
               type="button"
               onClick={() => setRangeMode('WEEK')}
               className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${rangeMode === 'WEEK'
-                ? 'bg-amber-500 text-slate-950 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#0866FF] text-white shadow-sm'
+                : 'text-slate-500 hover:text-slate-700'
                 }`}
             >
               Weeks
@@ -412,8 +412,8 @@ export default function LaundryPage() {
               type="button"
               onClick={() => setRangeMode('DAY')}
               className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${rangeMode === 'DAY'
-                ? 'bg-amber-500 text-slate-950 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#0866FF] text-white shadow-sm'
+                : 'text-slate-500 hover:text-slate-700'
                 }`}
             >
               Days
@@ -422,8 +422,8 @@ export default function LaundryPage() {
               type="button"
               onClick={() => setRangeMode('CUSTOM')}
               className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${rangeMode === 'CUSTOM'
-                ? 'bg-amber-500 text-slate-950 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#0866FF] text-white shadow-sm'
+                : 'text-slate-500 hover:text-slate-700'
                 }`}
             >
               Custom Range
@@ -437,7 +437,7 @@ export default function LaundryPage() {
                 <select
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(parseInt(e.target.value, 10))}
-                  className="bg-slate-950 border border-slate-800 text-slate-100 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-amber-500"
+                  className="bg-[#F0F2F5] border border-slate-200 text-slate-100 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-[#0866FF]"
                 >
                   {MONTH_NAMES.map((m, idx) => (
                     <option key={m} value={idx}>
@@ -449,7 +449,7 @@ export default function LaundryPage() {
                 <select
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(parseInt(e.target.value, 10))}
-                  className="bg-slate-950 border border-slate-800 text-slate-100 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-amber-500"
+                  className="bg-[#F0F2F5] border border-slate-200 text-slate-100 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-[#0866FF]"
                 >
                   <option value={currentYear}>{currentYear}</option>
                   <option value={currentYear - 1}>{currentYear - 1}</option>
@@ -462,7 +462,7 @@ export default function LaundryPage() {
               <select
                 value={selectedWeekType}
                 onChange={(e) => setSelectedWeekType(e.target.value)}
-                className="bg-slate-950 border border-slate-800 text-slate-100 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-amber-500"
+                className="bg-[#F0F2F5] border border-slate-200 text-slate-100 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-[#0866FF]"
               >
                 <option value="THIS_WEEK">This Current Week</option>
                 <option value="LAST_WEEK">Last Week</option>
@@ -475,7 +475,7 @@ export default function LaundryPage() {
                 <select
                   value={selectedDayType}
                   onChange={(e) => setSelectedDayType(e.target.value)}
-                  className="bg-slate-950 border border-slate-800 text-slate-100 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-amber-500"
+                  className="bg-[#F0F2F5] border border-slate-200 text-slate-100 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-[#0866FF]"
                 >
                   <option value="TODAY">Today</option>
                   <option value="YESTERDAY">Yesterday</option>
@@ -487,7 +487,7 @@ export default function LaundryPage() {
                     type="date"
                     value={specificDay}
                     onChange={(e) => setSpecificDay(e.target.value)}
-                    className="bg-slate-950 border border-slate-800 text-slate-100 text-xs rounded-lg px-3 py-1.5 focus:outline-hidden focus:border-amber-500"
+                    className="bg-[#F0F2F5] border border-slate-200 text-slate-100 text-xs rounded-lg px-3 py-1.5 focus:outline-hidden focus:border-[#0866FF]"
                   />
                 )}
               </div>
@@ -499,14 +499,14 @@ export default function LaundryPage() {
                   type="date"
                   value={customStartDate}
                   onChange={(e) => setCustomStartDate(e.target.value)}
-                  className="bg-slate-950 border border-slate-800 text-slate-100 text-xs rounded-lg px-2.5 py-1.5 focus:outline-hidden focus:border-amber-500"
+                  className="bg-[#F0F2F5] border border-slate-200 text-slate-100 text-xs rounded-lg px-2.5 py-1.5 focus:outline-hidden focus:border-[#0866FF]"
                 />
-                <span className="text-slate-400 text-xs">to</span>
+                <span className="text-slate-500 text-xs">to</span>
                 <input
                   type="date"
                   value={customEndDate}
                   onChange={(e) => setCustomEndDate(e.target.value)}
-                  className="bg-slate-950 border border-slate-800 text-slate-100 text-xs rounded-lg px-2.5 py-1.5 focus:outline-hidden focus:border-amber-500"
+                  className="bg-[#F0F2F5] border border-slate-200 text-slate-100 text-xs rounded-lg px-2.5 py-1.5 focus:outline-hidden focus:border-[#0866FF]"
                 />
               </div>
             )}
@@ -514,13 +514,13 @@ export default function LaundryPage() {
         </div>
 
         {/* Active Range Banner */}
-        <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-800/80">
+        <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-200/80">
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-500/15 border border-amber-500/30 text-amber-300 flex items-center gap-1.5">
-              <CalendarRange className="w-3.5 h-3.5 text-amber-400" />
+            <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-[#0866FF]/15 border border-[#0866FF]/30 text-amber-300 flex items-center gap-1.5">
+              <CalendarRange className="w-3.5 h-3.5 text-blue-500" />
               Active Range: {rangeLabel}
             </span>
-            <span className="text-slate-400 font-medium">
+            <span className="text-slate-500 font-medium">
               ({records.length} batch{records.length === 1 ? '' : 'es'} matched)
             </span>
           </div>
@@ -529,7 +529,7 @@ export default function LaundryPage() {
             <button
               type="button"
               onClick={() => setRangeMode('ALL')}
-              className="text-[11px] text-slate-400 hover:text-white underline cursor-pointer"
+              className="text-[11px] text-slate-500 hover:text-white underline cursor-pointer"
             >
               Reset to All Dates
             </button>
@@ -538,7 +538,7 @@ export default function LaundryPage() {
       </div>
 
       {/* General Filters: Search, Chapel/Tag, Status */}
-      <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row items-center gap-3">
+      <div className="p-4 rounded-xl bg-white border border-slate-200 flex flex-col md:flex-row items-center gap-3">
         <SearchInput
           value={search}
           onChange={(val) => {
@@ -723,7 +723,7 @@ export default function LaundryPage() {
                       onClick={() =>
                         setNewBatchData({ ...newBatchData, laundry_in_charge: name })
                       }
-                      className="px-2 py-0.5 text-[11px] rounded bg-slate-800 text-slate-300 hover:bg-slate-700 cursor-pointer border border-slate-700"
+                      className="px-2 py-0.5 text-[11px] rounded bg-white text-slate-600 hover:bg-slate-200 cursor-pointer border border-slate-300"
                     >
                       {name}
                     </button>
@@ -740,7 +740,7 @@ export default function LaundryPage() {
             onChange={(e) => setNewBatchData({ ...newBatchData, notes: e.target.value })}
           />
 
-          <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-800">
+          <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-200">
             <Button
               variant="ghost"
               onClick={() => setIsNewBatchOpen(false)}

@@ -102,7 +102,7 @@ export default function SettingsPage() {
         <h1 className="text-2xl font-serif font-bold text-slate-100 tracking-wide">
           System Settings & Facilities
         </h1>
-        <p className="text-xs text-slate-400 mt-0.5">
+        <p className="text-xs text-slate-500 mt-0.5">
           Configure viewing chapels, service departments, uncoded laundry tags, and inventory classifications.
         </p>
       </div>
@@ -123,21 +123,21 @@ export default function SettingsPage() {
           <div className="space-y-4">
             {/* 1. Viewing Chapels */}
             <div>
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-400 block mb-2">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-blue-500 block mb-2">
                 Viewing Chapels (Physical Rooms)
               </span>
               <div className="space-y-2">
                 {viewingChapels.map((loc) => (
                   <div
                     key={loc.id}
-                    className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 flex items-center justify-between"
+                    className="p-3 bg-[#F0F2F5]/60 rounded-xl border border-slate-200 flex items-center justify-between"
                   >
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-slate-100 text-sm">{loc.name}</span>
                         <Badge variant="primary" size="sm">Chapel</Badge>
                       </div>
-                      <p className="text-xs text-slate-400 mt-0.5">{loc.description || 'Viewing facility'}</p>
+                      <p className="text-xs text-slate-500 mt-0.5">{loc.description || 'Viewing facility'}</p>
                     </div>
                     <span className="text-xs font-mono text-slate-500">#{loc.code}</span>
                   </div>
@@ -147,21 +147,21 @@ export default function SettingsPage() {
 
             {/* 2. Administrative Offices */}
             <div>
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block mb-2">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block mb-2">
                 Administrative Facilities
               </span>
               <div className="space-y-2">
                 {officeDepots.map((loc) => (
                   <div
                     key={loc.id}
-                    className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 flex items-center justify-between"
+                    className="p-3 bg-[#F0F2F5]/60 rounded-xl border border-slate-200 flex items-center justify-between"
                   >
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-slate-100 text-sm">{loc.name}</span>
                         <Badge variant="secondary" size="sm">Office Depot</Badge>
                       </div>
-                      <p className="text-xs text-slate-400 mt-0.5">{loc.description || 'Administrative headquarters'}</p>
+                      <p className="text-xs text-slate-500 mt-0.5">{loc.description || 'Administrative headquarters'}</p>
                     </div>
                     <span className="text-xs font-mono text-slate-500">#{loc.code}</span>
                   </div>
@@ -178,7 +178,7 @@ export default function SettingsPage() {
                 {serviceAndTags.map((loc) => (
                   <div
                     key={loc.id}
-                    className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 flex items-center justify-between"
+                    className="p-3 bg-[#F0F2F5]/60 rounded-xl border border-slate-200 flex items-center justify-between"
                   >
                     <div>
                       <div className="flex items-center gap-2">
@@ -189,7 +189,7 @@ export default function SettingsPage() {
                           <Badge variant="warning" size="sm">Laundry Tag (Non-Chapel)</Badge>
                         )}
                       </div>
-                      <p className="text-xs text-slate-400 mt-0.5">
+                      <p className="text-xs text-slate-500 mt-0.5">
                         {loc.name === 'SERVICES'
                           ? 'Preparation, embalming, and funeral service operations (not a viewing chapel).'
                           : 'Laundry monitoring tag for uncoded linen, rags, and general fabrics.'}
@@ -204,18 +204,18 @@ export default function SettingsPage() {
             {/* Other / Custom facilities */}
             {otherLocations.length > 0 && (
               <div>
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block mb-2">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block mb-2">
                   Other Locations
                 </span>
                 <div className="space-y-2">
                   {otherLocations.map((loc) => (
                     <div
                       key={loc.id}
-                      className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 flex items-center justify-between"
+                      className="p-3 bg-[#F0F2F5]/60 rounded-xl border border-slate-200 flex items-center justify-between"
                     >
                       <div>
                         <span className="font-semibold text-slate-100 text-sm">{loc.name}</span>
-                        <p className="text-xs text-slate-400 mt-0.5">{loc.description}</p>
+                        <p className="text-xs text-slate-500 mt-0.5">{loc.description}</p>
                       </div>
                       <span className="text-xs font-mono text-slate-500">#{loc.code}</span>
                     </div>
@@ -244,13 +244,13 @@ export default function SettingsPage() {
               {categories.map((cat) => (
                 <div
                   key={cat.id}
-                  className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 flex items-center justify-between"
+                  className="p-3 bg-[#F0F2F5]/60 rounded-xl border border-slate-200 flex items-center justify-between"
                 >
                   <div>
                     <span className="font-semibold text-slate-100 text-sm">{cat.name}</span>
-                    <p className="text-xs text-slate-400 mt-0.5">{cat.description || 'General category'}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{cat.description || 'General category'}</p>
                   </div>
-                  <span className="text-xs text-slate-400">{cat.items_count || 0} items</span>
+                  <span className="text-xs text-slate-500">{cat.items_count || 0} items</span>
                 </div>
               ))}
             </div>
@@ -259,26 +259,26 @@ export default function SettingsPage() {
           {/* System & Deployment Architecture Status */}
           <Card title="Deployment & Architecture Status" subtitle="Vercel Frontend & Django Backend">
             <div className="space-y-3 text-xs">
-              <div className="p-3.5 bg-slate-950/60 rounded-xl border border-slate-800 space-y-2">
+              <div className="p-3.5 bg-[#F0F2F5]/60 rounded-xl border border-slate-200 space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Frontend Deployment:</span>
-                  <span className="font-semibold text-slate-200">Vercel (React + Vite)</span>
+                  <span className="text-slate-500">Frontend Deployment:</span>
+                  <span className="font-semibold text-slate-700">Vercel (React + Vite)</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Backend API URL:</span>
-                  <span className="font-mono text-slate-300 text-[11px] truncate max-w-[200px]" title={api.baseUrl}>
+                  <span className="text-slate-500">Backend API URL:</span>
+                  <span className="font-mono text-slate-600 text-[11px] truncate max-w-[200px]" title={api.baseUrl}>
                     {api.baseUrl}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Realtime Stream:</span>
+                  <span className="text-slate-500">Realtime Stream:</span>
                   <Badge variant={isWsConnected ? 'success' : 'info'} size="sm">
                     {isWsConnected ? 'Active (WebSocket)' : 'Active (Polling Fallback)'}
                   </Badge>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Database Engine:</span>
-                  <span className="font-semibold text-slate-200">PostgreSQL (Production) / SQLite (Dev)</span>
+                  <span className="text-slate-500">Database Engine:</span>
+                  <span className="font-semibold text-slate-700">PostgreSQL (Production) / SQLite (Dev)</span>
                 </div>
               </div>
               <p className="text-[11px] text-slate-500 italic">
@@ -317,7 +317,7 @@ export default function SettingsPage() {
             value={locDesc}
             onChange={(e) => setLocDesc(e.target.value)}
           />
-          <div className="pt-4 flex justify-end gap-3 border-t border-slate-800">
+          <div className="pt-4 flex justify-end gap-3 border-t border-slate-200">
             <Button variant="ghost" onClick={() => setIsLocModalOpen(false)}>Cancel</Button>
             <Button type="submit" variant="primary">Create Facility</Button>
           </div>
@@ -345,7 +345,7 @@ export default function SettingsPage() {
             value={catDesc}
             onChange={(e) => setCatDesc(e.target.value)}
           />
-          <div className="pt-4 flex justify-end gap-3 border-t border-slate-800">
+          <div className="pt-4 flex justify-end gap-3 border-t border-slate-200">
             <Button variant="ghost" onClick={() => setIsCatModalOpen(false)}>Cancel</Button>
             <Button type="submit" variant="primary">Create Category</Button>
           </div>

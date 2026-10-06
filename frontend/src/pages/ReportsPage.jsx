@@ -116,7 +116,7 @@ export default function ReportsPage() {
           <h1 className="text-2xl font-serif font-bold text-slate-100 tracking-wide">
             Operational Reports & Export
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Generate printable executive summaries and download CSV exports for accounting & records.
           </p>
         </div>
@@ -131,7 +131,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Filter and Module Selection Bar */}
-      <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-wrap items-center gap-3 no-print">
+      <div className="p-4 rounded-xl bg-white border border-slate-200 flex flex-wrap items-center gap-3 no-print">
         <div className="w-56">
           <Select
             label="Report Module"
@@ -202,32 +202,32 @@ export default function ReportsPage() {
         <div className="space-y-6">
           {/* Executive KPI Overview Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-            <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
-              <span className="text-xs text-slate-400 uppercase font-medium">Inventory Valuation</span>
-              <div className="mt-1 text-2xl font-bold text-amber-400">{formatCurrency(inv.valuation || 0)}</div>
-              <div className="mt-1 text-[11px] text-slate-400">{inv.total_quantity || 0} total units in stock</div>
+            <div className="p-4 rounded-xl bg-white border border-slate-200">
+              <span className="text-xs text-slate-500 uppercase font-medium">Inventory Valuation</span>
+              <div className="mt-1 text-2xl font-bold text-blue-500">{formatCurrency(inv.valuation || 0)}</div>
+              <div className="mt-1 text-[11px] text-slate-500">{inv.total_quantity || 0} total units in stock</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
-              <span className="text-xs text-slate-400 uppercase font-medium">Caskets Available</span>
+            <div className="p-4 rounded-xl bg-white border border-slate-200">
+              <span className="text-xs text-slate-500 uppercase font-medium">Caskets Available</span>
               <div className="mt-1 text-2xl font-bold text-indigo-400">{caskets.available || 0}</div>
-              <div className="mt-1 text-[11px] text-slate-400">{caskets.reserved || 0} reserved &bull; {caskets.sold || 0} sold</div>
+              <div className="mt-1 text-[11px] text-slate-500">{caskets.reserved || 0} reserved &bull; {caskets.sold || 0} sold</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
-              <span className="text-xs text-slate-400 uppercase font-medium">Chapels & Lamay</span>
-              <div className="mt-1 text-2xl font-bold text-rose-400">{chapels.active_lamay || 0} <span className="text-xs font-normal text-slate-400">Active</span></div>
-              <div className="mt-1 text-[11px] text-slate-400">{chapels.occupied || 0} occupied &bull; {chapels.available || 0} available</div>
+            <div className="p-4 rounded-xl bg-white border border-slate-200">
+              <span className="text-xs text-slate-500 uppercase font-medium">Chapels & Lamay</span>
+              <div className="mt-1 text-2xl font-bold text-rose-400">{chapels.active_lamay || 0} <span className="text-xs font-normal text-slate-500">Active</span></div>
+              <div className="mt-1 text-[11px] text-slate-500">{chapels.occupied || 0} occupied &bull; {chapels.available || 0} available</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
-              <span className="text-xs text-slate-400 uppercase font-medium">Laundry In-Process</span>
+            <div className="p-4 rounded-xl bg-white border border-slate-200">
+              <span className="text-xs text-slate-500 uppercase font-medium">Laundry In-Process</span>
               <div className="mt-1 text-2xl font-bold text-sky-400">{laundry.in_process || 0} batches</div>
-              <div className="mt-1 text-[11px] text-slate-400">{laundry.returned || 0} returned</div>
+              <div className="mt-1 text-[11px] text-slate-500">{laundry.returned || 0} returned</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
-              <span className="text-xs text-slate-400 uppercase font-medium">Total Utility Cost</span>
+            <div className="p-4 rounded-xl bg-white border border-slate-200">
+              <span className="text-xs text-slate-500 uppercase font-medium">Total Utility Cost</span>
               <div className="mt-1 text-2xl font-bold text-rose-400">{formatCurrency(util.total_utility_cost || 0)}</div>
               <div className="mt-1 text-[11px] text-rose-400/90">{formatCurrency(util.total_unpaid || 0)} unpaid</div>
             </div>
@@ -238,24 +238,24 @@ export default function ReportsPage() {
             {/* Inventory & Safety Stock Analysis */}
             <Card title="Inventory & Stock Health">
               <div className="space-y-3 text-xs">
-                <div className="flex justify-between py-2 border-b border-slate-800">
-                  <span className="text-slate-400">Total Unique Inventory Items</span>
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span className="text-slate-500">Total Unique Inventory Items</span>
                   <span className="font-semibold text-slate-100">{inv.total_items} items</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-slate-800">
-                  <span className="text-slate-400">Total Quantity in Hand</span>
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span className="text-slate-500">Total Quantity in Hand</span>
                   <span className="font-semibold text-slate-100">{inv.total_quantity} units</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-slate-800">
-                  <span className="text-slate-400">Total Estimated Inventory Value</span>
-                  <span className="font-bold text-amber-400">{formatCurrency(inv.valuation)}</span>
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span className="text-slate-500">Total Estimated Inventory Value</span>
+                  <span className="font-bold text-blue-500">{formatCurrency(inv.valuation)}</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-slate-800">
-                  <span className="text-slate-400">Low Stock Warnings</span>
-                  <span className="font-semibold text-amber-400">{inv.low_stock} items</span>
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span className="text-slate-500">Low Stock Warnings</span>
+                  <span className="font-semibold text-blue-500">{inv.low_stock} items</span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-slate-400">Out of Stock Warnings</span>
+                  <span className="text-slate-500">Out of Stock Warnings</span>
                   <span className="font-semibold text-rose-400">{inv.out_of_stock} items</span>
                 </div>
               </div>
@@ -264,16 +264,16 @@ export default function ReportsPage() {
             {/* Laundry & Linen Operations */}
             <Card title="Laundry Operations Summary">
               <div className="space-y-3 text-xs">
-                <div className="flex justify-between py-2 border-b border-slate-800">
-                  <span className="text-slate-400">Total Laundry Batches Processed</span>
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span className="text-slate-500">Total Laundry Batches Processed</span>
                   <span className="font-semibold text-slate-100">{laundry.total} batches</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-slate-800">
-                  <span className="text-slate-400">Currently in Washing / Drying / Folding</span>
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span className="text-slate-500">Currently in Washing / Drying / Folding</span>
                   <span className="font-semibold text-sky-400">{laundry.in_process} active</span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-slate-400">Completed & Returned to Chapels</span>
+                  <span className="text-slate-500">Completed & Returned to Chapels</span>
                   <span className="font-semibold text-emerald-400">{laundry.returned} batches</span>
                 </div>
               </div>
@@ -282,20 +282,20 @@ export default function ReportsPage() {
             {/* Facility Maintenance Analysis */}
             <Card title="Facility Maintenance & Repairs">
               <div className="space-y-3 text-xs">
-                <div className="flex justify-between py-2 border-b border-slate-800">
-                  <span className="text-slate-400">Total Maintenance Tickets</span>
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span className="text-slate-500">Total Maintenance Tickets</span>
                   <span className="font-semibold text-slate-100">{maint.total_tickets} tickets</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-slate-800">
-                  <span className="text-slate-400">Open / Ongoing Issues</span>
-                  <span className="font-semibold text-amber-400">{maint.open_tickets} tickets</span>
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span className="text-slate-500">Open / Ongoing Issues</span>
+                  <span className="font-semibold text-blue-500">{maint.open_tickets} tickets</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-slate-800">
-                  <span className="text-slate-400">Completed Work Orders</span>
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span className="text-slate-500">Completed Work Orders</span>
                   <span className="font-semibold text-emerald-400">{maint.completed_tickets} resolved</span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-slate-400">Cumulative Repair Costs</span>
+                  <span className="text-slate-500">Cumulative Repair Costs</span>
                   <span className="font-bold text-slate-100">{formatCurrency(maint.total_cost)}</span>
                 </div>
               </div>
@@ -304,20 +304,20 @@ export default function ReportsPage() {
             {/* Utility Expenses */}
             <Card title="Utility Consumption & Unpaid Bills">
               <div className="space-y-3 text-xs">
-                <div className="flex justify-between py-2 border-b border-slate-800">
-                  <span className="text-slate-400">Water Consumption</span>
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span className="text-slate-500">Water Consumption</span>
                   <span className="font-semibold text-sky-400">{util.water_consumption?.toFixed(1)} m³ ({formatCurrency(util.water_amount)})</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-slate-800">
-                  <span className="text-slate-400">Electricity Consumption</span>
-                  <span className="font-semibold text-amber-400">{util.electricity_consumption?.toFixed(1)} kWh ({formatCurrency(util.electricity_amount)})</span>
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span className="text-slate-500">Electricity Consumption</span>
+                  <span className="font-semibold text-blue-500">{util.electricity_consumption?.toFixed(1)} kWh ({formatCurrency(util.electricity_amount)})</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-slate-800">
-                  <span className="text-slate-400">Unpaid Water Bills</span>
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span className="text-slate-500">Unpaid Water Bills</span>
                   <span className="font-semibold text-rose-400">{formatCurrency(util.water_unpaid)}</span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-slate-400">Unpaid Electricity Bills</span>
+                  <span className="text-slate-500">Unpaid Electricity Bills</span>
                   <span className="font-semibold text-rose-400">{formatCurrency(util.electricity_unpaid)}</span>
                 </div>
               </div>
@@ -326,24 +326,24 @@ export default function ReportsPage() {
             {/* Chapel & Lamay Wake Operations */}
             <Card title="Chapel & Lamay Wake Operations">
               <div className="space-y-3 text-xs">
-                <div className="flex justify-between py-2 border-b border-slate-800">
-                  <span className="text-slate-400">Total Configured Chapels</span>
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span className="text-slate-500">Total Configured Chapels</span>
                   <span className="font-semibold text-slate-100">{chapels.total || 0} chapels</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-slate-800">
-                  <span className="text-slate-400">Currently Occupied / Active Lamay</span>
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span className="text-slate-500">Currently Occupied / Active Lamay</span>
                   <span className="font-semibold text-rose-400">{chapels.occupied || 0} chapels</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-slate-800">
-                  <span className="text-slate-400">Currently Available Chapels</span>
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span className="text-slate-500">Currently Available Chapels</span>
                   <span className="font-semibold text-sky-400">{chapels.available || 0} chapels</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-slate-800">
-                  <span className="text-slate-400">Cleaning & Turnover in Progress</span>
-                  <span className="font-semibold text-amber-400">{chapels.cleaning || 0} chapels</span>
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span className="text-slate-500">Cleaning & Turnover in Progress</span>
+                  <span className="font-semibold text-blue-500">{chapels.cleaning || 0} chapels</span>
                 </div>
                 <div className="flex justify-between py-2">
-                  <span className="text-slate-400">Active Wake Services Ongoing</span>
+                  <span className="text-slate-500">Active Wake Services Ongoing</span>
                   <span className="font-bold text-rose-300">{chapels.active_lamay || 0} services</span>
                 </div>
               </div>

@@ -67,14 +67,14 @@ export default function AnalyticsPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <div className="p-2 rounded-xl bg-blue-600/10 text-blue-500 border border-[#0866FF]/20">
               <BarChart3 className="w-5 h-5" />
             </div>
             <div>
               <h1 className="text-2xl font-serif font-bold text-slate-100 tracking-wide">
                 Executive Analytics & Intelligence
               </h1>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-slate-500 mt-0.5">
                 Consolidated cross-facility performance, operations metrics, stock movement, and financial utility costs.
               </p>
             </div>
@@ -111,7 +111,7 @@ export default function AnalyticsPage() {
       )}
 
       {/* Navigation Tabs */}
-      <div className="flex items-center gap-1 overflow-x-auto border-b border-slate-800 pb-px">
+      <div className="flex items-center gap-1 overflow-x-auto border-b border-slate-200 pb-px">
         {[
           { id: 'overview', label: 'Overview & Locations', icon: Building2 },
           { id: 'inventory', label: 'Inventory & Movement', icon: Package },
@@ -129,8 +129,8 @@ export default function AnalyticsPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-all border-b-2 whitespace-nowrap ${
                 isActive
-                  ? 'border-amber-400 text-amber-400 bg-slate-900/80 shadow-xs'
-                  : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40'
+                  ? 'border-amber-400 text-blue-500 bg-white/80 shadow-xs'
+                  : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-white/40'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -154,48 +154,48 @@ export default function AnalyticsPage() {
             <div className="space-y-6">
               {/* Primary High-Level Summary Grid */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-md">
-                  <div className="flex items-center justify-between text-slate-400 mb-2">
+                <div className="p-5 rounded-2xl bg-white/90 border border-slate-200 shadow-md">
+                  <div className="flex items-center justify-between text-slate-500 mb-2">
                     <span className="text-xs uppercase font-semibold">Inventory Value</span>
-                    <Package className="w-4 h-4 text-amber-400" />
+                    <Package className="w-4 h-4 text-blue-500" />
                   </div>
                   <div className="text-2xl font-bold text-slate-100">{formatCurrency(inv.valuation || 0)}</div>
-                  <div className="text-xs text-slate-400 mt-1">
+                  <div className="text-xs text-slate-500 mt-1">
                     {inv.total_items || 0} unique items &bull; {inv.total_quantity || 0} units
                   </div>
                 </div>
 
-                <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-md">
-                  <div className="flex items-center justify-between text-slate-400 mb-2">
+                <div className="p-5 rounded-2xl bg-white/90 border border-slate-200 shadow-md">
+                  <div className="flex items-center justify-between text-slate-500 mb-2">
                     <span className="text-xs uppercase font-semibold">Active Laundry</span>
                     <Shirt className="w-4 h-4 text-sky-400" />
                   </div>
                   <div className="text-2xl font-bold text-sky-400">{laundry.in_process || 0} batches</div>
-                  <div className="text-xs text-slate-400 mt-1">
+                  <div className="text-xs text-slate-500 mt-1">
                     {laundry.returned || 0} completed & returned
                   </div>
                 </div>
 
-                <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-md">
-                  <div className="flex items-center justify-between text-slate-400 mb-2">
+                <div className="p-5 rounded-2xl bg-white/90 border border-slate-200 shadow-md">
+                  <div className="flex items-center justify-between text-slate-500 mb-2">
                     <span className="text-xs uppercase font-semibold">Available Caskets</span>
                     <Box className="w-4 h-4 text-emerald-400" />
                   </div>
                   <div className="text-2xl font-bold text-emerald-400">{caskets.available || 0} units</div>
-                  <div className="text-xs text-slate-400 mt-1">
+                  <div className="text-xs text-slate-500 mt-1">
                     {caskets.reserved || 0} reserved &bull; {caskets.sold || 0} sold
                   </div>
                 </div>
 
-                <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-md">
-                  <div className="flex items-center justify-between text-slate-400 mb-2">
+                <div className="p-5 rounded-2xl bg-white/90 border border-slate-200 shadow-md">
+                  <div className="flex items-center justify-between text-slate-500 mb-2">
                     <span className="text-xs uppercase font-semibold">Utility Expenses</span>
-                    <Zap className="w-4 h-4 text-amber-400" />
+                    <Zap className="w-4 h-4 text-blue-500" />
                   </div>
                   <div className="text-2xl font-bold text-slate-100">
                     {formatCurrency((util.water?.expenses || 0) + (util.electricity?.expenses || 0))}
                   </div>
-                  <div className="text-xs text-slate-400 mt-1">
+                  <div className="text-xs text-slate-500 mt-1">
                     Water + Electricity across all chapels
                   </div>
                 </div>
@@ -209,7 +209,7 @@ export default function AnalyticsPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="border-b border-slate-800 bg-slate-950/60 text-slate-400">
+                      <tr className="border-b border-slate-200 bg-[#F0F2F5]/60 text-slate-500">
                         <th className="py-3 px-4 font-semibold">Location</th>
                         <th className="py-3 px-4 font-semibold">Inventory Items</th>
                         <th className="py-3 px-4 font-semibold">Available Stock</th>
@@ -219,14 +219,14 @@ export default function AnalyticsPage() {
                         <th className="py-3 px-4 font-semibold">Total Utility Cost</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60">
+                    <tbody className="divide-y divide-slate-200/60">
                       {locations.map((loc) => (
-                        <tr key={loc.location_id} className="hover:bg-slate-900/40 transition-colors">
-                          <td className="py-3 px-4 font-bold text-slate-200 flex items-center gap-2">
-                            <Building2 className="w-3.5 h-3.5 text-amber-400" />
+                        <tr key={loc.location_id} className="hover:bg-white/40 transition-colors">
+                          <td className="py-3 px-4 font-bold text-slate-700 flex items-center gap-2">
+                            <Building2 className="w-3.5 h-3.5 text-blue-500" />
                             {loc.location_name}
                           </td>
-                          <td className="py-3 px-4 text-slate-300">{loc.inventory_items} items</td>
+                          <td className="py-3 px-4 text-slate-600">{loc.inventory_items} items</td>
                           <td className="py-3 px-4 font-medium text-slate-100">{loc.inventory_qty} units</td>
                           <td className="py-3 px-4 text-sky-400 font-medium">{loc.laundry_count}</td>
                           <td className="py-3 px-4 text-emerald-400 font-medium">{loc.caskets_count}</td>
@@ -253,25 +253,25 @@ export default function AnalyticsPage() {
           {activeTab === 'inventory' && (
             <div className="space-y-6">
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
-                  <span className="text-[11px] text-slate-400 uppercase font-semibold">Total Stock Units</span>
+                <div className="p-4 rounded-xl bg-white/90 border border-slate-200">
+                  <span className="text-[11px] text-slate-500 uppercase font-semibold">Total Stock Units</span>
                   <div className="text-xl font-bold text-slate-100 mt-1">{inv.total_quantity || 0}</div>
-                  <span className="text-[11px] text-slate-400">{inv.total_items} distinct catalogue SKUs</span>
+                  <span className="text-[11px] text-slate-500">{inv.total_items} distinct catalogue SKUs</span>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
-                  <span className="text-[11px] text-slate-400 uppercase font-semibold">Low Stock Items</span>
-                  <div className="text-xl font-bold text-amber-400 mt-1">{inv.low_stock || 0}</div>
-                  <span className="text-[11px] text-slate-400">Below minimum threshold</span>
+                <div className="p-4 rounded-xl bg-white/90 border border-slate-200">
+                  <span className="text-[11px] text-slate-500 uppercase font-semibold">Low Stock Items</span>
+                  <div className="text-xl font-bold text-blue-500 mt-1">{inv.low_stock || 0}</div>
+                  <span className="text-[11px] text-slate-500">Below minimum threshold</span>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
-                  <span className="text-[11px] text-slate-400 uppercase font-semibold">Out of Stock</span>
+                <div className="p-4 rounded-xl bg-white/90 border border-slate-200">
+                  <span className="text-[11px] text-slate-500 uppercase font-semibold">Out of Stock</span>
                   <div className="text-xl font-bold text-rose-400 mt-1">{inv.out_of_stock || 0}</div>
-                  <span className="text-[11px] text-slate-400">Immediate order needed</span>
+                  <span className="text-[11px] text-slate-500">Immediate order needed</span>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
-                  <span className="text-[11px] text-slate-400 uppercase font-semibold">Total Valuation</span>
+                <div className="p-4 rounded-xl bg-white/90 border border-slate-200">
+                  <span className="text-[11px] text-slate-500 uppercase font-semibold">Total Valuation</span>
                   <div className="text-xl font-bold text-emerald-400 mt-1">{formatCurrency(inv.valuation || 0)}</div>
-                  <span className="text-[11px] text-slate-400">Calculated unit purchase cost</span>
+                  <span className="text-[11px] text-slate-500">Calculated unit purchase cost</span>
                 </div>
               </div>
 
@@ -280,43 +280,43 @@ export default function AnalyticsPage() {
                 subtitle="Audit trail of receipts, issues, inter-branch transfers, damages, and operational consumption"
               >
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                  <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
+                  <div className="p-3.5 rounded-xl bg-[#F0F2F5]/60 border border-slate-200">
                     <span className="text-[10px] uppercase font-bold text-emerald-400 flex items-center gap-1">
                       <ArrowDownRight className="w-3.5 h-3.5" /> Stock IN
                     </span>
                     <div className="text-lg font-bold text-slate-100 mt-1">{inv.movement?.stock_in || 0}</div>
                     <span className="text-[10px] text-slate-500">Intake / Purchases</span>
                   </div>
-                  <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
+                  <div className="p-3.5 rounded-xl bg-[#F0F2F5]/60 border border-slate-200">
                     <span className="text-[10px] uppercase font-bold text-sky-400 flex items-center gap-1">
                       <ArrowUpRight className="w-3.5 h-3.5" /> Stock OUT
                     </span>
                     <div className="text-lg font-bold text-slate-100 mt-1">{inv.movement?.stock_out || 0}</div>
                     <span className="text-[10px] text-slate-500">Dispatched / Used</span>
                   </div>
-                  <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
+                  <div className="p-3.5 rounded-xl bg-[#F0F2F5]/60 border border-slate-200">
                     <span className="text-[10px] uppercase font-bold text-indigo-400 flex items-center gap-1">
                       <ArrowLeftRight className="w-3.5 h-3.5" /> Transfers
                     </span>
                     <div className="text-lg font-bold text-slate-100 mt-1">{inv.movement?.transfers || 0}</div>
                     <span className="text-[10px] text-slate-500">Branch to Branch</span>
                   </div>
-                  <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
-                    <span className="text-[10px] uppercase font-bold text-amber-400 flex items-center gap-1">
+                  <div className="p-3.5 rounded-xl bg-[#F0F2F5]/60 border border-slate-200">
+                    <span className="text-[10px] uppercase font-bold text-blue-500 flex items-center gap-1">
                       <Layers className="w-3.5 h-3.5" /> Consumed
                     </span>
                     <div className="text-lg font-bold text-slate-100 mt-1">{inv.movement?.consumed || 0}</div>
                     <span className="text-[10px] text-slate-500">Service usage</span>
                   </div>
-                  <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
+                  <div className="p-3.5 rounded-xl bg-[#F0F2F5]/60 border border-slate-200">
                     <span className="text-[10px] uppercase font-bold text-rose-400 flex items-center gap-1">
                       <AlertTriangle className="w-3.5 h-3.5" /> Damaged
                     </span>
                     <div className="text-lg font-bold text-slate-100 mt-1">{inv.movement?.damaged || 0}</div>
                     <span className="text-[10px] text-slate-500">Written off</span>
                   </div>
-                  <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1">
+                  <div className="p-3.5 rounded-xl bg-[#F0F2F5]/60 border border-slate-200">
+                    <span className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1">
                       <Clock className="w-3.5 h-3.5" /> Lost / Scrap
                     </span>
                     <div className="text-lg font-bold text-slate-100 mt-1">{inv.movement?.lost || 0}</div>
@@ -340,11 +340,11 @@ export default function AnalyticsPage() {
                     { key: 'laba', label: 'Laba (Washing)', count: laundry.stages?.laba, color: 'text-indigo-400' },
                     { key: 'banlaw', label: 'Banlaw (Rinse)', count: laundry.stages?.banlaw, color: 'text-blue-400' },
                     { key: 'sampay', label: 'Sampay (Hanging)', count: laundry.stages?.sampay, color: 'text-teal-400' },
-                    { key: 'pinaw', label: 'Pinaw (Drying)', count: laundry.stages?.pinaw, color: 'text-amber-400' },
+                    { key: 'pinaw', label: 'Pinaw (Drying)', count: laundry.stages?.pinaw, color: 'text-blue-500' },
                     { key: 'tiklop', label: 'Tiklop (Folding)', count: laundry.stages?.tiklop, color: 'text-orange-400' },
                     { key: 'returned', label: 'Returned', count: laundry.stages?.returned, color: 'text-emerald-400' },
                   ].map((stg) => (
-                    <div key={stg.key} className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 text-center">
+                    <div key={stg.key} className="p-3.5 rounded-xl bg-[#F0F2F5]/60 border border-slate-200 text-center">
                       <div className={`text-xs uppercase font-bold ${stg.color}`}>{stg.label}</div>
                       <div className="text-2xl font-bold text-slate-100 mt-1.5">{stg.count || 0}</div>
                       <span className="text-[10px] text-slate-500">records passed</span>
@@ -358,10 +358,10 @@ export default function AnalyticsPage() {
                 <Card title="Laundry Operations by Shift" subtitle="Distribution across working operational shifts">
                   <div className="space-y-3">
                     {laundry.by_shift?.map((sh, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-950/40 border border-slate-800/80">
+                      <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-[#F0F2F5]/40 border border-slate-200/80">
                         <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4 text-amber-400" />
-                          <span className="text-xs font-semibold text-slate-200">{sh.laundry_in_shift || 'Standard Shift'}</span>
+                          <Clock className="w-4 h-4 text-blue-500" />
+                          <span className="text-xs font-semibold text-slate-700">{sh.laundry_in_shift || 'Standard Shift'}</span>
                         </div>
                         <Badge variant="primary" size="sm">{sh.count} Batches</Badge>
                       </div>
@@ -372,10 +372,10 @@ export default function AnalyticsPage() {
                 <Card title="Laundry Volume by Chapel Location" subtitle="Total linen & textile intake per branch">
                   <div className="space-y-3">
                     {laundry.by_location?.map((loc, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-950/40 border border-slate-800/80">
+                      <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-[#F0F2F5]/40 border border-slate-200/80">
                         <div className="flex items-center gap-2">
                           <Building2 className="w-4 h-4 text-sky-400" />
-                          <span className="text-xs font-semibold text-slate-200">{loc.location__name}</span>
+                          <span className="text-xs font-semibold text-slate-700">{loc.location__name}</span>
                         </div>
                         <span className="text-xs font-bold text-slate-100">{loc.total_qty || 0} pcs ({loc.count} batches)</span>
                       </div>
@@ -390,28 +390,28 @@ export default function AnalyticsPage() {
           {activeTab === 'caskets' && (
             <div className="space-y-6">
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold">Total Caskets</span>
+                <div className="p-3.5 rounded-xl bg-white/90 border border-slate-200">
+                  <span className="text-[10px] text-slate-500 uppercase font-semibold">Total Caskets</span>
                   <div className="text-xl font-bold text-slate-100 mt-1">{caskets.total || 0}</div>
                 </div>
-                <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+                <div className="p-3.5 rounded-xl bg-white/90 border border-slate-200">
                   <span className="text-[10px] text-emerald-400 uppercase font-semibold">Available</span>
                   <div className="text-xl font-bold text-emerald-400 mt-1">{caskets.available || 0}</div>
                 </div>
-                <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+                <div className="p-3.5 rounded-xl bg-white/90 border border-slate-200">
                   <span className="text-[10px] text-sky-400 uppercase font-semibold">Reserved</span>
                   <div className="text-xl font-bold text-sky-400 mt-1">{caskets.reserved || 0}</div>
                 </div>
-                <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+                <div className="p-3.5 rounded-xl bg-white/90 border border-slate-200">
                   <span className="text-[10px] text-indigo-400 uppercase font-semibold">Sold</span>
                   <div className="text-xl font-bold text-indigo-400 mt-1">{caskets.sold || 0}</div>
                 </div>
-                <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
-                  <span className="text-[10px] text-amber-400 uppercase font-semibold">For Repair</span>
-                  <div className="text-xl font-bold text-amber-400 mt-1">{caskets.for_repair || 0}</div>
+                <div className="p-3.5 rounded-xl bg-white/90 border border-slate-200">
+                  <span className="text-[10px] text-blue-500 uppercase font-semibold">For Repair</span>
+                  <div className="text-xl font-bold text-blue-500 mt-1">{caskets.for_repair || 0}</div>
                 </div>
-                <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold">Out of Stock</span>
+                <div className="p-3.5 rounded-xl bg-white/90 border border-slate-200">
+                  <span className="text-[10px] text-slate-500 uppercase font-semibold">Out of Stock</span>
                   <div className="text-xl font-bold text-rose-400 mt-1">{caskets.out_of_stock || 0}</div>
                 </div>
               </div>
@@ -419,8 +419,8 @@ export default function AnalyticsPage() {
               <Card title="Casket Showroom Distribution by Category / Material">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {caskets.by_type?.map((t, idx) => (
-                    <div key={idx} className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 flex items-center justify-between">
-                      <span className="text-xs font-semibold text-slate-200">{t.casket_type}</span>
+                    <div key={idx} className="p-3.5 rounded-xl bg-[#F0F2F5]/60 border border-slate-200 flex items-center justify-between">
+                      <span className="text-xs font-semibold text-slate-700">{t.casket_type}</span>
                       <Badge variant="neutral" size="sm">{t.count} Units</Badge>
                     </div>
                   ))}
@@ -433,20 +433,20 @@ export default function AnalyticsPage() {
           {activeTab === 'maintenance' && (
             <div className="space-y-6">
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
-                  <span className="text-[11px] text-slate-400 uppercase font-semibold">Open Tickets</span>
-                  <div className="text-xl font-bold text-amber-400 mt-1">{maint.open || 0}</div>
+                <div className="p-4 rounded-xl bg-white/90 border border-slate-200">
+                  <span className="text-[11px] text-slate-500 uppercase font-semibold">Open Tickets</span>
+                  <div className="text-xl font-bold text-blue-500 mt-1">{maint.open || 0}</div>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
-                  <span className="text-[11px] text-slate-400 uppercase font-semibold">Urgent Incidents</span>
+                <div className="p-4 rounded-xl bg-white/90 border border-slate-200">
+                  <span className="text-[11px] text-slate-500 uppercase font-semibold">Urgent Incidents</span>
                   <div className="text-xl font-bold text-rose-400 mt-1">{maint.urgent || 0}</div>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
-                  <span className="text-[11px] text-slate-400 uppercase font-semibold">Completed Works</span>
+                <div className="p-4 rounded-xl bg-white/90 border border-slate-200">
+                  <span className="text-[11px] text-slate-500 uppercase font-semibold">Completed Works</span>
                   <div className="text-xl font-bold text-emerald-400 mt-1">{maint.completed || 0}</div>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
-                  <span className="text-[11px] text-slate-400 uppercase font-semibold">Total Repair Cost</span>
+                <div className="p-4 rounded-xl bg-white/90 border border-slate-200">
+                  <span className="text-[11px] text-slate-500 uppercase font-semibold">Total Repair Cost</span>
                   <div className="text-xl font-bold text-slate-100 mt-1">{formatCurrency(maint.total_cost || 0)}</div>
                 </div>
               </div>
@@ -455,11 +455,11 @@ export default function AnalyticsPage() {
                 <Card title="Maintenance Costs by Location">
                   <div className="space-y-3">
                     {maint.by_location?.map((m, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-950/40 border border-slate-800/80">
-                        <span className="text-xs font-semibold text-slate-200">{m.location__name}</span>
+                      <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-[#F0F2F5]/40 border border-slate-200/80">
+                        <span className="text-xs font-semibold text-slate-700">{m.location__name}</span>
                         <div className="text-right">
                           <div className="text-xs font-bold text-slate-100">{formatCurrency(m.cost || 0)}</div>
-                          <span className="text-[10px] text-slate-400">{m.count} tickets</span>
+                          <span className="text-[10px] text-slate-500">{m.count} tickets</span>
                         </div>
                       </div>
                     ))}
@@ -469,8 +469,8 @@ export default function AnalyticsPage() {
                 <Card title="Issues by Category">
                   <div className="space-y-3">
                     {maint.by_category?.map((c, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-950/40 border border-slate-800/80">
-                        <span className="text-xs font-semibold text-slate-200">{c.category}</span>
+                      <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-[#F0F2F5]/40 border border-slate-200/80">
+                        <span className="text-xs font-semibold text-slate-700">{c.category}</span>
                         <Badge variant="primary" size="sm">{c.count} Requests</Badge>
                       </div>
                     ))}
@@ -488,17 +488,17 @@ export default function AnalyticsPage() {
                 <Card title="Water Consumption & Billing Analytics" subtitle="Metrics across provider accounts and meters">
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
-                        <span className="text-[10px] uppercase font-semibold text-slate-400">Total Consumption</span>
+                      <div className="p-3.5 rounded-xl bg-[#F0F2F5]/60 border border-slate-200">
+                        <span className="text-[10px] uppercase font-semibold text-slate-500">Total Consumption</span>
                         <div className="text-lg font-bold text-sky-400 mt-1">{util.water?.consumption || 0} m³</div>
                       </div>
-                      <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
-                        <span className="text-[10px] uppercase font-semibold text-slate-400">Total Billed</span>
+                      <div className="p-3.5 rounded-xl bg-[#F0F2F5]/60 border border-slate-200">
+                        <span className="text-[10px] uppercase font-semibold text-slate-500">Total Billed</span>
                         <div className="text-lg font-bold text-slate-100 mt-1">{formatCurrency(util.water?.expenses || 0)}</div>
                       </div>
                     </div>
-                    <div className="p-3 rounded-xl bg-slate-950/40 border border-slate-800 flex items-center justify-between text-xs">
-                      <span className="text-slate-400">Unpaid / Overdue Balance:</span>
+                    <div className="p-3 rounded-xl bg-[#F0F2F5]/40 border border-slate-200 flex items-center justify-between text-xs">
+                      <span className="text-slate-500">Unpaid / Overdue Balance:</span>
                       <span className="font-bold text-rose-400">{formatCurrency(util.water?.unpaid || 0)}</span>
                     </div>
                   </div>
@@ -508,17 +508,17 @@ export default function AnalyticsPage() {
                 <Card title="Electricity Consumption & Billing Analytics" subtitle="Kilowatt-hour usage and payment balances">
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
-                        <span className="text-[10px] uppercase font-semibold text-slate-400">Total Consumption</span>
-                        <div className="text-lg font-bold text-amber-400 mt-1">{util.electricity?.consumption || 0} kWh</div>
+                      <div className="p-3.5 rounded-xl bg-[#F0F2F5]/60 border border-slate-200">
+                        <span className="text-[10px] uppercase font-semibold text-slate-500">Total Consumption</span>
+                        <div className="text-lg font-bold text-blue-500 mt-1">{util.electricity?.consumption || 0} kWh</div>
                       </div>
-                      <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800">
-                        <span className="text-[10px] uppercase font-semibold text-slate-400">Total Billed</span>
+                      <div className="p-3.5 rounded-xl bg-[#F0F2F5]/60 border border-slate-200">
+                        <span className="text-[10px] uppercase font-semibold text-slate-500">Total Billed</span>
                         <div className="text-lg font-bold text-slate-100 mt-1">{formatCurrency(util.electricity?.expenses || 0)}</div>
                       </div>
                     </div>
-                    <div className="p-3 rounded-xl bg-slate-950/40 border border-slate-800 flex items-center justify-between text-xs">
-                      <span className="text-slate-400">Unpaid / Overdue Balance:</span>
+                    <div className="p-3 rounded-xl bg-[#F0F2F5]/40 border border-slate-200 flex items-center justify-between text-xs">
+                      <span className="text-slate-500">Unpaid / Overdue Balance:</span>
                       <span className="font-bold text-rose-400">{formatCurrency(util.electricity?.unpaid || 0)}</span>
                     </div>
                   </div>
@@ -534,9 +534,9 @@ export default function AnalyticsPage() {
                 <Card title="Top Personnel in Laundry Workflows" subtitle="Volume of laundry records logged and encoded">
                   <div className="space-y-2.5">
                     {employees.laundry_handled?.map((emp, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-950/40 border border-slate-800/80">
-                        <span className="text-xs font-semibold text-slate-200">{emp.encoded_by}</span>
-                        <span className="text-xs font-bold text-amber-400">{emp.total_qty || 0} items ({emp.count} batches)</span>
+                      <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-[#F0F2F5]/40 border border-slate-200/80">
+                        <span className="text-xs font-semibold text-slate-700">{emp.encoded_by}</span>
+                        <span className="text-xs font-bold text-blue-500">{emp.total_qty || 0} items ({emp.count} batches)</span>
                       </div>
                     ))}
                   </div>
@@ -545,9 +545,9 @@ export default function AnalyticsPage() {
                 <Card title="Inventory Management Activity by User" subtitle="Transactions posted across all facilities">
                   <div className="space-y-2.5">
                     {employees.inventory_transactions?.map((tx, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-slate-950/40 border border-slate-800/80">
+                      <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-[#F0F2F5]/40 border border-slate-200/80">
                         <div>
-                          <span className="text-xs font-semibold text-slate-200">
+                          <span className="text-xs font-semibold text-slate-700">
                             {tx.user__first_name ? `${tx.user__first_name} ${tx.user__last_name || ''}` : tx.user__username}
                           </span>
                           <span className="block text-[10px] text-slate-500 font-mono">@{tx.user__username}</span>

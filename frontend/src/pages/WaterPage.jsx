@@ -234,7 +234,7 @@ export default function WaterPage() {
           <h1 className="text-2xl font-serif font-bold text-slate-100 tracking-wide">
             Water Utility Monitoring
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Track water consumption (m³), meter readings, bills, and payment accountability across chapels.
           </p>
         </div>
@@ -251,27 +251,27 @@ export default function WaterPage() {
       {/* Summary KPI Cards */}
       {summary && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
-            <span className="text-xs text-slate-400 uppercase font-medium">Total Billed</span>
+          <div className="p-4 rounded-xl bg-white border border-slate-200">
+            <span className="text-xs text-slate-500 uppercase font-medium">Total Billed</span>
             <div className="mt-1 text-xl font-bold text-slate-100">{formatCurrency(summary.total_amount)}</div>
           </div>
-          <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
-            <span className="text-xs text-slate-400 uppercase font-medium">Total Consumption</span>
+          <div className="p-4 rounded-xl bg-white border border-slate-200">
+            <span className="text-xs text-slate-500 uppercase font-medium">Total Consumption</span>
             <div className="mt-1 text-xl font-bold text-sky-400">{summary.total_consumption.toFixed(1)} m³</div>
           </div>
-          <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
-            <span className="text-xs text-slate-400 uppercase font-medium">Unpaid Bills</span>
+          <div className="p-4 rounded-xl bg-white border border-slate-200">
+            <span className="text-xs text-slate-500 uppercase font-medium">Unpaid Bills</span>
             <div className="mt-1 text-xl font-bold text-rose-400">{summary.unpaid_count} bills</div>
           </div>
-          <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
-            <span className="text-xs text-slate-400 uppercase font-medium">Unpaid Amount</span>
+          <div className="p-4 rounded-xl bg-white border border-slate-200">
+            <span className="text-xs text-slate-500 uppercase font-medium">Unpaid Amount</span>
             <div className="mt-1 text-xl font-bold text-rose-400">{formatCurrency(summary.unpaid_amount)}</div>
           </div>
         </div>
       )}
 
       {/* Filter Toolbar */}
-      <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row items-center gap-3">
+      <div className="p-4 rounded-xl bg-white border border-slate-200 flex flex-col md:flex-row items-center gap-3">
         <SearchInput
           value={search}
           onChange={setSearch}
@@ -388,8 +388,8 @@ export default function WaterPage() {
             />
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1.5">Consumption</label>
-              <div className="px-3.5 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm font-bold text-sky-400">
+              <label className="block text-xs font-medium text-slate-600 mb-1.5">Consumption</label>
+              <div className="px-3.5 py-2 rounded-lg bg-[#F0F2F5] border border-slate-200 text-sm font-bold text-sky-400">
                 {calculatedConsumption > 0 ? calculatedConsumption.toFixed(2) : 0} m³
               </div>
             </div>
@@ -453,7 +453,7 @@ export default function WaterPage() {
             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
           />
 
-          <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-800">
+          <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-200">
             <Button
               variant="ghost"
               onClick={() => {

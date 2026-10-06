@@ -616,7 +616,7 @@ export default function CasketsPage() {
                     type="checkbox"
                     checked={sellForm.override_conflict}
                     onChange={(e) => setSellForm({ ...sellForm, override_conflict: e.target.checked })}
-                    className="rounded border-amber-400 text-amber-600 focus:ring-amber-500"
+                    className="rounded border-amber-400 text-amber-600 focus:ring-[#0866FF]"
                   />
                   <span>Master Admin Override: Authorize concurrent chapel service</span>
                 </label>
@@ -817,7 +817,7 @@ export default function CasketsPage() {
                       <Plus className="w-3 h-3" />
                       Add
                     </button>
-                    <span className="text-slate-400 text-xs">&bull;</span>
+                    <span className="text-slate-500 text-xs">&bull;</span>
                     <button
                       type="button"
                       onClick={() => setIsManageChapelsOpen(true)}
@@ -1216,7 +1216,7 @@ export default function CasketsPage() {
                     <p className="text-slate-900 font-medium mt-1">Client: {h.deceased_name} (Contract: {h.contract_number || 'N/A'})</p>
                   )}
                   {h.notes && <p className="text-slate-600 mt-1">{h.notes}</p>}
-                  <p className="text-[11px] text-slate-400 mt-1">Logged by: {h.user_name || 'Staff'}</p>
+                  <p className="text-[11px] text-slate-500 mt-1">Logged by: {h.user_name || 'Staff'}</p>
                 </div>
               ))
             )}
