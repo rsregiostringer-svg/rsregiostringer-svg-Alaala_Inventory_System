@@ -488,6 +488,7 @@ class ChapelViewSet(viewsets.ModelViewSet):
     """
     queryset = Chapel.objects.select_related('location').all().order_by('name')
     serializer_class = ChapelSerializer
+    pagination_class = None
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:

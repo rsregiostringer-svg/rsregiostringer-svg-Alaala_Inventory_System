@@ -154,6 +154,8 @@ class LocationViewSet(viewsets.ModelViewSet):
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = UserSerializer
+    pagination_class = None
     permission_classes = [CanManageUsers]
 
     def get_serializer_class(self):

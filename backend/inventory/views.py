@@ -14,6 +14,7 @@ from core.audit import log_audit
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    pagination_class = None
     permission_classes = [ReadOnlyOrManager]
 
     def perform_create(self, serializer):
