@@ -118,8 +118,7 @@ export default function CasketsPage() {
     code: '',
     description: '',
     capacity: 50,
-    status: 'AVAILABLE',
-    location: ''
+    status: 'AVAILABLE'
   });
   const [quickChapelLoading, setQuickChapelLoading] = useState(false);
   const [quickChapelError, setQuickChapelError] = useState('');
@@ -218,13 +217,16 @@ export default function CasketsPage() {
     try {
       const code = quickChapelForm.code.trim() || quickChapelForm.name.toUpperCase().replace(/\s+/g, '-');
       const payload = { ...quickChapelForm, code };
+      if ('location' in payload && !payload.location) {
+        delete payload.location;
+      }
       const res = await api.post('/chapels/', payload);
       const updated = await api.get('/chapels/');
       const list = updated.results || updated;
       setChapels(list);
       setSellForm((prev) => ({ ...prev, chapel_id: res.id, is_residence: false }));
       setIsQuickChapelOpen(false);
-      setQuickChapelForm({ name: '', code: '', description: '', capacity: 50, status: 'AVAILABLE', location: '' });
+      setQuickChapelForm({ name: '', code: '', description: '', capacity: 50, status: 'AVAILABLE' });
     } catch (err) {
       setQuickChapelError(err.message || 'Failed to create chapel.');
     } finally {
@@ -238,7 +240,11 @@ export default function CasketsPage() {
     setEditingChapelLoading(true);
     setEditingChapelError('');
     try {
-      await api.patch(`/chapels/${editingChapel.id}/`, editingChapel);
+      const payload = { ...editingChapel };
+      if (typeof payload.location === 'string' || !payload.location) {
+        delete payload.location;
+      }
+      await api.patch(`/chapels/${editingChapel.id}/`, payload);
       const updated = await api.get('/chapels/');
       setChapels(updated.results || updated);
       setEditingChapel(null);
@@ -1266,13 +1272,6 @@ export default function CasketsPage() {
           </div>
 
           <Input
-            label="Location / Floor (Optional)"
-            placeholder="e.g. 1st Floor, Main Wing"
-            value={quickChapelForm.location}
-            onChange={(e) => setQuickChapelForm({ ...quickChapelForm, location: e.target.value })}
-          />
-
-          <Input
             label="Description / Special Features (Optional)"
             placeholder="e.g. Private family room"
             value={quickChapelForm.description}
@@ -1446,13 +1445,6 @@ export default function CasketsPage() {
               ]}
               value={editingChapel.status || 'AVAILABLE'}
               onChange={(e) => setEditingChapel({ ...editingChapel, status: e.target.value })}
-            />
-
-            <Input
-              label="Location / Floor"
-              placeholder="e.g. 1st Floor, East Wing"
-              value={editingChapel.location || ''}
-              onChange={(e) => setEditingChapel({ ...editingChapel, location: e.target.value })}
             />
 
             <Input
