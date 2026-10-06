@@ -146,24 +146,6 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-# CORS Configuration
-# FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5173')
-
-# # Parse allowed origins from env or default to local dev & vercel preview patterns
-# _raw_cors = os.getenv('CORS_ALLOWED_ORIGINS', '')
-# if _raw_cors:
-#     CORS_ALLOWED_ORIGINS = [origin.strip() for origin in _raw_cors.split(',') if origin.strip()]
-# elif DEBUG:
-#     CORS_ALLOWED_ORIGINS = [
-#         'http://localhost:5173',
-#         'http://127.0.0.1:5173',
-#         'http://localhost:3000',
-#         'http://127.0.0.1:3000',
-#     ]
-# else:
-#     CORS_ALLOWED_ORIGINS = [FRONTEND_URL]
-
-# CORS_ALLOW_CREDENTIALS = True
 
 # CORS Configuration
 
