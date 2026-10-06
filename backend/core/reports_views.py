@@ -63,6 +63,19 @@ class ReportsSummaryView(APIView):
         caskets_sold = caskets_qs.filter(status='SOLD').aggregate(Sum('quantity'))['quantity__sum'] or 0
         caskets_repair = caskets_qs.filter(status='FOR_REPAIR').aggregate(Sum('quantity'))['quantity__sum'] or 0
 
+        casket_sales_qs = CasketSale.objects.all()
+        # Ensure we only calculate sales for caskets that belong to accessible locations
+        if not user.is_master_admin:
+            casket_sales_qs = casket_sales_qs.filter(casket__location_id__in=accessible_loc_ids)
+        if location_id:
+            casket_sales_qs = casket_sales_qs.filter(casket__location_id=location_id)
+        if start_date:
+            casket_sales_qs = casket_sales_qs.filter(date_sold__gte=start_date)
+        if end_date:
+            casket_sales_qs = casket_sales_qs.filter(date_sold__lte=end_date)
+        
+        caskets_revenue = casket_sales_qs.aggregate(Sum('selling_price'))['selling_price__sum'] or 0
+
         # Maintenance Stats
         maint_qs = apply_loc(Maintenance.objects.all())
         if start_date:
@@ -110,6 +123,7 @@ class ReportsSummaryView(APIView):
                 'reserved': caskets_reserved,
                 'sold': caskets_sold,
                 'for_repair': caskets_repair,
+                'revenue': float(caskets_revenue),
             },
             'chapels': {
                 'total': Chapel.objects.filter(is_active=True).count(),

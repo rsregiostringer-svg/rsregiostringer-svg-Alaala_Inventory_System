@@ -97,6 +97,35 @@ export default function ReportsPage() {
       .catch((err) => alert('Failed to download CSV: ' + err.message));
   };
 
+  const handleExportExcel = () => {
+    const params = new URLSearchParams({
+      module: selectedModule,
+      location: selectedLocation || '',
+      start_date: startDate || '',
+      end_date: endDate || '',
+    });
+
+    const exportUrl = `${api.baseUrl}/reports/export-excel/?${params.toString()}`;
+    const token = localStorage.getItem('alaala_access_token');
+
+    fetch(exportUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `alaala_${selectedModule}_report.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      })
+      .catch((err) => alert('Failed to download Excel: ' + err.message));
+  };
+
   const handlePrint = () => {
     window.print();
   };
@@ -108,6 +137,8 @@ export default function ReportsPage() {
   const maint = summaryData?.maintenance || {};
   const util = summaryData?.utilities || {};
 
+  const showCSV = selectedModule !== 'chapel_occupancy' && selectedModule !== 'lamay';
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -117,15 +148,20 @@ export default function ReportsPage() {
             Operational Reports & Export
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Generate printable executive summaries and download CSV exports for accounting & records.
+            Generate printable executive summaries and download exports for accounting & records.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="secondary" size="sm" onClick={handlePrint} icon={Printer}>
-            Print Report
+            Print
           </Button>
-          <Button variant="primary" size="sm" onClick={handleExportCSV} icon={Download}>
-            Export to CSV
+          {showCSV && (
+            <Button variant="secondary" size="sm" onClick={handleExportCSV} icon={Download}>
+              CSV
+            </Button>
+          )}
+          <Button variant="primary" size="sm" onClick={handleExportExcel} icon={FileSpreadsheet}>
+            Excel
           </Button>
         </div>
       </div>
@@ -319,6 +355,32 @@ export default function ReportsPage() {
                 <div className="flex justify-between py-2">
                   <span className="text-slate-500">Unpaid Electricity Bills</span>
                   <span className="font-semibold text-rose-400">{formatCurrency(util.electricity_unpaid)}</span>
+                </div>
+              </div>
+            </Card>
+
+            {/* Casket Inventory & Sales Performance */}
+            <Card title="Casket Inventory & Sales Performance">
+              <div className="space-y-3 text-xs">
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span className="text-slate-500">Available Caskets</span>
+                  <span className="font-semibold text-indigo-400">{caskets.available || 0} units</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span className="text-slate-500">Reserved for Pending Services</span>
+                  <span className="font-semibold text-sky-400">{caskets.reserved || 0} units</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span className="text-slate-500">Caskets For Repair</span>
+                  <span className="font-semibold text-rose-400">{caskets.for_repair || 0} units</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-slate-200">
+                  <span className="text-slate-500">Total Caskets Sold</span>
+                  <span className="font-semibold text-emerald-400">{caskets.sold || 0} units</span>
+                </div>
+                <div className="flex justify-between py-2">
+                  <span className="text-slate-500">Total Sales Revenue</span>
+                  <span className="font-bold text-slate-100">{formatCurrency(caskets.revenue || 0)}</span>
                 </div>
               </div>
             </Card>

@@ -10,7 +10,7 @@ from core.views import (
     UserViewSet, LocationViewSet, AuditLogViewSet, DashboardStatsView,
     SettingsView, AnalyticsView
 )
-from core.reports_views import ReportsSummaryView, ExportCSVView
+from core.reports_views import ReportsSummaryView, ExportCSVView, ExportExcelView
 from inventory.views import CategoryViewSet, InventoryItemViewSet, InventoryTransactionViewSet
 from laundry.views import LaundryViewSet
 from caskets.views import (
@@ -59,6 +59,7 @@ urlpatterns = [
     # Reports
     path('api/reports/summary/', ReportsSummaryView.as_view(), name='reports-summary'),
     path('api/reports/export-csv/', ExportCSVView.as_view(), name='reports-export-csv'),
+    path('api/reports/export-excel/', ExportExcelView.as_view(), name='reports-export-excel'),
 
     # ViewSet Router
     path('api/', include(router.urls)),

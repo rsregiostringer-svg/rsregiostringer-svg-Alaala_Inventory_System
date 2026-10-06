@@ -37,13 +37,10 @@ export default function LoginPage() {
     }
   };
 
-  const setDemoCredentials = (u, p) => {
-    setUsername(u);
-    setPassword(p);
-  };
+
 
   return (
-    <div 
+    <div
       className="min-h-screen bg-[#F0F2F5] flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: `url("${bgImage}")` }}
     >
@@ -62,10 +59,10 @@ export default function LoginPage() {
             <span className="font-serif font-black text-3xl text-blue-500">Alaala Funeraal Homes</span>
           </div> 
           */}
-          <h1 className="text-2xl font-serif font-bold tracking-wider text-black-100">
+          <h1 className="text-2xl font-serif font-bold tracking-wider text-white">
             ALAALA FUNERAL HOMES
           </h1>
-          <p className="text-xs uppercase tracking-widest text-blue-500/90 font-medium mt-1">
+          <p className="text-xs uppercase tracking-widest text-white/90 font-medium mt-1">
             Operations & Inventory Management System
           </p>
         </div>
@@ -112,35 +109,13 @@ export default function LoginPage() {
             </div>
           </form>
 
-          {/* Quick Demo Access Bar */}
-          <div className="mt-8 pt-6 border-t border-slate-200/80">
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-3">
-              <Sparkles className="w-3.5 h-3.5 text-blue-500" />
-              <span className="font-medium text-slate-600">Quick Demo Logins:</span>
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => setDemoCredentials('admin', 'Admin123!')}
-                className="px-2.5 py-1.5 rounded-lg bg-[#F0F2F5]/60 hover:bg-slate-100 border border-slate-200 text-[11px] font-medium text-slate-600 hover:text-white transition-colors cursor-pointer"
-              >
-                Admin
-              </button>
-              <button
-                type="button"
-                onClick={() => setDemoCredentials('manager', 'Manager123!')}
-                className="px-2.5 py-1.5 rounded-lg bg-[#F0F2F5]/60 hover:bg-slate-100 border border-slate-200 text-[11px] font-medium text-slate-600 hover:text-white transition-colors cursor-pointer"
-              >
-                Manager
-              </button>
-              <button
-                type="button"
-                onClick={() => setDemoCredentials('staff', 'Staff123!')}
-                className="px-2.5 py-1.5 rounded-lg bg-[#F0F2F5]/60 hover:bg-slate-100 border border-slate-200 text-[11px] font-medium text-slate-600 hover:text-white transition-colors cursor-pointer"
-              >
-                Staff
-              </button>
-            </div>
+          <div className="mt-6 text-center">
+            <p className="text-xs text-slate-500">
+              Forgot password?{' '}
+              <span className="text-blue-600 font-medium">
+                Contact administrator
+              </span>
+            </p>
           </div>
         </div>
 

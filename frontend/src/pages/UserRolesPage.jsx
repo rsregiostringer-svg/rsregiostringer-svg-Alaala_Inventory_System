@@ -388,7 +388,7 @@ export default function UserRolesPage() {
         {/* Decorative background elements */}
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-72 h-72 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-72 h-72 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
-        
+
         <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-white/10">
           <div className="flex items-center gap-5">
             <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-blue-400 shadow-inner backdrop-blur-md">
@@ -416,7 +416,7 @@ export default function UserRolesPage() {
               variant="outline"
               size="sm"
               icon={KeyRound}
-              className="rounded-xl bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:text-white transition-all shadow-sm backdrop-blur-sm px-4 py-2"
+              className="rounded-xl bg-white/5 border-white/10 text-white-300 hover:bg-white/10 hover:text-white transition-all shadow-sm backdrop-blur-sm px-4 py-2"
               onClick={() => {
                 setPasswordError('');
                 setPasswordSuccess('');
@@ -430,7 +430,7 @@ export default function UserRolesPage() {
               variant="outline"
               size="sm"
               icon={User}
-              className="rounded-xl bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:text-white transition-all shadow-sm backdrop-blur-sm px-4 py-2"
+              className="rounded-xl bg-white/5 border-white/10 text-white-300 hover:bg-white/10 hover:text-white transition-all shadow-sm backdrop-blur-sm px-4 py-2"
               onClick={handleOpenProfileModal}
             >
               My Profile
