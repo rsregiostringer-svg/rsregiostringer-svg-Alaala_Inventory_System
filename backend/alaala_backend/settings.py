@@ -169,6 +169,7 @@ CORS_ALLOWED_ORIGINS = [
 
     # Production - Vercel
     'https://rsregiostringer-svg-alaala-inventor.vercel.app',
+    'https://alaala-system.vercel.app',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -200,6 +201,7 @@ CSRF_TRUSTED_ORIGINS = [
 
     # Production - Vercel
     'https://rsregiostringer-svg-alaala-inventor.vercel.app',
+    'https://alaala-system.vercel.app',
 ]
 
 # Django Channels Layers Configuration
