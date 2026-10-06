@@ -616,7 +616,7 @@ export default function CasketsPage() {
                     type="checkbox"
                     checked={sellForm.override_conflict}
                     onChange={(e) => setSellForm({ ...sellForm, override_conflict: e.target.checked })}
-                    className="rounded border-amber-400 text-amber-600 focus:ring-[#0866FF]"
+                    className="rounded border-amber-400 text-[#0866FF] focus:ring-[#0866FF]"
                   />
                   <span>Master Admin Override: Authorize concurrent chapel service</span>
                 </label>

@@ -516,7 +516,7 @@ export default function LaundryPage() {
         {/* Active Range Banner */}
         <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-200/80">
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-[#0866FF]/15 border border-[#0866FF]/30 text-amber-300 flex items-center gap-1.5">
+            <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-[#0866FF]/15 border border-[#0866FF]/30 text-[#0866FF] flex items-center gap-1.5">
               <CalendarRange className="w-3.5 h-3.5 text-blue-500" />
               Active Range: {rangeLabel}
             </span>

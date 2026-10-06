@@ -246,7 +246,7 @@ export default function LaundryDetailPage() {
             <span>&bull;</span>
             <span>Quantity: <strong className="text-blue-500 font-bold">{record.quantity} pcs</strong></span>
             <span>&bull;</span>
-            <span>Origin: <strong className="text-amber-300 font-medium">{record.location_details?.name || 'NO CODE'}</strong></span>
+            <span>Origin: <strong className="text-[#0866FF] font-medium">{record.location_details?.name || 'NO CODE'}</strong></span>
           </p>
         </div>
 

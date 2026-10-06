@@ -540,7 +540,7 @@ export default function UserRolesPage() {
                 <td className="py-3 px-4 text-slate-500">
                   No — Master Admin Only
                 </td>
-                <td className="py-3 px-4 text-amber-300">
+                <td className="py-3 px-4 text-[#0866FF]">
                   Staff & Managers
                 </td>
                 <td className="py-3 px-4 text-slate-500">
@@ -715,7 +715,7 @@ export default function UserRolesPage() {
                             <div className="font-semibold text-slate-700 flex items-center gap-1.5">
                               <span>{u.first_name ? `${u.first_name} ${u.last_name || ''}` : u.username}</span>
                               {isCurrent && (
-                                <span className="px-1.5 py-0.5 rounded text-[10px] bg-blue-600/20 text-amber-300 border border-[#0866FF]/30">
+                                <span className="px-1.5 py-0.5 rounded text-[10px] bg-blue-600/20 text-[#0866FF] border border-[#0866FF]/30">
                                   You
                                 </span>
                               )}
@@ -905,7 +905,7 @@ export default function UserRolesPage() {
             </div>
           )}
 
-          <div className="p-3 rounded-xl bg-blue-600/10 border border-[#0866FF]/20 text-xs text-amber-300 flex items-center gap-2.5">
+          <div className="p-3 rounded-xl bg-blue-600/10 border border-[#0866FF]/20 text-xs text-[#0866FF] flex items-center gap-2.5">
             <ShieldCheck className="w-4 h-4 shrink-0 text-blue-500" />
             <span>You are editing your active Master Admin account. Keep your login username memorable.</span>
           </div>
