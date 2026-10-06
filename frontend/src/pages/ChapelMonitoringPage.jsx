@@ -97,6 +97,21 @@ export default function ChapelMonitoringPage() {
   const [deletingLamay, setDeletingLamay] = useState(null);
   const [deleteLamayLoading, setDeleteLamayLoading] = useState(false);
 
+  // Add Current Lamay State
+  const [isAddLamayModalOpen, setIsAddLamayModalOpen] = useState(false);
+  const [addLamayForm, setAddLamayForm] = useState({
+    buyer_first_name: '', buyer_last_name: '', buyer_contact_number: '', buyer_address: '', buyer_relationship: '',
+    deceased_first_name: '', deceased_last_name: '', deceased_date_of_death: '', deceased_age: '', deceased_sex: 'Male',
+    service_type: 'Direct', discount: 0,
+    chapel: '',
+    lamay_start_date: new Date().toISOString().split('T')[0],
+    lamay_start_time: '18:00',
+    expected_end_date: '',
+    expected_end_time: '18:00'
+  });
+  const [addLamayLoading, setAddLamayLoading] = useState(false);
+  const [addLamayError, setAddLamayError] = useState('');
+
   const { user, isMasterAdmin } = useAuth();
   const { pollTick, subscribe } = useRealtime();
   const navigate = useNavigate();
@@ -335,6 +350,59 @@ export default function ChapelMonitoringPage() {
     }
   };
 
+  // Add Current Lamay Handler
+  const handleAddLamaySubmit = async (e) => {
+    e.preventDefault();
+    setAddLamayLoading(true);
+    setAddLamayError('');
+
+    try {
+      await api.post('/lamay/create_direct/', {
+        buyer: {
+          first_name: addLamayForm.buyer_first_name,
+          last_name: addLamayForm.buyer_last_name,
+          contact_number: addLamayForm.buyer_contact_number,
+          address: addLamayForm.buyer_address,
+          relationship_to_deceased: addLamayForm.buyer_relationship,
+        },
+        deceased: {
+          first_name: addLamayForm.deceased_first_name,
+          last_name: addLamayForm.deceased_last_name,
+          date_of_death: addLamayForm.deceased_date_of_death || null,
+          age: addLamayForm.deceased_age || null,
+          sex: addLamayForm.deceased_sex,
+        },
+        service: {
+          chapel: addLamayForm.chapel,
+          wake_location: 'ALAALA',
+          status: 'ACTIVE',
+          lamay_start_date: addLamayForm.lamay_start_date,
+          lamay_start_time: addLamayForm.lamay_start_time,
+          expected_end_date: addLamayForm.expected_end_date,
+          expected_end_time: addLamayForm.expected_end_time,
+          service_type: addLamayForm.service_type,
+          discount: addLamayForm.discount,
+        }
+      });
+      setIsAddLamayModalOpen(false);
+      setAddLamayForm({
+        buyer_first_name: '', buyer_last_name: '', buyer_contact_number: '', buyer_address: '', buyer_relationship: '',
+        deceased_first_name: '', deceased_last_name: '', deceased_date_of_death: '', deceased_age: '', deceased_sex: 'Male',
+        service_type: 'Direct', discount: 0,
+        chapel: '',
+        lamay_start_date: new Date().toISOString().split('T')[0],
+        lamay_start_time: '18:00',
+        expected_end_date: '',
+        expected_end_time: '18:00'
+      });
+      loadChapelData(true);
+    } catch (err) {
+      setAddLamayError(err.message || 'Failed to add lamay.');
+    } finally {
+      setAddLamayLoading(false);
+    }
+  };
+
   // Filter chapels
   const filteredChapels = chapels.filter((ch) => {
     const matchesStatus = filterStatus === 'ALL' || ch.status === filterStatus;
@@ -369,6 +437,15 @@ export default function ChapelMonitoringPage() {
             icon={RefreshCw}
           >
             Refresh
+          </Button>
+
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsAddLamayModalOpen(true)}
+            icon={Plus}
+          >
+            Add Current Lamay
           </Button>
 
           {isMasterAdmin && (
@@ -495,6 +572,16 @@ export default function ChapelMonitoringPage() {
                           {lamay.buyer_details?.contact_number ? ` · ${lamay.buyer_details.contact_number}` : ''}
                         </span>
                       </div>
+
+                      {lamay.service_type && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-slate-500">Service:</span>
+                          <span className="font-medium text-slate-900">
+                            {lamay.service_type}
+                            {lamay.discount > 0 && ` (Discount: ₱${lamay.discount})`}
+                          </span>
+                        </div>
+                      )}
 
                       <div className="flex items-center justify-between">
                         <span className="text-slate-500">Lamay Dates:</span>
@@ -684,6 +771,16 @@ export default function ChapelMonitoringPage() {
                             <span className="text-[10px] text-slate-500 block">Buyer:</span>
                             <p className="text-slate-800 font-medium truncate">{currentLamay.buyer_name} ({currentLamay.buyer_contact})</p>
                           </div>
+
+                          {currentLamay.service_type && (
+                            <div>
+                              <span className="text-[10px] text-slate-500 block">Service:</span>
+                              <p className="text-slate-800 font-medium truncate">
+                                {currentLamay.service_type}
+                                {currentLamay.discount > 0 && ` (Discount: ₱${currentLamay.discount})`}
+                              </p>
+                            </div>
+                          )}
 
                           <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200 space-y-1 font-mono text-xs">
                             <div className="flex justify-between">
@@ -1264,6 +1361,178 @@ export default function ChapelMonitoringPage() {
         variant="danger"
         loading={deleteLamayLoading}
       />
+
+      {/* ADD CURRENT LAMAY MODAL */}
+      <Modal
+        isOpen={isAddLamayModalOpen}
+        onClose={() => setIsAddLamayModalOpen(false)}
+        title="Add Current Lamay"
+        subtitle="Manually add a lamay record and assign a chapel."
+        maxWidth="max-w-4xl"
+      >
+        <form onSubmit={handleAddLamaySubmit} className="space-y-6">
+          {addLamayError && (
+            <div className="p-3 rounded-lg bg-red-50 text-red-700 text-sm flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{addLamayError}</span>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Buyer Details */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-bold text-slate-800 border-b pb-2">Buyer / Family Info</h3>
+              <Input
+                label="First Name *"
+                value={addLamayForm.buyer_first_name}
+                onChange={(e) => setAddLamayForm({ ...addLamayForm, buyer_first_name: e.target.value })}
+                required
+              />
+              <Input
+                label="Last Name *"
+                value={addLamayForm.buyer_last_name}
+                onChange={(e) => setAddLamayForm({ ...addLamayForm, buyer_last_name: e.target.value })}
+                required
+              />
+              <Input
+                label="Contact Number *"
+                placeholder="09..."
+                value={addLamayForm.buyer_contact_number}
+                onChange={(e) => setAddLamayForm({ ...addLamayForm, buyer_contact_number: e.target.value })}
+                required
+              />
+              <Input
+                label="Address"
+                value={addLamayForm.buyer_address}
+                onChange={(e) => setAddLamayForm({ ...addLamayForm, buyer_address: e.target.value })}
+              />
+            </div>
+
+            {/* Deceased Details */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-bold text-slate-800 border-b pb-2">Deceased Info</h3>
+              <Input
+                label="First Name *"
+                value={addLamayForm.deceased_first_name}
+                onChange={(e) => setAddLamayForm({ ...addLamayForm, deceased_first_name: e.target.value })}
+                required
+              />
+              <Input
+                label="Last Name *"
+                value={addLamayForm.deceased_last_name}
+                onChange={(e) => setAddLamayForm({ ...addLamayForm, deceased_last_name: e.target.value })}
+                required
+              />
+              <Input
+                label="Date of Death"
+                type="date"
+                value={addLamayForm.deceased_date_of_death}
+                onChange={(e) => setAddLamayForm({ ...addLamayForm, deceased_date_of_death: e.target.value })}
+              />
+              <Select
+                label="Sex"
+                value={addLamayForm.deceased_sex}
+                onChange={(e) => setAddLamayForm({ ...addLamayForm, deceased_sex: e.target.value })}
+                options={[
+                  { value: 'Male', label: 'Male' },
+                  { value: 'Female', label: 'Female' }
+                ]}
+              />
+            </div>
+
+            {/* Service & Chapel */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-bold text-slate-800 border-b pb-2">Service Details</h3>
+              <Select
+                label="Service Type"
+                value={addLamayForm.service_type}
+                onChange={(e) => setAddLamayForm({ ...addLamayForm, service_type: e.target.value })}
+                options={[
+                  { value: 'Direct', label: 'Direct' },
+                  { value: 'Indirect', label: 'Indirect' }
+                ]}
+              />
+              <Input
+                label="Discount"
+                type="number"
+                step="0.01"
+                min="0"
+                value={addLamayForm.discount}
+                onChange={(e) => setAddLamayForm({ ...addLamayForm, discount: e.target.value })}
+              />
+              <Select
+                label="Chapel *"
+                value={addLamayForm.chapel}
+                onChange={(e) => setAddLamayForm({ ...addLamayForm, chapel: e.target.value })}
+                options={[
+                  { value: '', label: '-- Select Chapel --' },
+                  ...chapels.filter(c => c.status === 'AVAILABLE').map(c => ({
+                    value: c.id,
+                    label: c.name
+                  }))
+                ]}
+                required
+              />
+            </div>
+
+            {/* Schedule Details */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-bold text-slate-800 border-b pb-2">Schedule</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  label="Start Date *"
+                  type="date"
+                  value={addLamayForm.lamay_start_date}
+                  onChange={(e) => setAddLamayForm({ ...addLamayForm, lamay_start_date: e.target.value })}
+                  required
+                />
+                <Input
+                  label="Start Time"
+                  type="time"
+                  value={addLamayForm.lamay_start_time}
+                  onChange={(e) => setAddLamayForm({ ...addLamayForm, lamay_start_time: e.target.value })}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  label="Expected End Date *"
+                  type="date"
+                  value={addLamayForm.expected_end_date}
+                  onChange={(e) => setAddLamayForm({ ...addLamayForm, expected_end_date: e.target.value })}
+                  required
+                />
+                <Input
+                  label="Expected End Time *"
+                  type="time"
+                  value={addLamayForm.expected_end_time}
+                  onChange={(e) => setAddLamayForm({ ...addLamayForm, expected_end_time: e.target.value })}
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setIsAddLamayModalOpen(false)}
+              disabled={addLamayLoading}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              loading={addLamayLoading}
+              icon={CheckCircle2}
+            >
+              Add Lamay
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
     </div>
   );
 }

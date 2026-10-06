@@ -106,8 +106,9 @@ class LamayRecordSummarySerializer(serializers.ModelSerializer):
             'is_residence', 'residence_address',
             'deceased', 'deceased_name', 'buyer', 'buyer_name', 'buyer_contact',
             'casket', 'casket_id', 'casket_model', 'funeral_case_id',
-            'lamay_start_date', 'lamay_start_time', 'expected_end_date',
-            'expected_burial_date', 'burial_time', 'status', 'status_display', 'notes'
+            'lamay_start_date', 'lamay_start_time', 'expected_end_date', 'expected_end_time',
+            'expected_burial_date', 'burial_time', 'status', 'status_display', 'notes',
+            'service_type', 'discount'
         ]
 
     def get_chapel_name(self, obj):
@@ -166,8 +167,9 @@ class LamayRecordSerializer(serializers.ModelSerializer):
             'is_residence', 'residence_address',
             'deceased', 'deceased_details', 'buyer', 'buyer_details',
             'casket', 'casket_details', 'casket_sale', 'funeral_case_id',
-            'lamay_start_date', 'lamay_start_time', 'expected_end_date',
+            'lamay_start_date', 'lamay_start_time', 'expected_end_date', 'expected_end_time',
             'expected_burial_date', 'burial_time', 'assigned_staff',
+            'service_type', 'discount',
             'status', 'status_display',
             'notes', 'encoded_by', 'encoded_by_name', 'created_at', 'updated_at'
         ]

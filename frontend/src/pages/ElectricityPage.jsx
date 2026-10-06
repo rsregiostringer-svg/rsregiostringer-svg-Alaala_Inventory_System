@@ -352,7 +352,7 @@ export default function ElectricityPage() {
 
           <div className="grid grid-cols-2 gap-3">
             <Input
-              label="Meter Number"
+              label="Electric Meter Number"
               required
               value={formData.meter_number}
               onChange={(e) => setFormData({ ...formData, meter_number: e.target.value })}
@@ -370,7 +370,7 @@ export default function ElectricityPage() {
 
           <div className="grid grid-cols-3 gap-3">
             <Input
-              label="Previous Reading"
+              label="Previous reading"
               type="number"
               step="0.01"
               required
@@ -379,7 +379,7 @@ export default function ElectricityPage() {
             />
 
             <Input
-              label="Current Reading"
+              label="Current reading"
               type="number"
               step="0.01"
               required
@@ -388,7 +388,7 @@ export default function ElectricityPage() {
             />
 
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1.5">Consumption</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1.5">actual consumption</label>
               <div className="px-3.5 py-2 rounded-lg bg-[#F0F2F5] border border-slate-200 text-sm font-bold text-blue-500">
                 {calculatedConsumption > 0 ? calculatedConsumption.toFixed(2) : 0} kWh
               </div>
@@ -422,7 +422,7 @@ export default function ElectricityPage() {
           <div className="grid grid-cols-2 gap-3">
             <Input
               type="date"
-              label="Bill Date"
+              label="Date of Meter Reading"
               required
               value={formData.bill_date}
               onChange={(e) => setFormData({ ...formData, bill_date: e.target.value })}
@@ -430,7 +430,7 @@ export default function ElectricityPage() {
 
             <Input
               type="date"
-              label="Due Date"
+              label="Date of Next Reading"
               required
               value={formData.due_date}
               onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}

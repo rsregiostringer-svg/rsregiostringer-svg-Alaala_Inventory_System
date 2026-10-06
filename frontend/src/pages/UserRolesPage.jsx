@@ -384,20 +384,20 @@ export default function UserRolesPage() {
   return (
     <div className="space-y-6">
       {/* Top Banner & Title: Section 29 Spec */}
-      <div className="p-6 rounded-2xl bg-gradient-to-r from-white via-slate-900/95 to-[#F0F2F5] border border-slate-200 shadow-xl space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200/80">
+      <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border--100">
           <div className="flex items-center gap-3.5">
-            <div className="p-3 rounded-xl bg-blue-600/10 text-blue-500 border border-[#0866FF]/20 shadow-xs">
+            <div className="p-3 rounded-full bg-slate-50 text-blue-600 border border-slate-100">
               <ShieldCheck className="w-7 h-7" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-base font-bold text-slate-100 uppercase tracking-wider">
+                <h1 className="text-base font-bold text-red-800 uppercase tracking-wider">
                   ACCESS CONTROL, ACCOUNT SECURITY & ADMIN AUTHORITY MATRIX
                 </h1>
-                <Badge variant="primary" size="sm">
+                <span className="px-3 py-1 text-[11px] font-bold text-slate-700 bg-white border border-slate-300 rounded-full shadow-sm">
                   MASTER ADMIN / VERIFIED
-                </Badge>
+                </span>
               </div>
               <p className="text-xs text-slate-500 mt-1">
                 Role authorization rules governing user account creation, profile edits, deletions, and administrative credentials.
@@ -411,6 +411,7 @@ export default function UserRolesPage() {
               variant="outline"
               size="sm"
               icon={KeyRound}
+              className="rounded-full bg-white border-slate-300 text-slate-700 hover:bg-slate-50 shadow-sm"
               onClick={() => {
                 setPasswordError('');
                 setPasswordSuccess('');
@@ -424,6 +425,7 @@ export default function UserRolesPage() {
               variant="secondary"
               size="sm"
               icon={User}
+              className="rounded-full bg-white border-slate-300 text-slate-700 hover:bg-slate-50 shadow-sm"
               onClick={handleOpenProfileModal}
             >
               MY PROFILE
@@ -433,6 +435,7 @@ export default function UserRolesPage() {
               variant="primary"
               size="sm"
               icon={UserPlus}
+              className="rounded-full shadow-sm"
               onClick={handleOpenCreateUser}
             >
               CREATE NEW USER
@@ -443,55 +446,57 @@ export default function UserRolesPage() {
         {/* 4 Authority Summary Cards: Section 29 Spec */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           {/* Card 1: ACTIVE SESSION */}
-          <div className="p-4 rounded-xl bg-[#F0F2F5]/70 border border-slate-200 flex flex-col justify-between shadow-xs">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between shadow-xs">
             <div>
               <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
                 ACTIVE SESSION
               </span>
-              <div className="text-sm font-bold text-slate-100 mt-1">
+              <div className="text-sm font-bold text-slate-800 mt-1 capitalize">
                 {currentUser?.first_name
                   ? `${currentUser.first_name} ${currentUser.last_name || ''}`.trim()
                   : currentUser?.username || 'Master Administrator'}
               </div>
-              <div className="text-xs text-blue-500 font-mono mt-0.5">@{currentUser?.username}</div>
+              <div className="text-xs text-blue-600 font-mono mt-0.5">@{currentUser?.username}</div>
             </div>
-            <div className="mt-3 pt-2.5 border-t border-slate-200/80 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Security Level:</span>
-              <span className="font-bold text-emerald-400">MASTER ADMIN / VERIFIED</span>
+            <div className="mt-3 pt-2.5 border-t border-slate-200 flex items-center justify-between">
+              <span className="text-[11px] text-slate-500">Security Level:</span>
+              <span className="px-2.5 py-1 text-[10px] font-bold text-slate-700 bg-white border border-slate-300 rounded-full shadow-sm">
+                MASTER ADMIN / VERIFIED
+              </span>
             </div>
           </div>
 
           {/* Card 2: CREATE USERS & ADMINS */}
-          <div className="p-4 rounded-xl bg-[#F0F2F5]/70 border border-slate-200 shadow-xs">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 shadow-xs">
             <div className="flex items-center justify-between text-slate-500 mb-1">
               <span className="text-[10px] uppercase font-bold tracking-wider">CREATE USERS & ADMINS</span>
-              <UserPlus className="w-4 h-4 text-emerald-400" />
+              <UserPlus className="w-4 h-4 text-emerald-500" />
             </div>
-            <div className="text-xs font-bold text-slate-100 mt-1">Full Provisioning Authority</div>
+            <div className="text-xs font-bold text-slate-800 mt-1">Full Provisioning Authority</div>
             <p className="text-[11px] text-slate-500 mt-1">
               Only Master Admin can create: Master Admin, Admin / Simple Admin, Manager, and Staff.
             </p>
           </div>
 
           {/* Card 3: EDIT & UPDATE PROFILES */}
-          <div className="p-4 rounded-xl bg-[#F0F2F5]/70 border border-slate-200 shadow-xs">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 shadow-xs">
             <div className="flex items-center justify-between text-slate-500 mb-1">
               <span className="text-[10px] uppercase font-bold tracking-wider">EDIT & UPDATE PROFILES</span>
               <Edit3 className="w-4 h-4 text-blue-500" />
             </div>
-            <div className="text-xs font-bold text-slate-100 mt-1">All Accounts & Self-Profile</div>
+            <div className="text-xs font-bold text-slate-800 mt-1">All Accounts & Self-Profile</div>
             <p className="text-[11px] text-slate-500 mt-1">
               Modify account details, contact information, branch assignments, roles, permissions, and shifts.
             </p>
           </div>
 
           {/* Card 4: DELETE ACCOUNTS & RECORDS */}
-          <div className="p-4 rounded-xl bg-[#F0F2F5]/70 border border-slate-200 shadow-xs">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 shadow-xs">
             <div className="flex items-center justify-between text-slate-500 mb-1">
               <span className="text-[10px] uppercase font-bold tracking-wider">DELETE ACCOUNTS & RECORDS</span>
-              <Trash2 className="w-4 h-4 text-rose-400" />
+              <Trash2 className="w-4 h-4 text-rose-500" />
             </div>
-            <div className="text-xs font-bold text-slate-100 mt-1">Permanent Deletions Only</div>
+            <div className="text-xs font-bold text-slate-800 mt-1">Permanent Deletions Only</div>
             <p className="text-[11px] text-slate-500 mt-1">
               Restricted for normal users. Only Master Admin can perform permanent deletions with warnings.
             </p>
@@ -601,11 +606,10 @@ export default function UserRolesPage() {
       {/* Global Feedback Banner */}
       {feedback && (
         <div
-          className={`p-4 rounded-xl flex items-center justify-between ${
-            feedback.type === 'success'
-              ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-300'
-              : 'bg-rose-500/10 border border-rose-500/30 text-rose-300'
-          }`}
+          className={`p-4 rounded-xl flex items-center justify-between ${feedback.type === 'success'
+            ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-300'
+            : 'bg-rose-500/10 border border-rose-500/30 text-rose-300'
+            }`}
         >
           <div className="flex items-center gap-3 text-xs">
             {feedback.type === 'success' ? (

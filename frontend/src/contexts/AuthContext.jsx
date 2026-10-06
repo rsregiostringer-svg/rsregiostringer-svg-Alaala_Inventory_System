@@ -72,8 +72,8 @@ export function AuthProvider({ children }) {
   const isManager = isMasterAdmin || user?.role === 'ADMIN' || user?.role === 'MANAGER';
   const isStaff = !!user;
 
-  const canAccessWater = isMasterAdmin || isSimpleAdmin || Boolean(user?.custom_permissions?.water);
-  const canAccessElectricity = isMasterAdmin || isSimpleAdmin || Boolean(user?.custom_permissions?.electricity);
+  const canAccessWater = isMasterAdmin || isSimpleAdmin || isStaffRole || Boolean(user?.custom_permissions?.water);
+  const canAccessElectricity = isMasterAdmin || isSimpleAdmin || isStaffRole || Boolean(user?.custom_permissions?.electricity);
   const canViewReports = isMasterAdmin || Boolean(user?.custom_permissions?.reports);
 
   return (

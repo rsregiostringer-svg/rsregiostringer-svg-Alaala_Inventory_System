@@ -274,9 +274,14 @@ class LamayRecord(models.Model):
     lamay_start_date = models.DateField()
     lamay_start_time = models.TimeField(null=True, blank=True)
     expected_end_date = models.DateField(null=True, blank=True)
+    expected_end_time = models.TimeField(null=True, blank=True)
     expected_burial_date = models.DateField(null=True, blank=True)
     burial_time = models.TimeField(null=True, blank=True)
     assigned_staff = models.CharField(max_length=300, blank=True, default='')
+    
+    service_type = models.CharField(max_length=50, blank=True, default='') # Direct or Indirect
+    discount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+
     status = models.CharField(max_length=30, choices=Status.choices, default=Status.ACTIVE)
     notes = models.TextField(blank=True, default='')
     encoded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='encoded_lamays')

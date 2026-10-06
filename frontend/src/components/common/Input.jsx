@@ -13,10 +13,19 @@ export default function Input({
   ...props
 }) {
   const handleChange = (e) => {
-    if (props.type === 'number' && e.target.value) {
-      let val = e.target.value;
+    let val = e.target.value;
+    if (props.type === 'number' && val) {
       if (val.length > 1 && val.startsWith('0') && val[1] !== '.') {
-        e.target.value = val.replace(/^0+/, '');
+        val = val.replace(/^0+/, '');
+        e.target.value = val;
+      }
+    } else if ((!props.type || props.type === 'text') && val.length > 0) {
+      const name = (props.name || id || '').toLowerCase();
+      if (!name.includes('username') && !name.includes('email') && !name.includes('password')) {
+        const capitalized = val.charAt(0).toUpperCase() + val.slice(1);
+        if (val !== capitalized) {
+          e.target.value = capitalized;
+        }
       }
     }
     if (onChange) onChange(e);

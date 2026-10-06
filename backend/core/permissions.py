@@ -91,23 +91,15 @@ class CanManageMaintenance(permissions.BasePermission):
 
 
 class CanAccessWater(permissions.BasePermission):
-    """Master Admin, Simple Admin, or Staff with explicit water permission."""
+    """Master Admin, Simple Admin, or Staff"""
     def has_permission(self, request, view):
-        if not request.user or not request.user.is_authenticated:
-            return False
-        if request.user.is_master_admin or request.user.is_simple_admin:
-            return True
-        return request.user.has_custom_perm('water')
+        return bool(request.user and request.user.is_authenticated)
 
 
 class CanAccessElectricity(permissions.BasePermission):
-    """Master Admin, Simple Admin, or Staff with explicit electricity permission."""
+    """Master Admin, Simple Admin, or Staff"""
     def has_permission(self, request, view):
-        if not request.user or not request.user.is_authenticated:
-            return False
-        if request.user.is_master_admin or request.user.is_simple_admin:
-            return True
-        return request.user.has_custom_perm('electricity')
+        return bool(request.user and request.user.is_authenticated)
 
 
 # Legacy aliases for backward compatibility

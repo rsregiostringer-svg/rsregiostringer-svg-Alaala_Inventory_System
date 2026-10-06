@@ -495,6 +495,37 @@ class ChapelViewSet(viewsets.ModelViewSet):
             return [IsMasterAdmin()]
         return [permissions.IsAuthenticated()]
 
+    def list(self, request, *args, **kwargs):
+        from django.utils import timezone
+        import datetime
+        from caskets.websockets import broadcast_event
+
+        # Auto-expire completed lamays
+        now = timezone.localtime()
+        active_lamays = LamayRecord.objects.filter(status=LamayRecord.Status.ACTIVE)
+        for lamay in active_lamays:
+            if lamay.expected_end_date and lamay.expected_end_time:
+                # Use make_aware but handle timezones carefully
+                dt_naive = datetime.datetime.combine(lamay.expected_end_date, lamay.expected_end_time)
+                if timezone.is_aware(now):
+                    dt = timezone.make_aware(dt_naive)
+                else:
+                    dt = dt_naive
+
+                if now >= dt:
+                    lamay.status = LamayRecord.Status.COMPLETED
+                    lamay.save()
+                    if lamay.chapel:
+                        chapel = lamay.chapel
+                        chapel.status = Chapel.Status.AVAILABLE
+                        chapel.save()
+                        broadcast_event('lamay.updated', {'lamay_id': lamay.lamay_id, 'status': lamay.status})
+                        broadcast_event('chapel.updated', {'id': chapel.id, 'name': chapel.name, 'status': chapel.status})
+
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     def perform_create(self, serializer):
         chapel = serializer.save()
         log_audit(self.request, 'CREATE', 'CHAPELS', chapel.id, chapel.name, f"Created chapel '{chapel.name}' ({chapel.code})")
@@ -879,9 +910,12 @@ class LamayRecordViewSet(viewsets.ModelViewSet):
             lamay_start_date=service_data.get('lamay_start_date') or timezone.now().date(),
             lamay_start_time=service_data.get('lamay_start_time') or None,
             expected_end_date=service_data.get('expected_end_date') or None,
+            expected_end_time=service_data.get('expected_end_time') or None,
             expected_burial_date=service_data.get('expected_burial_date') or None,
             burial_time=service_data.get('burial_time') or None,
             assigned_staff=(service_data.get('assigned_staff') or '').strip(),
+            service_type=(service_data.get('service_type') or '').strip(),
+            discount=service_data.get('discount') or 0.00,
             status=record_status,
             notes=(data.get('notes') or '').strip(),
             encoded_by=request.user,

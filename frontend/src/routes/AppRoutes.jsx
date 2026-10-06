@@ -51,13 +51,7 @@ export default function AppRoutes() {
         <Route
           path="water"
           element={
-            <ProtectedRoute
-              checkPermission={(u) =>
-                u?.role === 'MASTER_ADMIN' ||
-                u?.role === 'ADMIN' ||
-                Boolean(u?.custom_permissions?.water)
-              }
-            >
+            <ProtectedRoute>
               <WaterPage />
             </ProtectedRoute>
           }
@@ -65,13 +59,7 @@ export default function AppRoutes() {
         <Route
           path="electricity"
           element={
-            <ProtectedRoute
-              checkPermission={(u) =>
-                u?.role === 'MASTER_ADMIN' ||
-                u?.role === 'ADMIN' ||
-                Boolean(u?.custom_permissions?.electricity)
-              }
-            >
+            <ProtectedRoute>
               <ElectricityPage />
             </ProtectedRoute>
           }
