@@ -9,8 +9,19 @@ export default function Input({
   className = '',
   containerClassName = '',
   required = false,
+  onChange,
   ...props
 }) {
+  const handleChange = (e) => {
+    if (props.type === 'number' && e.target.value) {
+      let val = e.target.value;
+      if (val.length > 1 && val.startsWith('0') && val[1] !== '.') {
+        e.target.value = val.replace(/^0+/, '');
+      }
+    }
+    if (onChange) onChange(e);
+  };
+
   const inputId = id || props.name || Math.random().toString(36).substring(7);
 
   return (
@@ -33,6 +44,7 @@ export default function Input({
               ? 'border-red-500 focus:border-red-600 focus:ring-1 focus:ring-red-600'
               : 'border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600'
           } ${Icon ? 'pl-9' : 'pl-3.5'} pr-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none transition-colors disabled:opacity-50 disabled:bg-slate-100 ${className}`}
+          onChange={handleChange}
           {...props}
         />
       </div>
