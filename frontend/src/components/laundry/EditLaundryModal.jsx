@@ -75,11 +75,29 @@ export default function EditLaundryModal({ isOpen, onClose, record, locations, s
     setLoading(true);
     setError('');
 
+    const payload = {
+      ...formData,
+      items: validItems
+    };
+
+    const dateTimeFields = [
+      'laundry_in_date', 'laundry_in_time',
+      'laba_date', 'laba_time',
+      'banlaw_date', 'banlaw_time',
+      'sampay_date', 'sampay_time',
+      'pinaw_date', 'pinaw_time',
+      'tiklop_date', 'tiklop_time',
+      'date_returned', 'returned_time'
+    ];
+
+    dateTimeFields.forEach(field => {
+      if (!payload[field]) {
+        payload[field] = null;
+      }
+    });
+
     try {
-      await api.put(`/laundry/${record.id}/`, {
-        ...formData,
-        items: validItems
-      });
+      await api.put(`/laundry/${record.id}/`, payload);
       onSuccess();
       onClose();
     } catch (err) {

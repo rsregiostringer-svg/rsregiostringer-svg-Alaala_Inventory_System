@@ -22,16 +22,16 @@ export default function LaundryExcelTable({
   const renderProcessCell = (date, time, shift, inCharge, stageLabel, stageKey, record) => {
     if (!date) {
       return (
-        <div className="flex flex-col items-center justify-center p-2 rounded-md bg-slate-50 border border-dashed border-slate-200 text-xs min-h-[64px]">
+        <div 
+          onClick={() => onEditRecord && onEditRecord(record)}
+          className="flex flex-col items-center justify-center p-2 rounded-md bg-slate-50 border border-dashed border-slate-200 text-xs min-h-[64px] cursor-pointer hover:bg-blue-50/50 transition-colors"
+          title={`Click to add ${stageLabel} details`}
+        >
           <span className="text-slate-500 font-mono">—</span>
-          {onAdvanceStage && record.status !== 'RETURNED' && (
-            <button
-              type="button"
-              onClick={() => onAdvanceStage(record, stageKey)}
-              className="mt-1 px-2 py-0.5 text-[11px] font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded transition-colors cursor-pointer"
-            >
+          {onEditRecord && record.status !== 'RETURNED' && (
+            <span className="mt-1 px-2 py-0.5 text-[11px] font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded transition-colors">
               + {stageLabel}
-            </button>
+            </span>
           )}
         </div>
       );
@@ -39,9 +39,9 @@ export default function LaundryExcelTable({
 
     return (
       <div
-        onClick={() => onAdvanceStage && onAdvanceStage(record, stageKey)}
+        onClick={() => onEditRecord && onEditRecord(record)}
         className="group relative flex flex-col justify-center p-2 rounded-md bg-white hover:bg-blue-50/50 border border-slate-200 hover:border-blue-400 text-xs min-w-[130px] leading-tight cursor-pointer transition-colors shadow-2xs"
-        title="Click to edit stage or change person in charge"
+        title="Click to edit details"
       >
         <div className="flex items-center justify-between gap-1">
           <span className="font-semibold text-slate-900">{formatDateTimeDisplay(date, time)}</span>
@@ -176,7 +176,7 @@ export default function LaundryExcelTable({
                   {/* 1. Laundry IN (Date/ Shift/ In Charge) */}
                   <td className="p-2.5">
                     <div
-                      onClick={() => onAdvanceStage && onAdvanceStage(r, 'in')}
+                      onClick={() => onEditRecord && onEditRecord(r)}
                       className="group flex flex-col justify-center p-2 rounded-md bg-white hover:bg-blue-50/50 border border-slate-200 hover:border-blue-400 text-xs min-w-[140px] leading-tight cursor-pointer transition-colors shadow-2xs"
                       title="Click to edit intake details"
                     >
@@ -198,7 +198,7 @@ export default function LaundryExcelTable({
                   </td>
 
                   {/* 2. Items */}
-                  <td className="p-2.5">
+                  <td className="p-2.5 cursor-pointer hover:bg-blue-50/50 transition-colors" onClick={() => onEditRecord && onEditRecord(r)} title="Click to edit items">
                     {(() => {
                       const hasItems = r.items && r.items.length > 0;
                       const displayItemStr = hasItems
@@ -214,7 +214,7 @@ export default function LaundryExcelTable({
                           {hasItems && r.items.length > 1 && (
                             <button
                               type="button"
-                              onClick={() => setItemBreakdownRecord(r)}
+                              onClick={(e) => { e.stopPropagation(); setItemBreakdownRecord(r); }}
                               className="text-[10px] text-blue-600 hover:underline mt-0.5 flex items-center gap-1"
                             >
                               <List className="w-3 h-3" /> View Breakdown ({r.items.length})
@@ -269,7 +269,7 @@ export default function LaundryExcelTable({
                   <td className="p-2.5">
                     {r.date_returned ? (
                       <div
-                        onClick={() => onAdvanceStage && onAdvanceStage(r, 'return')}
+                        onClick={() => onEditRecord && onEditRecord(r)}
                         className="group flex flex-col justify-center p-2 rounded-md bg-white hover:bg-blue-50/50 border border-slate-200 hover:border-blue-400 text-xs min-w-[130px] leading-tight cursor-pointer transition-colors shadow-2xs"
                         title="Click to edit returned date or delivery person"
                       >
@@ -285,16 +285,16 @@ export default function LaundryExcelTable({
                         </span>
                       </div>
                     ) : (
-                      <div className="flex flex-col items-center justify-center p-2 rounded-md bg-slate-50 border border-dashed border-slate-200 text-xs min-h-[64px]">
+                      <div 
+                        onClick={() => onEditRecord && onEditRecord(r)}
+                        className="flex flex-col items-center justify-center p-2 rounded-md bg-slate-50 border border-dashed border-slate-200 text-xs min-h-[64px] cursor-pointer hover:bg-blue-50/50 transition-colors"
+                        title="Click to return items"
+                      >
                         <span className="text-slate-500 font-mono">—</span>
-                        {onAdvanceStage && (
-                          <button
-                            type="button"
-                            onClick={() => onAdvanceStage(r, 'return')}
-                            className="mt-1 px-2 py-0.5 text-[11px] font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded transition-colors cursor-pointer"
-                          >
+                        {onEditRecord && (
+                          <span className="mt-1 px-2 py-0.5 text-[11px] font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded transition-colors">
                             + Return
-                          </button>
+                          </span>
                         )}
                       </div>
                     )}
@@ -323,17 +323,7 @@ export default function LaundryExcelTable({
                       >
                         Detail
                       </Button>
-                      {onEditRecord && (
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => onEditRecord(r)}
-                          icon={Edit2}
-                          title="Edit laundry batch"
-                        >
-                          Edit
-                        </Button>
-                      )}
+
                       {isMasterAdmin && onDeleteRecord && (
                         <Button
                           variant="danger"
