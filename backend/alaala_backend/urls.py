@@ -8,7 +8,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from core.views import (
     LoginView, CurrentUserView, UserProfileView, ChangePasswordView,
     UserViewSet, LocationViewSet, AuditLogViewSet, DashboardStatsView,
-    SettingsView, AnalyticsView
+    SettingsView, AnalyticsView, ExportCSVView
 )
 
 from inventory.views import CategoryViewSet, InventoryItemViewSet, InventoryTransactionViewSet
@@ -56,6 +56,8 @@ urlpatterns = [
     # Settings
     path('api/settings/', SettingsView.as_view(), name='system-settings'),
 
+    # Reports
+    path('api/reports/export-csv/', ExportCSVView.as_view(), name='export-csv'),
 
     # ViewSet Router
     path('api/', include(router.urls)),

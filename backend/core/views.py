@@ -652,3 +652,81 @@ class DashboardStatsView(APIView):
             'recent_water_bills': recent_water_bills,
             'recent_electricity_bills': recent_electricity_bills,
         })
+import csv
+from django.http import HttpResponse
+
+class ExportCSVView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        module = request.query_params.get('module')
+        
+        if module == 'laundry':
+            from laundry.models import LaundryRecord
+            location_id = request.query_params.get('location')
+            start_date = request.query_params.get('start_date')
+            end_date = request.query_params.get('end_date')
+
+            qs = LaundryRecord.objects.select_related('location').all()
+
+            if location_id:
+                qs = qs.filter(location_id=location_id)
+            if start_date:
+                qs = qs.filter(laundry_in_date__gte=start_date)
+            if end_date:
+                qs = qs.filter(laundry_in_date__lte=end_date)
+
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="laundry_export.csv"'
+
+            writer = csv.writer(response)
+            writer.writerow([
+                'UID', 'Location', 'Item', 'Quantity', 'Unit', 'Status',
+                'Laundry In Date', 'Laundry In Time', 'Laundry In Shift', 'Laundry In Charge',
+                'Laba Date', 'Laba Time', 'Laba Shift', 'Laba In Charge',
+                'Banlaw Date', 'Banlaw Time', 'Banlaw Shift', 'Banlaw In Charge',
+                'Sampay Date', 'Sampay Time', 'Sampay Shift', 'Sampay In Charge',
+                'Pinaw Date', 'Pinaw Time', 'Pinaw Shift', 'Pinaw In Charge',
+                'Tiklop Date', 'Tiklop Time', 'Tiklop Shift', 'Tiklop In Charge',
+                'Date Returned', 'Time Returned', 'Returned By'
+            ])
+
+            for record in qs:
+                writer.writerow([
+                    f"L-{record.id:04d}",
+                    record.location.name if record.location else '',
+                    record.item,
+                    record.quantity,
+                    record.unit,
+                    record.get_status_display(),
+                    record.laundry_in_date or '',
+                    record.laundry_in_time or '',
+                    record.laundry_in_shift or '',
+                    record.laundry_in_charge or '',
+                    record.laba_date or '',
+                    record.laba_time or '',
+                    record.laba_shift or '',
+                    record.laba_in_charge or '',
+                    record.banlaw_date or '',
+                    record.banlaw_time or '',
+                    record.banlaw_shift or '',
+                    record.banlaw_in_charge or '',
+                    record.sampay_date or '',
+                    record.sampay_time or '',
+                    record.sampay_shift or '',
+                    record.sampay_in_charge or '',
+                    record.pinaw_date or '',
+                    record.pinaw_time or '',
+                    record.pinaw_shift or '',
+                    record.pinaw_in_charge or '',
+                    record.tiklop_date or '',
+                    record.tiklop_time or '',
+                    record.tiklop_shift or '',
+                    record.tiklop_in_charge or '',
+                    record.date_returned or '',
+                    record.returned_time or '',
+                    record.returned_by or ''
+                ])
+            return response
+        
+        return Response({"detail": "Module not supported"}, status=status.HTTP_400_BAD_REQUEST)
