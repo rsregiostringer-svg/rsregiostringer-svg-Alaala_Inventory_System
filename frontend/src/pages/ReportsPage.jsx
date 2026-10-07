@@ -144,7 +144,7 @@ export default function ReportsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 no-print">
         <div>
-          <h1 className="text-2xl font-serif font-bold text-slate-100 tracking-wide">
+          <h1 className="text-2xl font-serif font-bold text-slate-900 tracking-wide">
             Operational Reports & Export
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
@@ -276,11 +276,11 @@ export default function ReportsPage() {
               <div className="space-y-3 text-xs">
                 <div className="flex justify-between py-2 border-b border-slate-200">
                   <span className="text-slate-500">Total Unique Inventory Items</span>
-                  <span className="font-semibold text-slate-100">{inv.total_items} items</span>
+                  <span className="font-semibold text-slate-900">{inv.total_items} items</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-slate-200">
                   <span className="text-slate-500">Total Quantity in Hand</span>
-                  <span className="font-semibold text-slate-100">{inv.total_quantity} units</span>
+                  <span className="font-semibold text-slate-900">{inv.total_quantity} units</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-slate-200">
                   <span className="text-slate-500">Total Estimated Inventory Value</span>
@@ -302,7 +302,7 @@ export default function ReportsPage() {
               <div className="space-y-3 text-xs">
                 <div className="flex justify-between py-2 border-b border-slate-200">
                   <span className="text-slate-500">Total Laundry Batches Processed</span>
-                  <span className="font-semibold text-slate-100">{laundry.total} batches</span>
+                  <span className="font-semibold text-slate-900">{laundry.total} batches</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-slate-200">
                   <span className="text-slate-500">Currently in Washing / Drying / Folding</span>
@@ -320,7 +320,7 @@ export default function ReportsPage() {
               <div className="space-y-3 text-xs">
                 <div className="flex justify-between py-2 border-b border-slate-200">
                   <span className="text-slate-500">Total Maintenance Tickets</span>
-                  <span className="font-semibold text-slate-100">{maint.total_tickets} tickets</span>
+                  <span className="font-semibold text-slate-900">{maint.total_tickets} tickets</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-slate-200">
                   <span className="text-slate-500">Open / Ongoing Issues</span>
@@ -332,7 +332,7 @@ export default function ReportsPage() {
                 </div>
                 <div className="flex justify-between py-2">
                   <span className="text-slate-500">Cumulative Repair Costs</span>
-                  <span className="font-bold text-slate-100">{formatCurrency(maint.total_cost)}</span>
+                  <span className="font-bold text-slate-900">{formatCurrency(maint.total_cost)}</span>
                 </div>
               </div>
             </Card>
@@ -380,7 +380,7 @@ export default function ReportsPage() {
                 </div>
                 <div className="flex justify-between py-2">
                   <span className="text-slate-500">Total Sales Revenue</span>
-                  <span className="font-bold text-slate-100">{formatCurrency(caskets.revenue || 0)}</span>
+                  <span className="font-bold text-slate-900">{formatCurrency(caskets.revenue || 0)}</span>
                 </div>
               </div>
             </Card>
@@ -390,7 +390,7 @@ export default function ReportsPage() {
               <div className="space-y-3 text-xs">
                 <div className="flex justify-between py-2 border-b border-slate-200">
                   <span className="text-slate-500">Total Configured Chapels</span>
-                  <span className="font-semibold text-slate-100">{chapels.total || 0} chapels</span>
+                  <span className="font-semibold text-slate-900">{chapels.total || 0} chapels</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-slate-200">
                   <span className="text-slate-500">Currently Occupied / Active Lamay</span>

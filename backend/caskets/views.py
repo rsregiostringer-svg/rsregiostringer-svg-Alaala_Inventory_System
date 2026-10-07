@@ -508,9 +508,8 @@ class ChapelViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         from django.utils import timezone
         import datetime
-        from caskets.websockets import broadcast_event
+        from alaala_backend.realtime import broadcast_event
 
-        # Auto-expire completed lamays
         now = timezone.localtime()
         active_lamays = LamayRecord.objects.filter(status=LamayRecord.Status.ACTIVE)
         for lamay in active_lamays:
