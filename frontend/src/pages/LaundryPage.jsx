@@ -685,7 +685,7 @@ export default function LaundryPage() {
                     <option value="Other" />
                   </datalist>
                 </div>
-                <div className="w-full sm:w-24">
+                <div className="w-full sm:w-20">
                   <Input
                     type="number"
                     min="1"
@@ -699,22 +699,6 @@ export default function LaundryPage() {
                       
                       const newItems = [...newBatchData.items];
                       newItems[index].quantity = isNaN(parsed) ? '' : parsed;
-                      setNewBatchData({ ...newBatchData, items: newItems });
-                    }}
-                  />
-                </div>
-                <div className="w-full sm:w-24">
-                  <Select
-                    options={[
-                      { value: 'pcs', label: 'pcs' },
-                      { value: 'set', label: 'set' },
-                      { value: 'dozen', label: 'dozen' },
-                      { value: 'kg', label: 'kg' },
-                    ]}
-                    value={item.unit}
-                    onChange={(e) => {
-                      const newItems = [...newBatchData.items];
-                      newItems[index].unit = e.target.value;
                       setNewBatchData({ ...newBatchData, items: newItems });
                     }}
                   />
