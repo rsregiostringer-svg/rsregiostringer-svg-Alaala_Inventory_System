@@ -86,7 +86,7 @@ export default function LoginPage() {
                 id="username"
                 type="text"
                 icon={User}
-                placeholder="e.g. admin or staff"
+                placeholder="Username"
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -100,7 +100,7 @@ export default function LoginPage() {
                 id="password"
                 type="password"
                 icon={Lock}
-                placeholder="••••••••"
+                placeholder="Password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

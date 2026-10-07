@@ -151,6 +151,7 @@ export const CHAPEL_STATUS_MAP = {
   CLEANING: { label: 'Cleaning', variant: 'blue', bgClass: 'bg-blue-50 text-blue-800 border-blue-200' },
   MAINTENANCE: { label: 'Maintenance', variant: 'yellow', bgClass: 'bg-yellow-50 text-yellow-800 border-yellow-200' },
   OUT_OF_SERVICE: { label: 'Out of Service', variant: 'neutral', bgClass: 'bg-slate-100 text-slate-700 border-slate-300' },
+  RESIDENCE: { label: 'Residence Viewing', variant: 'purple', bgClass: 'bg-purple-50 text-purple-700 border-purple-200' },
 };
 
 export const LAMAY_STATUS_MAP = {
