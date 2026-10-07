@@ -247,10 +247,9 @@ export default function MainLayout() {
           ]
         },
         {
-          title: 'REPORTS',
+          title: 'ANALYTICS',
           items: [
-            { to: '/reports', label: 'Reports', icon: BarChart3 },
-            { to: '/analytics', label: 'Analytics', icon: TrendingUp }
+            { to: '/analytics', label: 'Analytics', icon: BarChart3 }
           ]
         },
         {
@@ -264,9 +263,9 @@ export default function MainLayout() {
       : canViewReports
         ? [
           {
-            title: 'REPORTS',
+            title: 'ANALYTICS',
             items: [
-              { to: '/reports', label: 'Reports', icon: BarChart3 }
+              { to: '/analytics', label: 'Analytics', icon: BarChart3 }
             ]
           }
         ]

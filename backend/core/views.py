@@ -1,4 +1,8 @@
 import datetime
+from datetime import datetime, timedelta
+from django.utils import timezone
+from django.db.models.functions import TruncMonth, TruncWeek, TruncDay
+from caskets.models import Deceased, LamayRecord, Chapel
 from rest_framework import viewsets, status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -285,210 +289,125 @@ class SettingsView(APIView):
         return self.post(request)
 
 
+from django.utils import timezone
+from django.db.models import Count, Sum, Q
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import permissions
+from caskets.models import Deceased, LamayRecord, Chapel
+
 class AnalyticsView(APIView):
-    permission_classes = [CanViewAnalytics]
+    """
+    Analytics Dashboard View focused on Funeral/Deceased tracking.
+    Available to users with 'CanViewAnalytics' permission or Master Admins.
+    """
+    permission_classes = [permissions.IsAuthenticated, CanViewAnalytics]
 
     def get(self, request):
-        from inventory.models import InventoryItem, InventoryTransaction
-        from laundry.models import LaundryRecord
-        from caskets.models import Casket
-        from maintenance.models import Maintenance
-        from utilities.models import WaterBill, ElectricityBill
+        date_filter = request.query_params.get('date_filter', 'this_month')
+        start_date_str = request.query_params.get('start_date')
+        end_date_str = request.query_params.get('end_date')
 
-        # 1. Inventory Analytics
-        active_items = InventoryItem.objects.filter(is_active=True)
-        total_items = active_items.count()
-        total_quantity = active_items.aggregate(total=Sum('current_quantity'))['total'] or 0
-        low_stock = active_items.filter(status='LOW_STOCK').count()
-        out_of_stock = active_items.filter(status='OUT_OF_STOCK').count()
-        inventory_valuation = sum(item.current_quantity * float(item.cost) for item in active_items)
+        now = timezone.now()
+        today = now.date()
+        start_date = None
+        end_date = today
 
-        # Inventory stock movements
-        txs = InventoryTransaction.objects.all()
-        stock_in_total = txs.filter(transaction_type='IN').aggregate(Sum('quantity'))['quantity__sum'] or 0
-        stock_out_total = txs.filter(transaction_type='OUT').aggregate(Sum('quantity'))['quantity__sum'] or 0
-        transfers_total = txs.filter(transaction_type='TRANSFER').aggregate(Sum('quantity'))['quantity__sum'] or 0
-        damaged_total = txs.filter(reason__icontains='damage').aggregate(Sum('quantity'))['quantity__sum'] or 0
-        consumed_total = txs.filter(reason__icontains='consume').aggregate(Sum('quantity'))['quantity__sum'] or 0
-        lost_total = txs.filter(reason__icontains='lost').aggregate(Sum('quantity'))['quantity__sum'] or 0
+        if date_filter == 'this_week':
+            start_date = today - timedelta(days=today.weekday())
+        elif date_filter == 'this_month':
+            start_date = today.replace(day=1)
+        elif date_filter == 'last_month':
+            first_day_this_month = today.replace(day=1)
+            end_date = first_day_this_month - timedelta(days=1)
+            start_date = end_date.replace(day=1)
+        elif date_filter == 'this_year':
+            start_date = today.replace(month=1, day=1)
+        elif date_filter == 'last_year':
+            end_date = today.replace(month=1, day=1) - timedelta(days=1)
+            start_date = end_date.replace(month=1, day=1)
+        elif date_filter == 'custom':
+            if start_date_str:
+                try:
+                    start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+                except ValueError:
+                    pass
+            if end_date_str:
+                try:
+                    end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+                except ValueError:
+                    pass
 
-        # 2. Laundry Analytics
-        laundry_all = LaundryRecord.objects.all()
-        laundry_total = laundry_all.count()
-        laundry_in_count = laundry_all.filter(laundry_in_date__isnull=False).count()
-        laba_count = laundry_all.filter(laba_date__isnull=False).count()
-        banlaw_count = laundry_all.filter(banlaw_date__isnull=False).count()
-        sampay_count = laundry_all.filter(sampay_date__isnull=False).count()
-        pinaw_count = laundry_all.filter(pinaw_date__isnull=False).count()
-        tiklop_count = laundry_all.filter(tiklop_date__isnull=False).count()
-        returned_count = laundry_all.filter(status='RETURNED').count()
-        in_process_count = laundry_all.exclude(status='RETURNED').count()
+        # If no valid date range determined, default to all-time or this month
+        
+        # Deceased queries
+        deceased_qs = Deceased.objects.all()
+        if start_date:
+            deceased_period_qs = deceased_qs.filter(date_of_death__gte=start_date, date_of_death__lte=end_date)
+        else:
+            deceased_period_qs = deceased_qs
 
-        laundry_by_stage = list(laundry_all.values('status').annotate(count=Count('id')).order_by('status'))
-        laundry_by_shift = list(laundry_all.values('laundry_in_shift').annotate(count=Count('id')).order_by('-count'))
-        laundry_by_location = list(
-            laundry_all.values('location__name').annotate(count=Count('id'), total_qty=Sum('quantity')).order_by('-count')
-        )
+        total_deceased = deceased_qs.count()
+        period_deceased = deceased_period_qs.count()
 
-        # 3. Casket Analytics
-        caskets_all = Casket.objects.all()
-        total_caskets = caskets_all.count()
-        caskets_available = caskets_all.filter(status='AVAILABLE').aggregate(Sum('quantity'))['quantity__sum'] or 0
-        caskets_reserved = caskets_all.filter(status='RESERVED').aggregate(Sum('quantity'))['quantity__sum'] or 0
-        caskets_sold = caskets_all.filter(status='SOLD').aggregate(Sum('quantity'))['quantity__sum'] or 0
-        caskets_used = caskets_all.filter(status='USED').aggregate(Sum('quantity'))['quantity__sum'] or 0
-        caskets_repair = caskets_all.filter(status='FOR_REPAIR').aggregate(Sum('quantity'))['quantity__sum'] or 0
-        caskets_out_of_stock = caskets_all.filter(quantity=0).count()
-        caskets_by_type = list(caskets_all.values('casket_type').annotate(count=Count('id')).order_by('-count'))
-        caskets_by_location = list(caskets_all.values('location__name').annotate(count=Count('id'), total_qty=Sum('quantity')).order_by('-count'))
+        # Lamay and Chapel counts (current active state)
+        active_lamay = LamayRecord.objects.filter(status='ACTIVE').count()
+        completed_lamay = LamayRecord.objects.filter(status='COMPLETED').count() # we could filter this by date if needed, but total completed is fine. Let's filter by period if possible? "Completed Lamay" usually implies all-time or within period. Let's do within period based on created_at or end_date. LamayRecord might have 'end_date' or 'completed_at'. Since we don't know, let's just do all completed.
+        chapel_occupancy = Chapel.objects.filter(is_active=True, status='OCCUPIED').count()
+        total_chapels = Chapel.objects.filter(is_active=True).count()
 
-        # 4. Maintenance Analytics
-        maint_all = Maintenance.objects.all()
-        open_maintenance = maint_all.filter(status__in=['REPORTED', 'PENDING', 'FOR_REPAIR', 'IN_PROGRESS']).count()
-        completed_maintenance = maint_all.filter(status='COMPLETED').count()
-        pending_maintenance = maint_all.filter(status='PENDING').count()
-        repair_maintenance = maint_all.filter(status='FOR_REPAIR').count()
-        urgent_maintenance = maint_all.filter(status__in=['REPORTED', 'PENDING', 'FOR_REPAIR', 'IN_PROGRESS'], priority__in=['URGENT', 'HIGH']).count()
-        total_maint_cost = maint_all.aggregate(Sum('cost'))['cost__sum'] or 0
-        maint_by_location = list(maint_all.values('location__name').annotate(count=Count('id'), cost=Sum('cost')).order_by('-count'))
-        maint_by_category = list(maint_all.values('category').annotate(count=Count('id')).order_by('-count'))
+        # Trends
+        # For line chart: deaths this week/month etc
+        if date_filter in ['this_year', 'last_year']:
+            # Group by month
+            trend_data = list(deceased_period_qs.annotate(
+                period=TruncMonth('date_of_death')
+            ).values('period').annotate(count=Count('id')).order_by('period'))
+            # format period to string
+            for t in trend_data:
+                if t['period']:
+                    t['period'] = t['period'].strftime('%b %Y')
+        elif date_filter in ['this_week']:
+            # Group by day
+            trend_data = list(deceased_period_qs.annotate(
+                period=TruncDay('date_of_death')
+            ).values('period').annotate(count=Count('id')).order_by('period'))
+            for t in trend_data:
+                if t['period']:
+                    t['period'] = t['period'].strftime('%a, %b %d')
+        else:
+            # this month, last month -> group by week or day? day is fine
+            trend_data = list(deceased_period_qs.annotate(
+                period=TruncDay('date_of_death')
+            ).values('period').annotate(count=Count('id')).order_by('period'))
+            for t in trend_data:
+                if t['period']:
+                    t['period'] = t['period'].strftime('%b %d')
 
-        # 5. Utilities Analytics
-        water_bills = WaterBill.objects.all()
-        total_water_bills = water_bills.count()
-        water_paid = water_bills.filter(payment_status='PAID').aggregate(Sum('amount'))['amount__sum'] or 0
-        water_unpaid = water_bills.filter(payment_status='UNPAID').aggregate(Sum('amount'))['amount__sum'] or 0
-        water_overdue = water_bills.filter(payment_status='OVERDUE').aggregate(Sum('amount'))['amount__sum'] or 0
-        water_consumption = water_bills.aggregate(Sum('consumption'))['consumption__sum'] or 0
-        water_expenses = water_bills.aggregate(Sum('amount'))['amount__sum'] or 0
-
-        elec_bills = ElectricityBill.objects.all()
-        total_elec_bills = elec_bills.count()
-        elec_paid = elec_bills.filter(payment_status='PAID').aggregate(Sum('amount'))['amount__sum'] or 0
-        elec_unpaid = elec_bills.filter(payment_status='UNPAID').aggregate(Sum('amount'))['amount__sum'] or 0
-        elec_overdue = elec_bills.filter(payment_status='OVERDUE').aggregate(Sum('amount'))['amount__sum'] or 0
-        elec_consumption = elec_bills.aggregate(Sum('consumption'))['consumption__sum'] or 0
-        elec_expenses = elec_bills.aggregate(Sum('amount'))['amount__sum'] or 0
-
-        # 6. Location Consolidated Analytics
-        locations = Location.objects.filter(is_active=True)
-        location_metrics = []
-        for loc in locations:
-            loc_items = active_items.filter(location=loc)
-            loc_laundry = laundry_all.filter(location=loc)
-            loc_caskets = caskets_all.filter(location=loc)
-            loc_maint = maint_all.filter(location=loc)
-            loc_water = water_bills.filter(location=loc).aggregate(Sum('amount'))['amount__sum'] or 0
-            loc_elec = elec_bills.filter(location=loc).aggregate(Sum('amount'))['amount__sum'] or 0
-
-            location_metrics.append({
-                'location_id': loc.id,
-                'location_name': loc.name,
-                'inventory_items': loc_items.count(),
-                'inventory_qty': loc_items.aggregate(Sum('current_quantity'))['current_quantity__sum'] or 0,
-                'laundry_count': loc_laundry.count(),
-                'caskets_count': loc_caskets.count(),
-                'open_maintenance': loc_maint.filter(status__in=['REPORTED', 'PENDING', 'IN_PROGRESS']).count(),
-                'water_expenses': float(loc_water),
-                'electricity_expenses': float(loc_elec),
-                'total_utility_cost': float(loc_water + loc_elec)
-            })
-
-        # 7. Employee / Activity Analytics
-        employee_laundry = list(
-            laundry_all.exclude(encoded_by='').values('encoded_by').annotate(
-                count=Count('id'),
-                total_qty=Sum('quantity')
-            ).order_by('-count')[:10]
-        )
-        employee_inventory_tx = list(
-            txs.exclude(user__isnull=True).values('user__username', 'user__first_name', 'user__last_name').annotate(
-                count=Count('id'),
-                total_qty=Sum('quantity')
-            ).order_by('-count')[:10]
-        )
-        employee_maintenance = list(
-            maint_all.exclude(assigned_to='').values('assigned_to').annotate(
-                count=Count('id')
-            ).order_by('-count')[:10]
-        )
+        # Additional Charts
+        lamay_status = list(LamayRecord.objects.values('status').annotate(count=Count('id')).order_by('-count'))
+        
+        chapel_list = Chapel.objects.filter(is_active=True).values('name', 'status', 'capacity')
+        
+        location_data = list(LamayRecord.objects.values('wake_location').annotate(count=Count('id')).order_by('-count'))
 
         return Response({
-            'inventory': {
-                'total_items': total_items,
-                'total_quantity': total_quantity,
-                'valuation': float(inventory_valuation),
-                'low_stock': low_stock,
-                'out_of_stock': out_of_stock,
-                'movement': {
-                    'stock_in': stock_in_total,
-                    'stock_out': stock_out_total,
-                    'transfers': transfers_total,
-                    'damaged': damaged_total,
-                    'lost': lost_total,
-                    'consumed': consumed_total
-                }
+            'summary_cards': {
+                'total_deceased': total_deceased,
+                'period_deceased': period_deceased,
+                'active_lamay': active_lamay,
+                'completed_lamay': completed_lamay,
+                'chapel_occupancy': chapel_occupancy,
+                'total_chapels': total_chapels,
             },
-            'laundry': {
-                'total': laundry_total,
-                'in_process': in_process_count,
-                'returned': returned_count,
-                'stages': {
-                    'laundry_in': laundry_in_count,
-                    'laba': laba_count,
-                    'banlaw': banlaw_count,
-                    'sampay': sampay_count,
-                    'pinaw': pinaw_count,
-                    'tiklop': tiklop_count,
-                    'returned': returned_count
-                },
-                'by_stage': laundry_by_stage,
-                'by_shift': laundry_by_shift,
-                'by_location': laundry_by_location
-            },
-            'caskets': {
-                'total': total_caskets,
-                'available': caskets_available,
-                'reserved': caskets_reserved,
-                'sold': caskets_sold,
-                'used': caskets_used,
-                'for_repair': caskets_repair,
-                'out_of_stock': caskets_out_of_stock,
-                'by_type': caskets_by_type,
-                'by_location': caskets_by_location
-            },
-            'maintenance': {
-                'open': open_maintenance,
-                'completed': completed_maintenance,
-                'pending': pending_maintenance,
-                'urgent': urgent_maintenance,
-                'total_cost': float(total_maint_cost),
-                'by_location': maint_by_location,
-                'by_category': maint_by_category
-            },
-            'utilities': {
-                'water': {
-                    'total_bills': total_water_bills,
-                    'paid': float(water_paid),
-                    'unpaid': float(water_unpaid),
-                    'overdue': float(water_overdue),
-                    'consumption': float(water_consumption),
-                    'expenses': float(water_expenses)
-                },
-                'electricity': {
-                    'total_bills': total_elec_bills,
-                    'paid': float(elec_paid),
-                    'unpaid': float(elec_unpaid),
-                    'overdue': float(elec_overdue),
-                    'consumption': float(elec_consumption),
-                    'expenses': float(elec_expenses)
-                }
-            },
-            'locations': location_metrics,
-            'employees': {
-                'laundry_handled': employee_laundry,
-                'inventory_transactions': employee_inventory_tx,
-                'maintenance_activities': employee_maintenance
+            'trend_data': trend_data,
+            'lamay_status': lamay_status,
+            'chapel_list': list(chapel_list),
+            'location_data': location_data,
+            'filter_info': {
+                'start_date': start_date.strftime('%Y-%m-%d') if start_date else None,
+                'end_date': end_date.strftime('%Y-%m-%d') if end_date else None,
+                'label': date_filter.replace('_', ' ').title()
             }
         })
 

@@ -43,9 +43,11 @@ class CanViewReports(permissions.BasePermission):
 
 
 class CanViewAnalytics(permissions.BasePermission):
-    """Only Master Admin can inspect executive analytics & performance metrics."""
+    """Only Master Admin or users with 'reports' permission can inspect analytics."""
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated and request.user.is_master_admin)
+        if not request.user or not request.user.is_authenticated:
+            return False
+        return request.user.is_master_admin or request.user.has_custom_perm('reports')
 
 
 class CanManageSettings(permissions.BasePermission):

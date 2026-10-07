@@ -14,7 +14,7 @@ import ChapelMonitoringPage from '../pages/ChapelMonitoringPage';
 import MaintenancePage from '../pages/MaintenancePage';
 import WaterPage from '../pages/WaterPage';
 import ElectricityPage from '../pages/ElectricityPage';
-import ReportsPage from '../pages/ReportsPage';
+
 import AnalyticsPage from '../pages/AnalyticsPage';
 import UsersPage from '../pages/UsersPage';
 import UserRolesPage from '../pages/UserRolesPage';
@@ -65,19 +65,6 @@ export default function AppRoutes() {
           }
         />
 
-        {/* Reports (Master Admin or custom report perm) */}
-        <Route
-          path="reports"
-          element={
-            <ProtectedRoute
-              checkPermission={(u) =>
-                u?.role === 'MASTER_ADMIN' || Boolean(u?.custom_permissions?.reports)
-              }
-            >
-              <ReportsPage />
-            </ProtectedRoute>
-          }
-        />
 
         {/* Master Admin Only Routes: Users, Roles, Analytics, Audit Logs, Settings */}
         <Route
@@ -99,7 +86,11 @@ export default function AppRoutes() {
         <Route
           path="analytics"
           element={
-            <ProtectedRoute masterAdminOnly>
+            <ProtectedRoute
+              checkPermission={(u) =>
+                u?.role === 'MASTER_ADMIN' || Boolean(u?.custom_permissions?.reports)
+              }
+            >
               <AnalyticsPage />
             </ProtectedRoute>
           }
