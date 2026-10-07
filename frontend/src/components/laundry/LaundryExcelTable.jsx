@@ -198,7 +198,7 @@ export default function LaundryExcelTable({
                   </td>
 
                   {/* 2. Items */}
-                  <td className="p-2.5 cursor-pointer hover:bg-blue-50/50 transition-colors" onClick={() => onEditRecord && onEditRecord(r)} title="Click to edit items">
+                  <td className="p-2.5">
                     {(() => {
                       const hasItems = r.items && r.items.length > 0;
                       const displayItemStr = hasItems
@@ -323,6 +323,18 @@ export default function LaundryExcelTable({
                       >
                         Detail
                       </Button>
+
+                      {onEditRecord && (
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => onEditRecord(r)}
+                          icon={Edit2}
+                          title="Edit laundry batch"
+                        >
+                          Edit
+                        </Button>
+                      )}
 
                       {isMasterAdmin && onDeleteRecord && (
                         <Button
