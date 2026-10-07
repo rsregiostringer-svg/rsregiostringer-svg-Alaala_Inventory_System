@@ -70,7 +70,7 @@ export default function LaundryPage() {
   const [isNewBatchOpen, setIsNewBatchOpen] = useState(false);
   const [newBatchData, setNewBatchData] = useState({
     location: '',
-    items: [{ item_description: '', quantity: 1, unit: 'pcs' }],
+    items: [{ item_description: '', quantity: '', unit: 'pcs' }],
     laundry_in_date: currentDate.toISOString().split('T')[0],
     laundry_in_time: currentDate.toTimeString().slice(0, 5),
     laundry_in_shift: '8am to 5pm',
@@ -300,7 +300,7 @@ export default function LaundryPage() {
     const noCodeLoc = locations.find((l) => l.name === 'NO CODE' || l.code === 'NO_CODE');
     setNewBatchData({
       location: noCodeLoc ? noCodeLoc.id : locations[0]?.id || '',
-      items: [{ item_description: '', quantity: 1, unit: 'pcs' }],
+      items: [{ item_description: '', quantity: '', unit: 'pcs' }],
       laundry_in_date: new Date().toISOString().split('T')[0],
       laundry_in_time: new Date().toTimeString().slice(0, 5),
       laundry_in_shift: '8am to 5pm',
@@ -666,12 +666,16 @@ export default function LaundryPage() {
                   <Input
                     type="number"
                     min="1"
-                    placeholder="Qty"
+                    placeholder="0"
                     required
-                    value={Number(item.quantity)}
+                    value={item.quantity}
                     onChange={(e) => {
+                      let val = e.target.value;
+                      if (val === '0') val = '1';
+                      const parsed = parseInt(val, 10);
+                      
                       const newItems = [...newBatchData.items];
-                      newItems[index].quantity = parseInt(e.target.value, 10) || 1;
+                      newItems[index].quantity = isNaN(parsed) ? '' : parsed;
                       setNewBatchData({ ...newBatchData, items: newItems });
                     }}
                   />
@@ -713,7 +717,7 @@ export default function LaundryPage() {
               onClick={() => {
                 setNewBatchData({
                   ...newBatchData,
-                  items: [...newBatchData.items, { item_description: '', quantity: 1, unit: 'pcs' }],
+                  items: [...newBatchData.items, { item_description: '', quantity: '', unit: 'pcs' }],
                 });
               }}
               className="text-xs font-semibold text-[#0866FF] hover:text-blue-700 hover:underline flex items-center gap-1 mt-1"

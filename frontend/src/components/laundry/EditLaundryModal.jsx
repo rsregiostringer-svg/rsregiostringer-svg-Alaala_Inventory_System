@@ -16,7 +16,7 @@ export default function EditLaundryModal({ isOpen, onClose, record, locations, s
       // Setup edit form
       const initialItems = record.items?.length > 0
         ? record.items.map(i => ({ ...i }))
-        : [{ item_description: record.item || '', quantity: record.quantity || 1, unit: 'pcs' }];
+        : [{ item_description: record.item || '', quantity: record.quantity || '', unit: 'pcs' }];
         
       setFormData({
         location: record.location,
@@ -103,7 +103,7 @@ export default function EditLaundryModal({ isOpen, onClose, record, locations, s
   const addItem = () => {
     setFormData({
       ...formData,
-      items: [...formData.items, { item_description: '', quantity: 1, unit: 'pcs' }]
+      items: [...formData.items, { item_description: '', quantity: '', unit: 'pcs' }]
     });
   };
 
@@ -165,10 +165,15 @@ export default function EditLaundryModal({ isOpen, onClose, record, locations, s
                   <Input
                     type="number"
                     min="1"
-                    placeholder="Qty"
+                    placeholder="0"
                     required
-                    value={Number(item.quantity)}
-                    onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value, 10) || 1)}
+                    value={item.quantity}
+                    onChange={(e) => {
+                      let val = e.target.value;
+                      if (val === '0') val = '1';
+                      const parsed = parseInt(val, 10);
+                      handleItemChange(index, 'quantity', isNaN(parsed) ? '' : parsed);
+                    }}
                   />
                 </div>
                 <div className="w-full sm:w-24">
