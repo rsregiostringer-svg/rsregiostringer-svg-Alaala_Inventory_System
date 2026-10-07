@@ -13,6 +13,7 @@ export default function LaundryExcelTable({
   records = [],
   onAdvanceStage,
   onViewDetail,
+  onEditRecord,
   onDeleteRecord,
   isMasterAdmin = false,
   loading = false,
@@ -322,6 +323,17 @@ export default function LaundryExcelTable({
                       >
                         Detail
                       </Button>
+                      {onEditRecord && (
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => onEditRecord(r)}
+                          icon={Edit2}
+                          title="Edit laundry batch"
+                        >
+                          Edit
+                        </Button>
+                      )}
                       {isMasterAdmin && onDeleteRecord && (
                         <Button
                           variant="danger"

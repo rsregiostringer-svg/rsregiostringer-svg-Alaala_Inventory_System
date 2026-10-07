@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useRealtime } from '../contexts/RealtimeContext';
 import LaundryExcelTable from '../components/laundry/LaundryExcelTable';
 import AdvanceStageModal from '../components/laundry/AdvanceStageModal';
+import EditLaundryModal from '../components/laundry/EditLaundryModal';
 import Button from '../components/common/Button';
 import SearchInput from '../components/common/SearchInput';
 import Select from '../components/common/Select';
@@ -65,6 +66,7 @@ export default function LaundryPage() {
   // Modals
   const [advanceRecord, setAdvanceRecord] = useState(null);
   const [targetStage, setTargetStage] = useState(null);
+  const [editRecord, setEditRecord] = useState(null);
   const [isNewBatchOpen, setIsNewBatchOpen] = useState(false);
   const [newBatchData, setNewBatchData] = useState({
     location: '',
@@ -591,6 +593,7 @@ export default function LaundryPage() {
         loading={loading}
         onAdvanceStage={handleOpenAdvance}
         onViewDetail={(record) => navigate(`/laundry/${record.id}`)}
+        onEditRecord={(record) => setEditRecord(record)}
         onDeleteRecord={(record) => setDeleteBatchTarget(record)}
         isMasterAdmin={user?.role === 'MASTER_ADMIN' || user?.is_master_admin}
       />
@@ -852,6 +855,16 @@ export default function LaundryPage() {
           </div>
         </div>
       </Modal>
+
+      {/* Edit Laundry Record Modal */}
+      <EditLaundryModal
+        isOpen={!!editRecord}
+        onClose={() => setEditRecord(null)}
+        record={editRecord}
+        locations={locations}
+        staffList={staffList}
+        onSuccess={() => loadLaundry()}
+      />
     </div>
   );
 }
