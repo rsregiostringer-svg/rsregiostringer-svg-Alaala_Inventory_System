@@ -685,11 +685,12 @@ export default function LaundryPage() {
                     <option value="Other" />
                   </datalist>
                 </div>
-                <div className="w-full sm:w-20">
+                <div className="w-full sm:w-16">
                   <Input
                     type="number"
                     min="1"
                     placeholder="0"
+                    className="text-center px-1"
                     required
                     value={item.quantity}
                     onChange={(e) => {
