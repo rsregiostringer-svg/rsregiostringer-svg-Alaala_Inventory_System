@@ -442,7 +442,7 @@ export default function LaundryPage() {
                 <select
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(parseInt(e.target.value, 10))}
-                  className="bg-[#F0F2F5] border border-slate-200 text-slate-100 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-[#0866FF]"
+                  className="bg-[#F0F2F5] border border-slate-200 text-slate-900 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-[#0866FF]"
                 >
                   {MONTH_NAMES.map((m, idx) => (
                     <option key={m} value={idx}>
@@ -454,7 +454,7 @@ export default function LaundryPage() {
                 <select
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(parseInt(e.target.value, 10))}
-                  className="bg-[#F0F2F5] border border-slate-200 text-slate-100 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-[#0866FF]"
+                  className="bg-[#F0F2F5] border border-slate-200 text-slate-900 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-[#0866FF]"
                 >
                   <option value={currentYear}>{currentYear}</option>
                   <option value={currentYear - 1}>{currentYear - 1}</option>
@@ -467,7 +467,7 @@ export default function LaundryPage() {
               <select
                 value={selectedWeekType}
                 onChange={(e) => setSelectedWeekType(e.target.value)}
-                className="bg-[#F0F2F5] border border-slate-200 text-slate-100 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-[#0866FF]"
+                className="bg-[#F0F2F5] border border-slate-200 text-slate-900 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-[#0866FF]"
               >
                 <option value="THIS_WEEK">This Current Week</option>
                 <option value="LAST_WEEK">Last Week</option>
@@ -480,7 +480,7 @@ export default function LaundryPage() {
                 <select
                   value={selectedDayType}
                   onChange={(e) => setSelectedDayType(e.target.value)}
-                  className="bg-[#F0F2F5] border border-slate-200 text-slate-100 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-[#0866FF]"
+                  className="bg-[#F0F2F5] border border-slate-200 text-slate-900 text-xs rounded-lg px-3 py-2 cursor-pointer focus:outline-hidden focus:border-[#0866FF]"
                 >
                   <option value="TODAY">Today</option>
                   <option value="YESTERDAY">Yesterday</option>
@@ -492,7 +492,7 @@ export default function LaundryPage() {
                     type="date"
                     value={specificDay}
                     onChange={(e) => setSpecificDay(e.target.value)}
-                    className="bg-[#F0F2F5] border border-slate-200 text-slate-100 text-xs rounded-lg px-3 py-1.5 focus:outline-hidden focus:border-[#0866FF]"
+                    className="bg-[#F0F2F5] border border-slate-200 text-slate-900 text-xs rounded-lg px-3 py-1.5 focus:outline-hidden focus:border-[#0866FF]"
                   />
                 )}
               </div>
@@ -504,14 +504,14 @@ export default function LaundryPage() {
                   type="date"
                   value={customStartDate}
                   onChange={(e) => setCustomStartDate(e.target.value)}
-                  className="bg-[#F0F2F5] border border-slate-200 text-slate-100 text-xs rounded-lg px-2.5 py-1.5 focus:outline-hidden focus:border-[#0866FF]"
+                  className="bg-[#F0F2F5] border border-slate-200 text-slate-900 text-xs rounded-lg px-2.5 py-1.5 focus:outline-hidden focus:border-[#0866FF]"
                 />
                 <span className="text-slate-500 text-xs">to</span>
                 <input
                   type="date"
                   value={customEndDate}
                   onChange={(e) => setCustomEndDate(e.target.value)}
-                  className="bg-[#F0F2F5] border border-slate-200 text-slate-100 text-xs rounded-lg px-2.5 py-1.5 focus:outline-hidden focus:border-[#0866FF]"
+                  className="bg-[#F0F2F5] border border-slate-200 text-slate-900 text-xs rounded-lg px-2.5 py-1.5 focus:outline-hidden focus:border-[#0866FF]"
                 />
               </div>
             )}
