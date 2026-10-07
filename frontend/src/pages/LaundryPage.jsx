@@ -299,8 +299,7 @@ export default function LaundryPage() {
     // Prefer NO CODE as default if found
     const noCodeLoc = locations.find((l) => l.name === 'NO CODE' || l.code === 'NO_CODE');
     setNewBatchData({
-      location: noCodeLoc ? noCodeLoc.id : locations[0]?.id || '',
-      items: [{ item_description: '', quantity: '', unit: 'pcs' }],
+      items: [{ item_description: '', quantity: '', unit: 'pcs', location: noCodeLoc ? noCodeLoc.id : locations[0]?.id || '' }],
       laundry_in_date: new Date().toISOString().split('T')[0],
       laundry_in_time: new Date().toTimeString().slice(0, 5),
       laundry_in_shift: '8am to 5pm',
@@ -627,17 +626,6 @@ export default function LaundryPage() {
           )}
 
           <Select
-            label="Originating Chapel / Tag"
-            required
-            options={locations.map((l) => ({
-              value: l.id,
-              label: l.name === 'NO CODE' ? 'NO CODE (Uncoded / General Linen)' : l.name,
-            }))}
-            value={newBatchData.location}
-            onChange={(e) => setNewBatchData({ ...newBatchData, location: e.target.value })}
-            helperText="Select NO CODE if item has no chapel code or is general linen/rags."
-          />
-
           <div className="space-y-3 p-3 bg-slate-50/80 border border-slate-200 rounded-lg">
             <div className="flex items-center justify-between">
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
@@ -650,6 +638,20 @@ export default function LaundryPage() {
             
             {newBatchData.items.map((item, index) => (
               <div key={index} className="flex flex-col sm:flex-row gap-2 items-start sm:items-center bg-white p-2 rounded border border-slate-200">
+                <div className="w-full sm:w-48">
+                  <Select
+                    options={locations.map((l) => ({
+                      value: l.id,
+                      label: l.name === 'NO CODE' ? 'NO CODE' : l.name,
+                    }))}
+                    value={item.location || ''}
+                    onChange={(e) => {
+                      const newItems = [...newBatchData.items];
+                      newItems[index].location = e.target.value;
+                      setNewBatchData({ ...newBatchData, items: newItems });
+                    }}
+                  />
+                </div>
                 <div className="flex-1 w-full">
                   <Input
                     placeholder="Item (e.g. Curtain)"
@@ -715,9 +717,10 @@ export default function LaundryPage() {
             <button
               type="button"
               onClick={() => {
+                const defaultLoc = locations.find((l) => l.name === 'NO CODE' || l.code === 'NO_CODE') || locations[0];
                 setNewBatchData({
                   ...newBatchData,
-                  items: [...newBatchData.items, { item_description: '', quantity: '', unit: 'pcs' }],
+                  items: [...newBatchData.items, { item_description: '', quantity: '', unit: 'pcs', location: defaultLoc ? defaultLoc.id : '' }],
                 });
               }}
               className="text-xs font-semibold text-[#0866FF] hover:text-blue-700 hover:underline flex items-center gap-1 mt-1"

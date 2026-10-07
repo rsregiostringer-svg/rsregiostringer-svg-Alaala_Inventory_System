@@ -149,17 +149,6 @@ export default function EditLaundryModal({ isOpen, onClose, record, locations, s
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* General info */}
           <div className="md:col-span-2 space-y-4">
-            <Select
-              label="Location"
-              required
-              options={locations.map(l => ({
-                value: l.id,
-                label: l.name === 'NO CODE' ? 'NO CODE (Uncoded)' : l.name,
-              }))}
-              value={formData.location}
-              onChange={(e) => handleChange('location', e.target.value)}
-            />
-
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 p-3 bg-slate-50 border border-slate-200 rounded-lg">
               <Input
                 type="date"
@@ -216,6 +205,16 @@ export default function EditLaundryModal({ isOpen, onClose, record, locations, s
             
             {formData.items.map((item, index) => (
               <div key={index} className="flex flex-col sm:flex-row gap-2 items-start sm:items-center bg-white p-2 rounded border border-slate-200">
+                <div className="w-full sm:w-48">
+                  <Select
+                    options={locations.map((l) => ({
+                      value: l.id,
+                      label: l.name === 'NO CODE' ? 'NO CODE' : l.name,
+                    }))}
+                    value={item.location || ''}
+                    onChange={(e) => handleItemChange(index, 'location', e.target.value)}
+                  />
+                </div>
                 <div className="flex-1 w-full">
                   <Input
                     placeholder="Item (e.g. Curtain)"
