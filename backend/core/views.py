@@ -439,7 +439,7 @@ class DashboardStatsView(APIView):
         else:
             active_items = InventoryItem.objects.filter(is_active=True, location_id__in=accessible_loc_ids)
             caskets_qs = Casket.objects.filter(location_id__in=accessible_loc_ids)
-            laundry_qs = LaundryRecord.objects.filter(location_id__in=accessible_loc_ids)
+            laundry_qs = LaundryRecord.objects.filter(Q(location_id__in=accessible_loc_ids) | Q(items__location_id__in=accessible_loc_ids)).distinct()
             maint_qs = Maintenance.objects.filter(location_id__in=accessible_loc_ids)
             locations_qs = Location.objects.filter(is_active=True, id__in=accessible_loc_ids)
             chapels_qs = Chapel.objects.filter(is_active=True)
@@ -663,14 +663,42 @@ class ExportCSVView(APIView):
         
         if module == 'laundry':
             from laundry.models import LaundryRecord
+            from django.db.models import Q
             location_id = request.query_params.get('location')
+            status_filter = request.query_params.get('status')
+            in_charge = request.query_params.get('in_charge')
+            search = request.query_params.get('search')
             start_date = request.query_params.get('start_date')
             end_date = request.query_params.get('end_date')
 
-            qs = LaundryRecord.objects.select_related('location').all()
+            qs = LaundryRecord.objects.select_related('location').prefetch_related('items').all()
 
             if location_id:
-                qs = qs.filter(location_id=location_id)
+                qs = qs.filter(
+                    Q(location_id=location_id) | Q(items__location_id=location_id)
+                ).distinct()
+            if status_filter:
+                if status_filter == 'IN_PROCESS':
+                    qs = qs.exclude(status='RETURNED')
+                else:
+                    qs = qs.filter(status=status_filter)
+            if in_charge:
+                qs = qs.filter(
+                    Q(laundry_in_charge__icontains=in_charge) |
+                    Q(laba_in_charge__icontains=in_charge) |
+                    Q(banlaw_in_charge__icontains=in_charge) |
+                    Q(sampay_in_charge__icontains=in_charge) |
+                    Q(pinaw_in_charge__icontains=in_charge) |
+                    Q(tiklop_in_charge__icontains=in_charge) |
+                    Q(returned_by__icontains=in_charge)
+                )
+            if search:
+                qs = qs.filter(
+                    Q(item__icontains=search) |
+                    Q(items__item_description__icontains=search) |
+                    Q(encoded_by__icontains=search) |
+                    Q(notes__icontains=search)
+                ).distinct()
             if start_date:
                 qs = qs.filter(laundry_in_date__gte=start_date)
             if end_date:
@@ -692,41 +720,82 @@ class ExportCSVView(APIView):
             ])
 
             for record in qs:
-                writer.writerow([
-                    f"L-{record.id:04d}",
-                    record.location.name if record.location else '',
-                    record.item,
-                    record.quantity,
-                    record.unit,
-                    record.get_status_display(),
-                    record.laundry_in_date or '',
-                    record.laundry_in_time or '',
-                    record.laundry_in_shift or '',
-                    record.laundry_in_charge or '',
-                    record.laba_date or '',
-                    record.laba_time or '',
-                    record.laba_shift or '',
-                    record.laba_in_charge or '',
-                    record.banlaw_date or '',
-                    record.banlaw_time or '',
-                    record.banlaw_shift or '',
-                    record.banlaw_in_charge or '',
-                    record.sampay_date or '',
-                    record.sampay_time or '',
-                    record.sampay_shift or '',
-                    record.sampay_in_charge or '',
-                    record.pinaw_date or '',
-                    record.pinaw_time or '',
-                    record.pinaw_shift or '',
-                    record.pinaw_in_charge or '',
-                    record.tiklop_date or '',
-                    record.tiklop_time or '',
-                    record.tiklop_shift or '',
-                    record.tiklop_in_charge or '',
-                    record.date_returned or '',
-                    record.returned_time or '',
-                    record.returned_by or ''
-                ])
+                # Iterate over items to create a row for each item/location combination
+                items = record.items.all()
+                if not items:
+                    # Fallback for old records with no items
+                    writer.writerow([
+                        f"L-{record.id:04d}",
+                        record.location.name if record.location else '',
+                        record.item,
+                        record.quantity,
+                        '', # No unit in old records natively accessible without items
+                        record.get_status_display(),
+                        record.laundry_in_date or '',
+                        record.laundry_in_time or '',
+                        record.laundry_in_shift or '',
+                        record.laundry_in_charge or '',
+                        record.laba_date or '',
+                        record.laba_time or '',
+                        record.laba_shift or '',
+                        record.laba_in_charge or '',
+                        record.banlaw_date or '',
+                        record.banlaw_time or '',
+                        record.banlaw_shift or '',
+                        record.banlaw_in_charge or '',
+                        record.sampay_date or '',
+                        record.sampay_time or '',
+                        record.sampay_shift or '',
+                        record.sampay_in_charge or '',
+                        record.pinaw_date or '',
+                        record.pinaw_time or '',
+                        record.pinaw_shift or '',
+                        record.pinaw_in_charge or '',
+                        record.tiklop_date or '',
+                        record.tiklop_time or '',
+                        record.tiklop_shift or '',
+                        record.tiklop_in_charge or '',
+                        record.date_returned or '',
+                        record.returned_time or '',
+                        record.returned_by or ''
+                    ])
+                else:
+                    for item in items:
+                        writer.writerow([
+                            f"L-{record.id:04d}",
+                            item.location.name if item.location else (record.location.name if record.location else ''),
+                            item.item_description,
+                            item.quantity,
+                            item.unit,
+                            record.get_status_display(),
+                            record.laundry_in_date or '',
+                            record.laundry_in_time or '',
+                            record.laundry_in_shift or '',
+                            record.laundry_in_charge or '',
+                            record.laba_date or '',
+                            record.laba_time or '',
+                            record.laba_shift or '',
+                            record.laba_in_charge or '',
+                            record.banlaw_date or '',
+                            record.banlaw_time or '',
+                            record.banlaw_shift or '',
+                            record.banlaw_in_charge or '',
+                            record.sampay_date or '',
+                            record.sampay_time or '',
+                            record.sampay_shift or '',
+                            record.sampay_in_charge or '',
+                            record.pinaw_date or '',
+                            record.pinaw_time or '',
+                            record.pinaw_shift or '',
+                            record.pinaw_in_charge or '',
+                            record.tiklop_date or '',
+                            record.tiklop_time or '',
+                            record.tiklop_shift or '',
+                            record.tiklop_in_charge or '',
+                            record.date_returned or '',
+                            record.returned_time or '',
+                            record.returned_by or ''
+                        ])
             return response
         
         return Response({"detail": "Module not supported"}, status=status.HTTP_400_BAD_REQUEST)

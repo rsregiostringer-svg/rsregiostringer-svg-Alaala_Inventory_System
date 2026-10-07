@@ -237,14 +237,22 @@ class CasketViewSet(viewsets.ModelViewSet):
             return Response({'detail': 'Deceased full name is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Service info
-        chapel_id = service_data.get('chapel') or None
-        is_residence = bool(service_data.get('is_residence', False)) or (str(chapel_id).upper() in ['RESIDENCE', 'HOME', 'HOUSE'])
-        residence_address = (service_data.get('residence_address') or buyer_address or '').strip()
-        lamay_start_date = service_data.get('lamay_start_date') or timezone.now().date()
-        lamay_start_time = service_data.get('lamay_start_time') or None
-        expected_burial_date = service_data.get('expected_burial_date') or None
-        burial_time = service_data.get('burial_time') or None
-        service_status = service_data.get('service_status', 'ACTIVE')
+        chapel_id = service_data.get('chapel') or data.get('chapel_id') or None
+        is_residence_from_data = data.get('is_residence')
+        if is_residence_from_data is None:
+            is_residence = bool(service_data.get('is_residence', False))
+        else:
+            is_residence = bool(is_residence_from_data)
+            
+        if str(chapel_id).upper() in ['RESIDENCE', 'HOME', 'HOUSE']:
+            is_residence = True
+            
+        residence_address = (service_data.get('residence_address') or data.get('residence_address') or buyer_address or '').strip()
+        lamay_start_date = service_data.get('lamay_start_date') or data.get('lamay_start_date') or timezone.now().date()
+        lamay_start_time = service_data.get('lamay_start_time') or data.get('lamay_start_time') or None
+        expected_burial_date = service_data.get('expected_burial_date') or data.get('expected_burial_date') or None
+        burial_time = service_data.get('burial_time') or data.get('burial_time') or None
+        service_status = service_data.get('service_status') or data.get('service_status') or 'ACTIVE'
         selling_price = data.get('selling_price') or casket.selling_price
         override_conflict = data.get('override_conflict', False)
         general_notes = data.get('notes', '')

@@ -206,9 +206,25 @@ export default function LaundryExcelTable({
                   
                   {/* 2. Location */}
                   <td className="p-2.5 whitespace-nowrap">
-                    <span className="px-2 py-1 rounded text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                      {r.location_details?.name || 'NO CODE'}
-                    </span>
+                    {(() => {
+                      const hasItems = r.items && r.items.length > 0;
+                      if (hasItems) {
+                        return (
+                          <div className="flex flex-col gap-1">
+                            {r.items.map((item, idx) => (
+                              <span key={idx} className="px-2 py-1 rounded text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200 w-max">
+                                {item.location_details?.name || 'NO CODE'}
+                              </span>
+                            ))}
+                          </div>
+                        );
+                      }
+                      return (
+                        <span className="px-2 py-1 rounded text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                          {r.location_details?.name || 'NO CODE'}
+                        </span>
+                      );
+                    })()}
                   </td>
 
                   {/* 2. Items */}
@@ -225,15 +241,6 @@ export default function LaundryExcelTable({
                           <div className="font-semibold text-slate-900 max-w-[160px] truncate" title={displayItemStr}>
                             {displayItemStr}
                           </div>
-                          {hasItems && r.items.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); setItemBreakdownRecord(r); }}
-                              className="text-[10px] text-blue-600 hover:underline mt-0.5 flex items-center gap-1"
-                            >
-                              <List className="w-3 h-3" /> View Breakdown ({r.items.length})
-                            </button>
-                          )}
 
                           {hasNotes && (
                             <p className="text-[11px] text-slate-500 truncate max-w-[160px] mt-1" title={r.notes}>

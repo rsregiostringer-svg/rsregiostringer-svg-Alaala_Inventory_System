@@ -36,7 +36,9 @@ class LaundryViewSet(viewsets.ModelViewSet):
         end_date = self.request.query_params.get('end_date')
 
         if location_id:
-            qs = qs.filter(location_id=location_id)
+            qs = qs.filter(
+                Q(location_id=location_id) | Q(items__location_id=location_id)
+            ).distinct()
         if status_filter:
             if status_filter == 'IN_PROCESS':
                 qs = qs.exclude(status='RETURNED')
@@ -55,9 +57,10 @@ class LaundryViewSet(viewsets.ModelViewSet):
         if search:
             qs = qs.filter(
                 Q(item__icontains=search) |
+                Q(items__item_description__icontains=search) |
                 Q(encoded_by__icontains=search) |
                 Q(notes__icontains=search)
-            )
+            ).distinct()
         if start_date:
             qs = qs.filter(laundry_in_date__gte=start_date)
         if end_date:

@@ -253,6 +253,8 @@ export default function LaundryPage() {
       });
       if (effectiveStartDate) params.set('start_date', effectiveStartDate);
       if (effectiveEndDate) params.set('end_date', effectiveEndDate);
+      if (selectedStatus) params.set('status', selectedStatus);
+      if (search) params.set('search', search);
 
       const exportUrl = `${api.baseUrl}/reports/export-csv/?${params.toString()}`;
       const token = localStorage.getItem('alaala_access_token');
@@ -329,17 +331,25 @@ export default function LaundryPage() {
     setBatchError('');
 
     try {
-      await api.post('/laundry/', {
-        ...newBatchData,
-        items: validItems, // Only submit valid items
-        encoded_by: user
-          ? `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.username
-          : 'Staff',
+      const encodedBy = user
+        ? `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.username
+        : 'Staff';
+
+      // Submit each item as a separate laundry record
+      const promises = validItems.map(item => {
+        return api.post('/laundry/', {
+          ...newBatchData,
+          location: item.location,
+          items: [item], // Send as a single-item array
+          encoded_by: encodedBy,
+        });
       });
+
+      await Promise.all(promises);
       setIsNewBatchOpen(false);
       loadLaundry();
     } catch (err) {
-      setBatchError(err.message || 'Failed to intake laundry record.');
+      setBatchError(err.message || 'Failed to intake laundry records.');
     } finally {
       setBatchLoading(false);
     }
@@ -625,7 +635,6 @@ export default function LaundryPage() {
             </div>
           )}
 
-          <Select
           <div className="space-y-3 p-3 bg-slate-50/80 border border-slate-200 rounded-lg">
             <div className="flex items-center justify-between">
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">

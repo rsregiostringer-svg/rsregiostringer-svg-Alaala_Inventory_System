@@ -3,9 +3,14 @@ from .models import LaundryRecord, LaundryRecordItem
 from core.serializers import LocationSerializer
 
 class LaundryRecordItemSerializer(serializers.ModelSerializer):
+    location_details = LocationSerializer(source='location', read_only=True)
+
     class Meta:
         model = LaundryRecordItem
-        fields = ['id', 'item_description', 'quantity', 'unit']
+        fields = ['id', 'item_description', 'quantity', 'unit', 'location', 'location_details']
+        extra_kwargs = {
+            'location': {'required': False, 'allow_null': True}
+        }
 
 class LaundryRecordSerializer(serializers.ModelSerializer):
     location_details = LocationSerializer(source='location', read_only=True)

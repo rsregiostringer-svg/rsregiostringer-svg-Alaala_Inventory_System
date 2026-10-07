@@ -31,7 +31,7 @@ class LaundryRecord(models.Model):
         READY_FOR_RETURN = 'READY_FOR_RETURN', 'Ready for Return'
         RETURNED = 'RETURNED', 'Returned'
 
-    location = models.ForeignKey(Location, on_delete=models.PROTECT, related_name='laundry_records')
+    location = models.ForeignKey(Location, on_delete=models.PROTECT, related_name='laundry_records', null=True, blank=True)
     # Legacy fields, kept temporarily for data migration / compatibility
     item = models.CharField(max_length=200, blank=True, null=True, default='', help_text="DEPRECATED: Use LaundryRecordItem instead.")
     quantity = models.IntegerField(default=0, null=True, blank=True, help_text="DEPRECATED: Use LaundryRecordItem instead.")
@@ -123,6 +123,7 @@ class LaundryRecordItem(models.Model):
     item_description = models.CharField(max_length=200)
     quantity = models.DecimalField(max_digits=10, decimal_places=2, default=1)
     unit = models.CharField(max_length=50, blank=True, default='pcs')
+    location = models.ForeignKey(Location, on_delete=models.PROTECT, related_name='laundry_items', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

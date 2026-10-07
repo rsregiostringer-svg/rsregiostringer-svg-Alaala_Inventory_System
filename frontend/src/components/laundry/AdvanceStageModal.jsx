@@ -195,15 +195,12 @@ export default function AdvanceStageModal({
           </div>
         </div>
 
-        {/* Stage Selector */}
+        {/* Stage Fixed */}
         <div>
-          <Select
-            label="Select Process Stage to Record / Update"
-            required
-            options={STAGES}
-            value={stage}
-            onChange={(e) => handleStageSelect(e.target.value)}
-          />
+          <div className="mb-1 block text-[13px] font-semibold text-slate-700">Process Stage</div>
+          <div className="p-2.5 bg-slate-100 border border-slate-200 text-slate-800 rounded-lg text-sm font-medium">
+            {STAGES.find(s => s.value === stage)?.label || stage}
+          </div>
           {isCurrentStageRecorded && (
             <div className="mt-2 p-2 rounded-md bg-blue-50 border border-blue-200 text-xs text-blue-700 flex items-center gap-1.5 font-medium">
               <CheckCircle2 className="w-4 h-4 shrink-0 text-blue-600" />
