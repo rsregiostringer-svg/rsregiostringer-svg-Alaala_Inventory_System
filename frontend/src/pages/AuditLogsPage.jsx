@@ -75,12 +75,12 @@ export default function AuditLogsPage() {
           row.action === 'CREATE'
             ? 'success'
             : row.action === 'DELETE'
-            ? 'danger'
-            : row.action === 'TRANSFER'
-            ? 'primary'
-            : row.action === 'STAGE_CHANGE'
-            ? 'accent'
-            : 'warning';
+              ? 'danger'
+              : row.action === 'TRANSFER'
+                ? 'primary'
+                : row.action === 'STAGE_CHANGE'
+                  ? 'accent'
+                  : 'warning';
         return <Badge variant={variant} size="sm">{row.action}</Badge>;
       },
     },
@@ -111,7 +111,7 @@ export default function AuditLogsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-serif font-bold text-slate-100 tracking-wide">
+          <h1 className="text-2xl font-serif font-bold text-black-100 tracking-wide">
             Audit Trail & Accountability
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">

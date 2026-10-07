@@ -143,7 +143,7 @@ export default function InventoryTransactionsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-serif font-bold text-slate-100 tracking-wide">
+          <h1 className="text-2xl font-serif font-bold text-black-100 tracking-wide">
             Inventory Transactions
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">

@@ -232,7 +232,7 @@ export default function WaterPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-serif font-bold text-slate-100 tracking-wide">
+          <h1 className="text-2xl font-serif font-bold text-black-100 tracking-wide">
             Water Utility Monitoring
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
@@ -245,8 +245,8 @@ export default function WaterPage() {
             size="sm"
             onClick={async () => {
               try {
-                await handleExportExcel('water', { 
-                  search, 
+                await handleExportExcel('water', {
+                  search,
                   location: locationFilter,
                   payment_status: statusFilter
                 }, 'water');

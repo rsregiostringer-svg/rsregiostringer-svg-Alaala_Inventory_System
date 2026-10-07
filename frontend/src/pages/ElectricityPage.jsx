@@ -232,7 +232,7 @@ export default function ElectricityPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-serif font-bold text-yellow-600 tracking-wide">
+          <h1 className="text-2xl font-serif font-bold text-black-100 tracking-wide">
             Electricity Utility Monitoring
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
@@ -245,8 +245,8 @@ export default function ElectricityPage() {
             size="sm"
             onClick={async () => {
               try {
-                await handleExportExcel('electricity', { 
-                  search, 
+                await handleExportExcel('electricity', {
+                  search,
                   location: locationFilter,
                   payment_status: statusFilter
                 }, 'electricity');

@@ -99,7 +99,7 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       <div>
-        <h1 className="text-2xl font-serif font-bold text-slate-100 tracking-wide">
+        <h1 className="text-2xl font-serif font-bold text-black-100 tracking-wide">
           System Settings & Facilities
         </h1>
         <p className="text-xs text-slate-500 mt-0.5">
