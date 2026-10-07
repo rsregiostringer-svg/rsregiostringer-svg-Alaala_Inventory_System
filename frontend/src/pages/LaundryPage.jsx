@@ -668,7 +668,7 @@ export default function LaundryPage() {
                     min="1"
                     placeholder="Qty"
                     required
-                    value={item.quantity}
+                    value={Number(item.quantity)}
                     onChange={(e) => {
                       const newItems = [...newBatchData.items];
                       newItems[index].quantity = parseInt(e.target.value, 10) || 1;
@@ -839,7 +839,7 @@ export default function LaundryPage() {
             <div>
               <p className="font-semibold text-rose-200">Are you sure you want to permanently delete this batch?</p>
               <p className="mt-1">
-                Batch #{deleteBatchTarget?.id} &bull; <strong>{deleteBatchTarget?.item}</strong> ({deleteBatchTarget?.quantity} pcs).
+                Batch #{deleteBatchTarget?.id} &bull; <strong>{deleteBatchTarget?.item}</strong> ({Number(deleteBatchTarget?.total_quantity || deleteBatchTarget?.quantity)} pcs).
                 This action cannot be undone and will be logged in the system audit trail.
               </p>
             </div>

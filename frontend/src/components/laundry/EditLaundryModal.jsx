@@ -167,7 +167,7 @@ export default function EditLaundryModal({ isOpen, onClose, record, locations, s
                     min="1"
                     placeholder="Qty"
                     required
-                    value={item.quantity}
+                    value={Number(item.quantity)}
                     onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value, 10) || 1)}
                   />
                 </div>

@@ -171,7 +171,7 @@ export default function AdvanceStageModal({
       isOpen={isOpen}
       onClose={onClose}
       title={isCurrentStageRecorded ? 'Edit Stage & Personnel In Charge' : 'Advance Laundry Stage'}
-      subtitle={`Batch #${record.id} - ${record.item} (${record.quantity} pcs)`}
+      subtitle={`Batch #${record.id} - ${record.item} (${Number(record.total_quantity || record.quantity)} pcs)`}
       maxWidth="max-w-lg"
     >
       <form onSubmit={handleSubmit} className="space-y-4">

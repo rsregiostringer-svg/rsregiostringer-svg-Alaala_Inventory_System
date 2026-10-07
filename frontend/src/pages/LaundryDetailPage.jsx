@@ -248,7 +248,7 @@ export default function LaundryDetailPage() {
           <p className="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-3">
             <span>Batch ID: #{record.id}</span>
             <span>&bull;</span>
-            <span>Quantity: <strong className="text-blue-500 font-bold">{record.total_quantity || record.quantity}</strong></span>
+            <span>Quantity: <strong className="text-blue-500 font-bold">{Number(record.total_quantity || record.quantity)}</strong></span>
             <span>&bull;</span>
             <span>Origin: <strong className="text-[#0866FF] font-medium">{record.location_details?.name || 'NO CODE'}</strong></span>
           </p>
@@ -364,7 +364,7 @@ export default function LaundryDetailPage() {
             <div>
               <p className="font-semibold text-rose-200">Are you sure you want to permanently delete this batch?</p>
               <p className="mt-1">
-                Batch #{record.id} &bull; <strong>{record.items && record.items.length > 0 ? record.items.map(i => i.item_description).join(' / ') : record.item}</strong> ({record.total_quantity || record.quantity} items) originating from{' '}
+                Batch #{record.id} &bull; <strong>{record.items && record.items.length > 0 ? record.items.map(i => i.item_description).join(' / ') : record.item}</strong> ({Number(record.total_quantity || record.quantity)} items) originating from{' '}
                 <strong>{record.location_details?.name || 'NO CODE'}</strong>.
               </p>
               <p className="mt-2 text-rose-400/90 font-medium">

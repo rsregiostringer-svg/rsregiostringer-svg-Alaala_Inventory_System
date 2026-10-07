@@ -237,7 +237,7 @@ export default function LaundryExcelTable({
 
                   {/* 3. Quantity */}
                   <td className="p-2.5 text-center font-bold text-slate-900 text-base">
-                    {r.total_quantity || r.quantity}
+                    {Number(r.total_quantity || r.quantity)}
                   </td>
 
                   {/* 4. Laba */}
@@ -377,7 +377,7 @@ export default function LaundryExcelTable({
                   {itemBreakdownRecord.items.map((item, idx) => (
                     <tr key={idx} className="hover:bg-slate-50/50">
                       <td className="px-4 py-2.5 font-medium text-slate-800">{item.item_description}</td>
-                      <td className="px-4 py-2.5 text-right font-semibold">{item.quantity}</td>
+                      <td className="px-4 py-2.5 text-right font-semibold">{Number(item.quantity)}</td>
                       <td className="px-4 py-2.5 text-left text-slate-500">{item.unit || 'pcs'}</td>
                     </tr>
                   ))}
@@ -386,7 +386,7 @@ export default function LaundryExcelTable({
                   <tr>
                     <td className="px-4 py-2.5 text-right uppercase text-xs">Total Quantity:</td>
                     <td className="px-4 py-2.5 text-right">
-                      {itemBreakdownRecord.total_quantity || itemBreakdownRecord.quantity}
+                      {Number(itemBreakdownRecord.total_quantity || itemBreakdownRecord.quantity)}
                     </td>
                     <td></td>
                   </tr>
