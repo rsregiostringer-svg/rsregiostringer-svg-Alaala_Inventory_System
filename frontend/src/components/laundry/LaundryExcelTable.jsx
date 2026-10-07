@@ -75,21 +75,42 @@ export default function LaundryExcelTable({
       <table className="w-full text-left text-xs text-slate-900 divide-y divide-slate-200">
         <thead className="bg-blue-600 text-white text-xs font-semibold sticky top-0 z-10 select-none">
           <tr className="divide-x divide-blue-500">
-            {/* 1. Laundry IN (Date/ Shift/ In Charge) */}
-            <th className="px-3.5 py-3 whitespace-nowrap min-w-[160px]">
-              <div className="font-bold">Laundry IN</div>
-              <div className="text-[10px] text-blue-100 font-normal">(Date / Shift / In Charge)</div>
+            {/* 1. Laundry ID */}
+            <th className="px-3.5 py-3 whitespace-nowrap">
+              <div className="font-bold">Laundry ID</div>
             </th>
 
-            {/* 2. Items */}
+            {/* 2. Location */}
+            <th className="px-3.5 py-3 whitespace-nowrap">
+              <div className="font-bold">Location</div>
+            </th>
+
+            {/* 3. Item */}
             <th className="px-3.5 py-3 whitespace-nowrap min-w-[140px]">
-              <div className="font-bold">Items</div>
+              <div className="font-bold">Item</div>
             </th>
 
-            {/* 3. Quantity */}
+            {/* 4. Quantity */}
             <th className="px-3 py-3 whitespace-nowrap text-center min-w-[70px]">
-              <div className="font-bold">Qty</div>
+              <div className="font-bold">Quantity</div>
             </th>
+
+            {/* 5. Date */}
+            <th className="px-3.5 py-3 whitespace-nowrap">
+              <div className="font-bold">Date</div>
+            </th>
+
+            {/* 6. Shift */}
+            <th className="px-3.5 py-3 whitespace-nowrap">
+              <div className="font-bold">Shift</div>
+            </th>
+
+            {/* 7. In Charge */}
+            <th className="px-3.5 py-3 whitespace-nowrap">
+              <div className="font-bold">In Charge</div>
+            </th>
+
+
 
             {/* 4. Laba */}
             <th className="px-3.5 py-3 whitespace-nowrap min-w-[140px]">
@@ -144,9 +165,14 @@ export default function LaundryExcelTable({
           {loading ? (
             Array.from({ length: 5 }).map((_, rIdx) => (
               <tr key={rIdx} className="divide-x divide-slate-100 animate-pulse">
-                <td className="p-2.5"><div className="h-12 bg-slate-100 rounded-md" /></td>
+                <td className="p-2.5"><div className="h-6 w-16 bg-slate-100 rounded" /></td>
+                <td className="p-2.5"><div className="h-8 w-24 bg-slate-100 rounded-md" /></td>
                 <td className="p-2.5"><div className="h-10 bg-slate-100 rounded-md" /></td>
                 <td className="p-2.5"><div className="h-6 w-8 mx-auto bg-slate-100 rounded" /></td>
+                <td className="p-2.5"><div className="h-6 w-20 bg-slate-100 rounded" /></td>
+                <td className="p-2.5"><div className="h-6 w-20 bg-slate-100 rounded" /></td>
+                <td className="p-2.5"><div className="h-6 w-20 bg-slate-100 rounded" /></td>
+
                 <td className="p-2"><div className="h-12 bg-slate-100 rounded-md" /></td>
                 <td className="p-2"><div className="h-12 bg-slate-100 rounded-md" /></td>
                 <td className="p-2"><div className="h-12 bg-slate-100 rounded-md" /></td>
@@ -173,28 +199,16 @@ export default function LaundryExcelTable({
 
               return (
                 <tr key={r.id} className="divide-x divide-slate-200 hover:bg-slate-50 transition-colors">
-                  {/* 1. Laundry IN (Date/ Shift/ In Charge) */}
-                  <td className="p-2.5">
-                    <div
-                      onClick={() => onAdvanceStage && onAdvanceStage(r, 'in')}
-                      className="group flex flex-col justify-center p-2 rounded-md bg-white hover:bg-blue-50/50 border border-slate-200 hover:border-blue-400 text-xs min-w-[140px] leading-tight cursor-pointer transition-colors shadow-2xs"
-                      title="Click to edit intake details"
-                    >
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="font-semibold text-slate-900">{formatDateTimeDisplay(r.laundry_in_date, r.laundry_in_time)}</span>
-                        <Edit2 className="w-3 h-3 text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
-                      </div>
-                      <span className="text-slate-500 text-[11px] mt-0.5">{r.laundry_in_shift}</span>
-                      <span className="text-slate-700 text-[11px] font-medium mt-0.5 truncate" title={r.laundry_in_charge}>
-                        {r.laundry_in_charge}
-                      </span>
-                      <span className="text-[10px] text-slate-500 font-mono mt-1 pt-1 border-t border-slate-100 flex items-center justify-between">
-                        <span>#{r.id}</span>
-                        <span className="px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 font-medium">
-                          {r.location_details?.name || 'NO CODE'}
-                        </span>
-                      </span>
-                    </div>
+                  {/* 1. Laundry ID */}
+                  <td className="p-2.5 whitespace-nowrap">
+                    <span className="font-mono text-[11px] text-slate-500 font-medium">#{r.id}</span>
+                  </td>
+                  
+                  {/* 2. Location */}
+                  <td className="p-2.5 whitespace-nowrap">
+                    <span className="px-2 py-1 rounded text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                      {r.location_details?.name || 'NO CODE'}
+                    </span>
                   </td>
 
                   {/* 2. Items */}
@@ -220,11 +234,7 @@ export default function LaundryExcelTable({
                               <List className="w-3 h-3" /> View Breakdown ({r.items.length})
                             </button>
                           )}
-                          <div className="mt-1 flex items-center gap-1.5">
-                            <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
-                              {r.location_details?.name || 'NO CODE'}
-                            </span>
-                          </div>
+
                           {hasNotes && (
                             <p className="text-[11px] text-slate-500 truncate max-w-[160px] mt-1" title={r.notes}>
                               {r.notes}
@@ -235,9 +245,24 @@ export default function LaundryExcelTable({
                     })()}
                   </td>
 
-                  {/* 3. Quantity */}
+                  {/* 4. Quantity */}
                   <td className="p-2.5 text-center font-bold text-slate-900 text-base">
                     {Number(r.total_quantity || r.quantity)}
+                  </td>
+
+                  {/* 5. Date */}
+                  <td className="p-2.5 whitespace-nowrap">
+                    <div className="text-xs text-slate-900 font-medium">{formatDateTimeDisplay(r.laundry_in_date, r.laundry_in_time)}</div>
+                  </td>
+
+                  {/* 6. Shift */}
+                  <td className="p-2.5 whitespace-nowrap">
+                    <div className="text-xs text-slate-600">{r.laundry_in_shift}</div>
+                  </td>
+
+                  {/* 7. In Charge */}
+                  <td className="p-2.5 whitespace-nowrap">
+                    <div className="text-[11px] text-slate-700 font-medium truncate max-w-[100px]" title={r.laundry_in_charge}>{r.laundry_in_charge}</div>
                   </td>
 
                   {/* 4. Laba */}

@@ -148,7 +148,7 @@ export default function EditLaundryModal({ isOpen, onClose, record, locations, s
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* General info */}
-          <div className="md:col-span-2">
+          <div className="md:col-span-2 space-y-4">
             <Select
               label="Location"
               required
@@ -159,6 +159,51 @@ export default function EditLaundryModal({ isOpen, onClose, record, locations, s
               value={formData.location}
               onChange={(e) => handleChange('location', e.target.value)}
             />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 p-3 bg-slate-50 border border-slate-200 rounded-lg">
+              <Input
+                type="date"
+                label="Date"
+                required
+                value={formData.laundry_in_date}
+                onChange={(e) => handleChange('laundry_in_date', e.target.value)}
+              />
+              <Input
+                type="time"
+                label="Time"
+                required
+                value={formData.laundry_in_time}
+                onChange={(e) => handleChange('laundry_in_time', e.target.value)}
+              />
+              <Select
+                label="Shift"
+                required
+                options={[
+                  { value: '8am to 5pm', label: '8am to 5pm' },
+                  { value: '4pm to 1am', label: '4pm to 1am' },
+                  { value: '12midnight to 9am', label: '12midnight to 9am' },
+                ]}
+                value={formData.laundry_in_shift}
+                onChange={(e) => handleChange('laundry_in_shift', e.target.value)}
+              />
+              <div>
+                <Input
+                  label="In Charge"
+                  required
+                  value={formData.laundry_in_charge}
+                  onChange={(e) => handleChange('laundry_in_charge', e.target.value)}
+                  list="edit-staff-list"
+                />
+                <datalist id="edit-staff-list">
+                  {staffList.map((s) => (
+                    <option
+                      key={s.id}
+                      value={`${s.first_name || ''} ${s.last_name || ''}`.trim() || s.username}
+                    />
+                  ))}
+                </datalist>
+              </div>
+            </div>
           </div>
 
           {/* Items Breakdown */}
