@@ -1095,8 +1095,8 @@ export default function ChapelMonitoringPage() {
               label="Seating Capacity"
               required
               min={0}
-              value={configForm.capacity !== undefined ? configForm.capacity : 0}
-              onChange={(e) => setConfigForm({ ...configForm, capacity: parseInt(e.target.value, 10) || 0 })}
+              value={configForm.capacity === 0 ? '' : (configForm.capacity || '')}
+              onChange={(e) => setConfigForm({ ...configForm, capacity: e.target.value === '' ? 0 : parseInt(e.target.value, 10) })}
             />
 
             <Select
@@ -1172,8 +1172,8 @@ export default function ChapelMonitoringPage() {
                 type="number"
                 min={0}
                 required
-                value={editingChapel.capacity !== undefined ? editingChapel.capacity : 0}
-                onChange={(e) => setEditingChapel({ ...editingChapel, capacity: parseInt(e.target.value, 10) || 0 })}
+                value={editingChapel.capacity === 0 ? '' : (editingChapel.capacity || '')}
+                onChange={(e) => setEditingChapel({ ...editingChapel, capacity: e.target.value === '' ? 0 : parseInt(e.target.value, 10) })}
               />
             </div>
 

@@ -36,6 +36,7 @@ import {
   Check
 } from 'lucide-react';
 import { api } from '../services/api';
+import AlaalaLogo from '../assets/alaala.png';
 
 export default function MainLayout() {
   const {
@@ -303,9 +304,7 @@ export default function MainLayout() {
       {/* Mobile Top Header */}
       <div className="md:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-slate-200 z-30">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
-            A
-          </div>
+          <img src={AlaalaLogo} alt="Alaala Logo" className="w-8 h-8 object-contain rounded-lg shrink-0" />
           <div>
             <span className="font-bold text-sm tracking-wide text-slate-900">ALAALA</span>
             <span className="block text-[10px] text-slate-500 font-medium tracking-wider uppercase">
@@ -345,9 +344,7 @@ export default function MainLayout() {
         <div className={`p-4 border-b border-slate-200 flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
           {!isCollapsed && (
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center shrink-0">
-                <span className="font-bold text-base text-white">A</span>
-              </div>
+              <img src={AlaalaLogo} alt="Alaala Logo" className="w-9 h-9 object-contain rounded-lg shrink-0" />
               <div className="min-w-0">
                 <h1 className="font-bold text-sm tracking-wide text-slate-900 truncate">
                   ALAALA
