@@ -238,7 +238,7 @@ class ExportCSVView(APIView):
                 'Encoded By',
                 'Status'
             ])
-            recs = LaundryRecord.objects.select_related('location').all()
+            recs = LaundryRecord.objects.select_related('location').prefetch_related('items').all()
             recs = get_target_loc_filter(recs, 'location_id')
             if start_date and start_date.strip():
                 recs = recs.filter(laundry_in_date__gte=start_date.strip())
@@ -266,19 +266,37 @@ class ExportCSVView(APIView):
                 returned_dt = f"{r.date_returned} {r.returned_time}".strip() if r.date_returned else ""
                 returned_str = f"{returned_dt} / {r.returned_by or ''}" if r.date_returned else ""
 
-                writer.writerow([
-                    laundry_in_str,
-                    f"{r.item} ({r.location.name})",
-                    r.quantity,
-                    laba_str,
-                    banlaw_str,
-                    sampay_str,
-                    pinaw_str,
-                    tiklop_str,
-                    returned_str,
-                    r.encoded_by,
-                    r.get_status_display()
-                ])
+                record_items = list(r.items.all())
+                if not record_items:
+                    # Fallback to legacy fields if no items
+                    writer.writerow([
+                        laundry_in_str,
+                        f"{r.item} ({r.location.name})",
+                        r.quantity,
+                        laba_str,
+                        banlaw_str,
+                        sampay_str,
+                        pinaw_str,
+                        tiklop_str,
+                        returned_str,
+                        r.encoded_by,
+                        r.get_status_display()
+                    ])
+                else:
+                    for item in record_items:
+                        writer.writerow([
+                            laundry_in_str,
+                            f"{item.item_description} ({r.location.name})",
+                            f"{item.quantity} {item.unit}".strip(),
+                            laba_str,
+                            banlaw_str,
+                            sampay_str,
+                            pinaw_str,
+                            tiklop_str,
+                            returned_str,
+                            r.encoded_by,
+                            r.get_status_display()
+                        ])
 
         elif module == 'caskets':
             writer.writerow(['Casket ID', 'Model', 'Type', 'Size', 'Color', 'Material', 'Location', 'Cost (PHP)', 'Price (PHP)', 'Condition', 'Status', 'Received Date'])
@@ -587,6 +605,92 @@ class ExportExcelView(APIView):
                     l.get_status_display()
                 ])
             filename = 'Alaala_Chapel_Lamay'
+
+        elif module == 'laundry':
+            ws.title = 'Laundry'
+            write_header(ws, [
+                'Laundry IN (Date/ Shift/ In Charge)',
+                'Items',
+                'Quantity',
+                'Laba (Date/Shift/ In Charge)',
+                'Banlaw (Date/Shift/ In Charge)',
+                'Sampay (Date/Shift/ In Charge)',
+                'Pinaw (Date/Shift/ In Charge)',
+                'Tiklop (Date/Shift/ In Charge)',
+                'Date Returned/ By',
+                'Encoded By',
+                'Status'
+            ])
+            recs = LaundryRecord.objects.select_related('location').prefetch_related('items').all()
+            recs = get_target_loc_filter(recs, 'location_id')
+            if start_date and start_date.strip():
+                recs = recs.filter(laundry_in_date__gte=start_date.strip())
+            if end_date and end_date.strip():
+                recs = recs.filter(laundry_in_date__lte=end_date.strip())
+            if status_param:
+                recs = recs.filter(status=status_param)
+            
+            for r in recs:
+                laundry_in_dt = f"{r.laundry_in_date} {r.laundry_in_time}".strip()
+                laundry_in_str = f"{laundry_in_dt} / {r.laundry_in_shift} / {r.laundry_in_charge}"
+
+                laba_dt = f"{r.laba_date} {r.laba_time}".strip() if r.laba_date else ""
+                laba_str = f"{laba_dt} / {r.laba_shift or ''} / {r.laba_in_charge or ''}" if r.laba_date else ""
+
+                banlaw_dt = f"{r.banlaw_date} {r.banlaw_time}".strip() if r.banlaw_date else ""
+                banlaw_str = f"{banlaw_dt} / {r.banlaw_shift or ''} / {r.banlaw_in_charge or ''}" if r.banlaw_date else ""
+
+                sampay_dt = f"{r.sampay_date} {r.sampay_time}".strip() if r.sampay_date else ""
+                sampay_str = f"{sampay_dt} / {r.sampay_shift or ''} / {r.sampay_in_charge or ''}" if r.sampay_date else ""
+
+                pinaw_dt = f"{r.pinaw_date} {r.pinaw_time}".strip() if r.pinaw_date else ""
+                pinaw_str = f"{pinaw_dt} / {r.pinaw_shift or ''} / {r.pinaw_in_charge or ''}" if r.pinaw_date else ""
+
+                tiklop_dt = f"{r.tiklop_date} {r.tiklop_time}".strip() if r.tiklop_date else ""
+                tiklop_str = f"{tiklop_dt} / {r.tiklop_shift or ''} / {r.tiklop_in_charge or ''}" if r.tiklop_date else ""
+
+                returned_dt = f"{r.date_returned} {r.returned_time}".strip() if r.date_returned else ""
+                returned_str = f"{returned_dt} / {r.returned_by or ''}" if r.date_returned else ""
+
+                record_items = list(r.items.all())
+                if not record_items:
+                    ws.append([
+                        laundry_in_str,
+                        f"{r.item} ({r.location.name})",
+                        r.quantity,
+                        laba_str,
+                        banlaw_str,
+                        sampay_str,
+                        pinaw_str,
+                        tiklop_str,
+                        returned_str,
+                        r.encoded_by,
+                        r.get_status_display()
+                    ])
+                else:
+                    for item in record_items:
+                        ws.append([
+                            laundry_in_str,
+                            f"{item.item_description} ({r.location.name})",
+                            f"{item.quantity} {item.unit}".strip(),
+                            laba_str,
+                            banlaw_str,
+                            sampay_str,
+                            pinaw_str,
+                            tiklop_str,
+                            returned_str,
+                            r.encoded_by,
+                            r.get_status_display()
+                        ])
+            
+            if start_date and end_date:
+                filename = f"Alaala_Laundry_{start_date}_to_{end_date}"
+            elif start_date:
+                filename = f"Alaala_Laundry_from_{start_date}"
+            elif end_date:
+                filename = f"Alaala_Laundry_until_{end_date}"
+            else:
+                filename = "Alaala_Laundry_All_Records"
 
         elif module == 'maintenance':
             ws.title = 'Maintenance'

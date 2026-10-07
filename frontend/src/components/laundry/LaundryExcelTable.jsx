@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Badge from '../common/Badge';
 import Button from '../common/Button';
+import Modal from '../common/Modal';
 import { LAUNDRY_STATUS_MAP, formatDateTimeDisplay } from '../../utils/formatters';
-import { CheckCircle2, Eye, Edit2, Trash2 } from 'lucide-react';
+import { CheckCircle2, Eye, Edit2, Trash2, List } from 'lucide-react';
 
 /**
  * Clean Excel-like Laundry Monitoring Table:
@@ -16,6 +17,7 @@ export default function LaundryExcelTable({
   isMasterAdmin = false,
   loading = false,
 }) {
+  const [itemBreakdownRecord, setItemBreakdownRecord] = useState(null);
   const renderProcessCell = (date, time, shift, inCharge, stageLabel, stageKey, record) => {
     if (!date) {
       return (
@@ -196,24 +198,45 @@ export default function LaundryExcelTable({
 
                   {/* 2. Items */}
                   <td className="p-2.5">
-                    <div className="font-semibold text-slate-900 max-w-[160px] truncate" title={r.item}>
-                      {r.item}
-                    </div>
-                    <div className="mt-1 flex items-center gap-1.5">
-                      <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
-                        {r.location_details?.name || 'NO CODE'}
-                      </span>
-                    </div>
-                    {r.notes && (
-                      <p className="text-[11px] text-slate-500 truncate max-w-[160px] mt-1" title={r.notes}>
-                        {r.notes}
-                      </p>
-                    )}
+                    {(() => {
+                      const hasItems = r.items && r.items.length > 0;
+                      const displayItemStr = hasItems
+                        ? r.items.map(i => i.item_description).join(' / ')
+                        : r.item;
+                      const hasNotes = hasItems ? r.items.some(i => i.notes) || r.notes : r.notes;
+
+                      return (
+                        <>
+                          <div className="font-semibold text-slate-900 max-w-[160px] truncate" title={displayItemStr}>
+                            {displayItemStr}
+                          </div>
+                          {hasItems && r.items.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => setItemBreakdownRecord(r)}
+                              className="text-[10px] text-blue-600 hover:underline mt-0.5 flex items-center gap-1"
+                            >
+                              <List className="w-3 h-3" /> View Breakdown ({r.items.length})
+                            </button>
+                          )}
+                          <div className="mt-1 flex items-center gap-1.5">
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                              {r.location_details?.name || 'NO CODE'}
+                            </span>
+                          </div>
+                          {hasNotes && (
+                            <p className="text-[11px] text-slate-500 truncate max-w-[160px] mt-1" title={r.notes}>
+                              {r.notes}
+                            </p>
+                          )}
+                        </>
+                      );
+                    })()}
                   </td>
 
                   {/* 3. Quantity */}
                   <td className="p-2.5 text-center font-bold text-slate-900 text-base">
-                    {r.quantity}
+                    {r.total_quantity || r.quantity}
                   </td>
 
                   {/* 4. Laba */}
@@ -318,6 +341,55 @@ export default function LaundryExcelTable({
           )}
         </tbody>
       </table>
+
+      {/* Item Breakdown Modal */}
+      <Modal
+        isOpen={!!itemBreakdownRecord}
+        onClose={() => setItemBreakdownRecord(null)}
+        title="Item Breakdown"
+        subtitle={`Batch #${itemBreakdownRecord?.id} - ${itemBreakdownRecord?.location_details?.name || 'NO CODE'}`}
+        maxWidth="max-w-md"
+      >
+        {itemBreakdownRecord && (
+          <div className="space-y-3">
+            <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+              <table className="w-full text-left text-sm text-slate-600 divide-y divide-slate-200">
+                <thead className="bg-slate-50 text-xs font-semibold text-slate-700">
+                  <tr>
+                    <th className="px-4 py-2">Item Description</th>
+                    <th className="px-4 py-2 text-right">Qty</th>
+                    <th className="px-4 py-2 text-left">Unit</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {itemBreakdownRecord.items.map((item, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50/50">
+                      <td className="px-4 py-2.5 font-medium text-slate-800">{item.item_description}</td>
+                      <td className="px-4 py-2.5 text-right font-semibold">{item.quantity}</td>
+                      <td className="px-4 py-2.5 text-left text-slate-500">{item.unit || 'pcs'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot className="bg-slate-50 font-semibold text-slate-800">
+                  <tr>
+                    <td className="px-4 py-2.5 text-right uppercase text-xs">Total Quantity:</td>
+                    <td className="px-4 py-2.5 text-right">
+                      {itemBreakdownRecord.total_quantity || itemBreakdownRecord.quantity}
+                    </td>
+                    <td></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <Button variant="secondary" onClick={() => setItemBreakdownRecord(null)}>
+                Close
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

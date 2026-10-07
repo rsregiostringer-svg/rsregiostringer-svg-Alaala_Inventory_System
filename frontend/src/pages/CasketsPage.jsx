@@ -7,6 +7,7 @@ import Badge from '../components/common/Badge';
 import Button from '../components/common/Button';
 import SearchInput from '../components/common/SearchInput';
 import Select from '../components/common/Select';
+import ChapelSelect from '../components/common/ChapelSelect';
 import Modal from '../components/common/Modal';
 import Input from '../components/common/Input';
 import {
@@ -850,8 +851,9 @@ export default function CasketsPage() {
                     </button>
                   </div>
                 </div>
-                <select
-                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-hidden focus:border-blue-600 transition-colors"
+                <ChapelSelect
+                  allowResidence={true}
+                  className="w-full bg-white border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-hidden focus:border-blue-600 transition-colors"
                   value={sellForm.is_residence ? 'RESIDENCE' : sellForm.chapel_id}
                   onChange={(e) => {
                     const val = e.target.value;
@@ -870,16 +872,7 @@ export default function CasketsPage() {
                       }));
                     }
                   }}
-                >
-                  <option value="RESIDENCE">Residence / House Viewing (In Family Home)</option>
-                  <optgroup label="Funeral Home Chapels">
-                    {chapels.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name} ({c.status_display || c.status})
-                      </option>
-                    ))}
-                  </optgroup>
-                </select>
+                />
               </div>
 
               <Input

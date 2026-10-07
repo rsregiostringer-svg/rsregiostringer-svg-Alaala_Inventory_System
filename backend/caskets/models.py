@@ -188,7 +188,7 @@ class Chapel(models.Model):
     name = models.CharField(max_length=100, unique=True)
     code = models.CharField(max_length=50, unique=True)
     description = models.TextField(blank=True, default='')
-    capacity = models.IntegerField(default=50)
+    capacity = models.IntegerField(default=0)
     status = models.CharField(max_length=30, choices=Status.choices, default=Status.AVAILABLE)
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True, related_name='chapel_units')
     is_active = models.BooleanField(default=True)
@@ -197,6 +197,23 @@ class Chapel(models.Model):
 
     class Meta:
         ordering = ['name']
+
+    @property
+    def occupied(self):
+        from caskets.models import LamayRecord
+        active_statuses = [
+            LamayRecord.Status.ARRANGEMENT,
+            LamayRecord.Status.RESERVED,
+            LamayRecord.Status.PREPARING,
+            LamayRecord.Status.ACTIVE,
+            LamayRecord.Status.READY_FOR_BURIAL,
+            LamayRecord.Status.FOR_BURIAL
+        ]
+        return self.lamay_records.filter(status__in=active_statuses).count()
+
+    @property
+    def available(self):
+        return max(0, self.capacity - self.occupied)
 
     def __str__(self):
         return f"{self.name} [{self.get_status_display()}]"

@@ -10,6 +10,7 @@ import Modal from '../components/common/Modal';
 import Input from '../components/common/Input';
 import SearchInput from '../components/common/SearchInput';
 import Select from '../components/common/Select';
+import ChapelSelect from '../components/common/ChapelSelect';
 import {
   Building2,
   Users,
@@ -1093,9 +1094,19 @@ export default function ChapelMonitoringPage() {
               type="number"
               label="Seating Capacity"
               required
-              min={1}
-              value={configForm.capacity}
-              onChange={(e) => setConfigForm({ ...configForm, capacity: parseInt(e.target.value, 10) || 50 })}
+              min={0}
+              value={configForm.capacity !== undefined ? configForm.capacity : 0}
+              onChange={(e) => setConfigForm({ ...configForm, capacity: parseInt(e.target.value, 10) || 0 })}
+            />
+
+            <Select
+              label="Activation Status"
+              value={configForm.is_active === false ? 'false' : 'true'}
+              onChange={(e) => setConfigForm({ ...configForm, is_active: e.target.value === 'true' })}
+              options={[
+                { value: 'true', label: 'Active (Available for use)' },
+                { value: 'false', label: 'Deactivated (Hidden from select)' }
+              ]}
             />
 
             <Input
@@ -1159,12 +1170,22 @@ export default function ChapelMonitoringPage() {
               <Input
                 label="Capacity"
                 type="number"
-                min={1}
+                min={0}
                 required
-                value={editingChapel.capacity || 50}
-                onChange={(e) => setEditingChapel({ ...editingChapel, capacity: parseInt(e.target.value, 10) || 50 })}
+                value={editingChapel.capacity !== undefined ? editingChapel.capacity : 0}
+                onChange={(e) => setEditingChapel({ ...editingChapel, capacity: parseInt(e.target.value, 10) || 0 })}
               />
             </div>
+
+            <Select
+              label="Activation Status"
+              value={editingChapel.is_active === false ? 'false' : 'true'}
+              onChange={(e) => setEditingChapel({ ...editingChapel, is_active: e.target.value === 'true' })}
+              options={[
+                { value: 'true', label: 'Active (Available for use)' },
+                { value: 'false', label: 'Deactivated (Hidden from select)' }
+              ]}
+            />
 
             <Select
               label="Current Status"
@@ -1256,14 +1277,10 @@ export default function ChapelMonitoringPage() {
               </div>
 
               {!editingLamay.is_residence ? (
-                <Select
-                  label="Assigned Chapel"
-                  options={chapels.map((c) => ({
-                    value: c.id,
-                    label: `${c.name} (${c.status_display || c.status})`
-                  }))}
+                <ChapelSelect
                   value={editingLamay.chapel || ''}
                   onChange={(e) => setEditingLamay({ ...editingLamay, chapel: e.target.value })}
+                  label="Assigned Chapel"
                 />
               ) : (
                 <Input
@@ -1460,17 +1477,9 @@ export default function ChapelMonitoringPage() {
                 value={addLamayForm.discount}
                 onChange={(e) => setAddLamayForm({ ...addLamayForm, discount: e.target.value })}
               />
-              <Select
-                label="Chapel *"
+              <ChapelSelect
                 value={addLamayForm.chapel}
                 onChange={(e) => setAddLamayForm({ ...addLamayForm, chapel: e.target.value })}
-                options={[
-                  { value: '', label: '-- Select Chapel --' },
-                  ...chapels.filter(c => c.status === 'AVAILABLE').map(c => ({
-                    value: c.id,
-                    label: c.name
-                  }))
-                ]}
                 required
               />
             </div>

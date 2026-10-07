@@ -10,7 +10,7 @@ from alaala_backend.realtime import broadcast_event
 
 
 class LaundryViewSet(viewsets.ModelViewSet):
-    queryset = LaundryRecord.objects.select_related('location').all()
+    queryset = LaundryRecord.objects.select_related('location').prefetch_related('items').all()
     serializer_class = LaundryRecordSerializer
 
     def get_permissions(self):

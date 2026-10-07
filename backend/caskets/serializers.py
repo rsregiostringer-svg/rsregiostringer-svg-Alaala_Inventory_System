@@ -133,9 +133,10 @@ class ChapelSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name', 'code', 'description', 'capacity', 'status',
             'status_display', 'location', 'location_name', 'is_active',
-            'current_lamay', 'upcoming_reservations', 'created_at', 'updated_at'
+            'current_lamay', 'upcoming_reservations', 'created_at', 'updated_at',
+            'occupied', 'available'
         ]
-        read_only_fields = ['id', 'status_display', 'location_name', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'status_display', 'location_name', 'created_at', 'updated_at', 'occupied', 'available']
 
     def get_current_lamay(self, obj):
         active = obj.get_active_lamay()
@@ -174,6 +175,37 @@ class LamayRecordSerializer(serializers.ModelSerializer):
             'notes', 'encoded_by', 'encoded_by_name', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'status_display', 'wake_location_display', 'encoded_by', 'encoded_by_name', 'created_at', 'updated_at']
+
+    def validate(self, attrs):
+        chapel = attrs.get('chapel')
+        status = attrs.get('status')
+        instance = self.instance
+        
+        is_active_status = status in [
+            'ARRANGEMENT', 'RESERVED', 'PREPARING', 'ACTIVE', 'READY_FOR_BURIAL', 'FOR_BURIAL'
+        ]
+        
+        if not status and instance:
+            is_active_status = instance.status in [
+                'ARRANGEMENT', 'RESERVED', 'PREPARING', 'ACTIVE', 'READY_FOR_BURIAL', 'FOR_BURIAL'
+            ]
+            
+        if not chapel and instance and 'chapel' not in attrs:
+            chapel = instance.chapel
+            
+        # Also check if it's residence, if so chapel can be ignored
+        is_residence = attrs.get('is_residence')
+        if is_residence is None and instance:
+            is_residence = instance.is_residence
+            
+        if chapel and is_active_status and not is_residence:
+            if not instance or instance.chapel != chapel or (instance.status not in [
+                'ARRANGEMENT', 'RESERVED', 'PREPARING', 'ACTIVE', 'READY_FOR_BURIAL', 'FOR_BURIAL'
+            ]):
+                if chapel.available <= 0:
+                    raise serializers.ValidationError({"chapel": f"Chapel '{chapel.name}' is at full capacity."})
+                    
+        return attrs
 
     def get_chapel_name(self, obj):
         if obj.is_residence:

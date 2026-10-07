@@ -68,8 +68,7 @@ export default function LaundryPage() {
   const [isNewBatchOpen, setIsNewBatchOpen] = useState(false);
   const [newBatchData, setNewBatchData] = useState({
     location: '',
-    item: '',
-    quantity: 1,
+    items: [{ item_description: '', quantity: 1, unit: 'pcs' }],
     laundry_in_date: currentDate.toISOString().split('T')[0],
     laundry_in_time: currentDate.toTimeString().slice(0, 5),
     laundry_in_shift: '8am to 5pm',
@@ -299,8 +298,7 @@ export default function LaundryPage() {
     const noCodeLoc = locations.find((l) => l.name === 'NO CODE' || l.code === 'NO_CODE');
     setNewBatchData({
       location: noCodeLoc ? noCodeLoc.id : locations[0]?.id || '',
-      item: '',
-      quantity: 1,
+      items: [{ item_description: '', quantity: 1, unit: 'pcs' }],
       laundry_in_date: new Date().toISOString().split('T')[0],
       laundry_in_time: new Date().toTimeString().slice(0, 5),
       laundry_in_shift: '8am to 5pm',
@@ -313,10 +311,14 @@ export default function LaundryPage() {
 
   const handleNewBatchSubmit = async (e) => {
     e.preventDefault();
-    if (!newBatchData.item.trim()) {
-      setBatchError('Item description is required.');
+    
+    // Validate items
+    const validItems = newBatchData.items.filter(i => i.item_description.trim() !== '');
+    if (validItems.length === 0) {
+      setBatchError('At least one item with a description is required.');
       return;
     }
+
     if (!newBatchData.laundry_in_charge.trim()) {
       setBatchError('Person in charge of receiving is required.');
       return;
@@ -328,6 +330,7 @@ export default function LaundryPage() {
     try {
       await api.post('/laundry/', {
         ...newBatchData,
+        items: validItems, // Only submit valid items
         encoded_by: user
           ? `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.username
           : 'Staff',
@@ -632,28 +635,92 @@ export default function LaundryPage() {
             helperText="Select NO CODE if item has no chapel code or is general linen/rags."
           />
 
-          <Input
-            label="Item Description"
-            placeholder="e.g. White Satin Towels, Altar Curtains, Basahan"
-            required
-            value={newBatchData.item}
-            onChange={(e) => setNewBatchData({ ...newBatchData, item: e.target.value })}
-          />
+          <div className="space-y-3 p-3 bg-slate-50/80 border border-slate-200 rounded-lg">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                Items ({newBatchData.items.length})
+              </label>
+              <div className="text-xs text-slate-500 font-medium">
+                Total Quantity: {newBatchData.items.reduce((sum, item) => sum + (parseInt(item.quantity) || 0), 0)}
+              </div>
+            </div>
+            
+            {newBatchData.items.map((item, index) => (
+              <div key={index} className="flex flex-col sm:flex-row gap-2 items-start sm:items-center bg-white p-2 rounded border border-slate-200">
+                <div className="flex-1 w-full">
+                  <Input
+                    placeholder="Item (e.g. Curtain)"
+                    required
+                    value={item.item_description}
+                    onChange={(e) => {
+                      const newItems = [...newBatchData.items];
+                      newItems[index].item_description = e.target.value;
+                      setNewBatchData({ ...newBatchData, items: newItems });
+                    }}
+                  />
+                </div>
+                <div className="w-full sm:w-24">
+                  <Input
+                    type="number"
+                    min="1"
+                    placeholder="Qty"
+                    required
+                    value={item.quantity}
+                    onChange={(e) => {
+                      const newItems = [...newBatchData.items];
+                      newItems[index].quantity = parseInt(e.target.value, 10) || 1;
+                      setNewBatchData({ ...newBatchData, items: newItems });
+                    }}
+                  />
+                </div>
+                <div className="w-full sm:w-24">
+                  <Select
+                    options={[
+                      { value: 'pcs', label: 'pcs' },
+                      { value: 'set', label: 'set' },
+                      { value: 'dozen', label: 'dozen' },
+                      { value: 'kg', label: 'kg' },
+                    ]}
+                    value={item.unit}
+                    onChange={(e) => {
+                      const newItems = [...newBatchData.items];
+                      newItems[index].unit = e.target.value;
+                      setNewBatchData({ ...newBatchData, items: newItems });
+                    }}
+                  />
+                </div>
+                {newBatchData.items.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newItems = newBatchData.items.filter((_, i) => i !== index);
+                      setNewBatchData({ ...newBatchData, items: newItems });
+                    }}
+                    className="p-2 text-rose-500 hover:bg-rose-50 rounded mt-1 sm:mt-0"
+                    title="Remove item"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            ))}
 
-          <div className="grid grid-cols-2 gap-3">
-            <Input
-              label="Quantity"
-              type="number"
-              min="1"
-              required
-              value={newBatchData.quantity}
-              onChange={(e) =>
+            <button
+              type="button"
+              onClick={() => {
                 setNewBatchData({
                   ...newBatchData,
-                  quantity: parseInt(e.target.value, 10) || 1,
-                })
-              }
-            />
+                  items: [...newBatchData.items, { item_description: '', quantity: 1, unit: 'pcs' }],
+                });
+              }}
+              className="text-xs font-semibold text-[#0866FF] hover:text-blue-700 hover:underline flex items-center gap-1 mt-1"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Add More Item
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3">
 
             <Select
               label="Intake Shift"

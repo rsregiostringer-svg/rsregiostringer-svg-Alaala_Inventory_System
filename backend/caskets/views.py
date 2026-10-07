@@ -258,19 +258,29 @@ class CasketViewSet(viewsets.ModelViewSet):
                 return Response({'detail': 'Selected chapel not found.'}, status=status.HTTP_404_NOT_FOUND)
 
             if service_status in ['ACTIVE', 'ACTIVE_LAMAY']:
-                active_lamay = chapel.get_active_lamay()
-                if active_lamay and active_lamay.status == LamayRecord.Status.ACTIVE:
+                if chapel.available <= 0:
                     if not (request.user.is_master_admin and override_conflict):
-                        burial_str = active_lamay.expected_burial_date.strftime('%B %d, %Y') if active_lamay.expected_burial_date else 'TBD'
+                        active_lamays = chapel.lamay_records.filter(status__in=[
+                            LamayRecord.Status.ARRANGEMENT,
+                            LamayRecord.Status.RESERVED,
+                            LamayRecord.Status.PREPARING,
+                            LamayRecord.Status.ACTIVE,
+                            LamayRecord.Status.READY_FOR_BURIAL,
+                            LamayRecord.Status.FOR_BURIAL
+                        ])
+                        
+                        names = ", ".join([l.deceased.full_name for l in active_lamays[:2]])
+                        if active_lamays.count() > 2:
+                            names += f" and {active_lamays.count() - 2} more"
+                            
                         return Response({
                             'detail': (
-                                f"CHAPEL UNAVAILABLE: {chapel.name} is currently occupied by an active lamay "
-                                f"for {active_lamay.deceased.full_name} (Expected Burial: {burial_str})."
+                                f"CHAPEL UNAVAILABLE: {chapel.name} is at full capacity. "
+                                f"Currently occupied by: {names}."
                             ),
                             'conflict': True,
                             'chapel_name': chapel.name,
-                            'current_deceased': active_lamay.deceased.full_name,
-                            'expected_burial': burial_str,
+                            'current_deceased': names,
                             'can_override': request.user.is_master_admin
                         }, status=status.HTTP_400_BAD_REQUEST)
         elif is_residence:

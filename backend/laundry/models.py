@@ -32,8 +32,11 @@ class LaundryRecord(models.Model):
         RETURNED = 'RETURNED', 'Returned'
 
     location = models.ForeignKey(Location, on_delete=models.PROTECT, related_name='laundry_records')
-    item = models.CharField(max_length=200)
-    quantity = models.IntegerField(default=1)
+    # Legacy fields, kept temporarily for data migration / compatibility
+    item = models.CharField(max_length=200, blank=True, null=True, default='', help_text="DEPRECATED: Use LaundryRecordItem instead.")
+    quantity = models.IntegerField(default=0, null=True, blank=True, help_text="DEPRECATED: Use LaundryRecordItem instead.")
+    
+    total_quantity = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     # 1. Laundry IN
     laundry_in_date = models.DateField()
@@ -109,4 +112,19 @@ class LaundryRecord(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Laundry #{self.id}: {self.item} (Qty: {self.quantity}) - {self.get_status_display()}"
+        items_count = self.items.count()
+        if items_count > 0:
+            first_item = self.items.first().item_description
+            return f"Laundry #{self.id}: {first_item} (+{items_count-1} more) (Total Qty: {self.total_quantity}) - {self.get_status_display()}"
+        return f"Laundry #{self.id} (Total Qty: {self.total_quantity}) - {self.get_status_display()}"
+
+class LaundryRecordItem(models.Model):
+    laundry_record = models.ForeignKey(LaundryRecord, on_delete=models.CASCADE, related_name='items')
+    item_description = models.CharField(max_length=200)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, default=1)
+    unit = models.CharField(max_length=50, blank=True, default='pcs')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.item_description} - {self.quantity} {self.unit}"

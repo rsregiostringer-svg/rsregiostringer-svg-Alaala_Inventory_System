@@ -22,8 +22,8 @@ export const formatDate = (dateString) => {
     if (isNaN(d.getTime())) return dateString;
     return d.toLocaleDateString('en-US', {
       year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
     });
   } catch {
     return dateString;
@@ -37,8 +37,8 @@ export const formatDateTime = (dateTimeString) => {
     if (isNaN(d.getTime())) return dateTimeString;
     return d.toLocaleString('en-US', {
       year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
     });
