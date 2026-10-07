@@ -68,51 +68,57 @@ export default function LoginPage() {
         </div>
 
         {/* Login Card */}
-        <div className="bg-white/80 backdrop-blur-md border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-2xl">
-          <h2 className="text-lg font-semibold text-slate-100 mb-1">System Authentication</h2>
-          <p className="text-xs text-slate-500 mb-6">Enter your authorized credentials to access records.</p>
+        <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6 sm:p-8 shadow-2xl">
+          <h2 className="text-lg font-semibold text-white mb-1">System Authentication</h2>
+          <p className="text-xs text-slate-300 mb-6">Enter your authorized credentials to access records.</p>
 
           {error && (
-            <div className="mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-3 text-xs text-rose-400">
+            <div className="mb-5 p-3.5 rounded-xl bg-rose-500/20 border border-rose-500/30 flex items-start gap-3 text-xs text-rose-300">
               <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
-              label="Username"
-              id="username"
-              type="text"
-              icon={User}
-              placeholder="e.g. admin or staff"
-              required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
+            <div className="text-slate-200">
+              <Input
+                label={<span className="text-slate-200">Username</span>}
+                id="username"
+                type="text"
+                icon={User}
+                placeholder="e.g. admin or staff"
+                required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="!bg-slate-800/50 !border-slate-600/50 !text-white placeholder:!text-slate-400 focus:!bg-slate-800/80 focus:!border-blue-500 !shadow-inner backdrop-blur-md transition-all"
+              />
+            </div>
 
-            <Input
-              label="Password"
-              id="password"
-              type="password"
-              icon={Lock}
-              placeholder="••••••••"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="text-slate-200">
+              <Input
+                label={<span className="text-slate-200">Password</span>}
+                id="password"
+                type="password"
+                icon={Lock}
+                placeholder="••••••••"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="!bg-slate-800/50 !border-slate-600/50 !text-white placeholder:!text-slate-400 focus:!bg-slate-800/80 focus:!border-blue-500 !shadow-inner backdrop-blur-md transition-all"
+              />
+            </div>
 
             <div className="pt-2">
-              <Button type="submit" variant="primary" loading={loading} className="w-full py-2.5">
+              <Button type="submit" variant="primary" loading={loading} className="w-full py-2.5 shadow-lg shadow-blue-600/20">
                 Sign In to System
               </Button>
             </div>
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-400">
               Forgot password?{' '}
-              <span className="text-blue-600 font-medium">
+              <span className="text-blue-400 font-medium cursor-pointer hover:text-blue-300 transition-colors">
                 Contact administrator
               </span>
             </p>
@@ -120,7 +126,7 @@ export default function LoginPage() {
         </div>
 
         {/* Footer info */}
-        <p className="text-center text-xs text-slate-500 mt-8">
+        <p className="text-center text-xs text-white/50 mt-8">
           &copy; {new Date().getFullYear()} Alaala Funeral Homes. All rights reserved.
         </p>
       </div>
