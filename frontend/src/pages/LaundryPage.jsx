@@ -663,8 +663,9 @@ export default function LaundryPage() {
                 </div>
                 <div className="flex-1 w-full">
                   <Input
-                    placeholder="Item (e.g. Curtain)"
+                    placeholder="Item Name"
                     required
+                    list="laundry-item-names"
                     value={item.item_description}
                     onChange={(e) => {
                       const newItems = [...newBatchData.items];
@@ -672,6 +673,17 @@ export default function LaundryPage() {
                       setNewBatchData({ ...newBatchData, items: newItems });
                     }}
                   />
+                  <datalist id="laundry-item-names">
+                    <option value="Curtain" />
+                    <option value="Basahan" />
+                    <option value="Bedsheet" />
+                    <option value="Towel" />
+                    <option value="Pillow Case" />
+                    <option value="Uniform" />
+                    <option value="Blanket" />
+                    <option value="Table Cloth" />
+                    <option value="Other" />
+                  </datalist>
                 </div>
                 <div className="w-full sm:w-24">
                   <Input
