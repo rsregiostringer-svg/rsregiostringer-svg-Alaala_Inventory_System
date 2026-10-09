@@ -169,10 +169,10 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            {/* 3. Operational & Service Units (NOT Chapels) */}
+            {/* 3. Operational & Service Units (New Chapels) */}
             <div>
               <span className="text-[11px] font-semibold uppercase tracking-wider text-sky-400 block mb-2">
-                Service Units & Monitoring Tags (Non-Chapel)
+                Service Units & Monitoring Tags (New Chapel)
               </span>
               <div className="space-y-2">
                 {serviceAndTags.map((loc) => (
@@ -184,14 +184,14 @@ export default function SettingsPage() {
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-slate-100 text-sm">{loc.name}</span>
                         {loc.name === 'SERVICES' ? (
-                          <Badge variant="info" size="sm">Service Dept (Non-Chapel)</Badge>
+                          <Badge variant="info" size="sm">Service Dept (New Chapel)</Badge>
                         ) : (
-                          <Badge variant="warning" size="sm">Laundry Tag (Non-Chapel)</Badge>
+                          <Badge variant="warning" size="sm">Laundry Tag (New Chapel)</Badge>
                         )}
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
                         {loc.name === 'SERVICES'
-                          ? 'Preparation, embalming, and funeral service operations (not a viewing chapel).'
+                          ? 'Preparation, embalming, and funeral service operations (New Chapel).'
                           : 'Laundry monitoring tag for uncoded linen, rags, and general fabrics.'}
                       </p>
                     </div>

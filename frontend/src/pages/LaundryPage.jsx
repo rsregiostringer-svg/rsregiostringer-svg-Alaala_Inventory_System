@@ -187,7 +187,7 @@ export default function LaundryPage() {
 
   // Load staff list for intake in-charge quick selection
   useEffect(() => {
-    api.get('/users/')
+    api.get('/users/', {}, { cache: true })
       .then((data) => setStaffList(data.results || data || []))
       .catch((err) => console.warn('Could not load users for staff datalist:', err));
   }, []);
@@ -205,7 +205,7 @@ export default function LaundryPage() {
 
       const [recRes, locRes] = await Promise.all([
         api.get('/laundry/', query),
-        api.get('/locations/'),
+        api.get('/locations/', {}, { cache: true }),
       ]);
       setRecords(recRes.results || recRes);
       setLocations(locRes.results || locRes);
@@ -314,7 +314,7 @@ export default function LaundryPage() {
 
   const handleNewBatchSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validate items
     const validItems = newBatchData.items.filter(i => i.item_description.trim() !== '');
     if (validItems.length === 0) {
@@ -644,7 +644,7 @@ export default function LaundryPage() {
                 Total Quantity: {newBatchData.items.reduce((sum, item) => sum + (parseInt(item.quantity) || 0), 0)}
               </div>
             </div>
-            
+
             {newBatchData.items.map((item, index) => (
               <div key={index} className="flex flex-col sm:flex-row gap-2 items-start sm:items-center bg-white p-2 rounded border border-slate-200">
                 <div className="w-full sm:w-48">
@@ -697,7 +697,7 @@ export default function LaundryPage() {
                       let val = e.target.value;
                       if (val === '0') val = '1';
                       const parsed = parseInt(val, 10);
-                      
+
                       const newItems = [...newBatchData.items];
                       newItems[index].quantity = isNaN(parsed) ? '' : parsed;
                       setNewBatchData({ ...newBatchData, items: newItems });

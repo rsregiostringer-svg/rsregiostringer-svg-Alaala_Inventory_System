@@ -14,6 +14,20 @@ class ApiService {
     this.baseUrl = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
     this.isRefreshing = false;
     this.refreshSubscribers = [];
+    this.cache = new Map();
+    this.defaultCacheTTL = 5 * 60 * 1000; // 5 minutes
+  }
+
+  clearCache(endpointPrefix = null) {
+    if (!endpointPrefix) {
+      this.cache.clear();
+      return;
+    }
+    for (const key of this.cache.keys()) {
+      if (key.startsWith(endpointPrefix)) {
+        this.cache.delete(key);
+      }
+    }
   }
 
   getTokens() {
@@ -147,7 +161,7 @@ class ApiService {
     }
   }
 
-  get(endpoint, params = {}) {
+  get(endpoint, params = {}, options = {}) {
     const query = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
@@ -156,29 +170,49 @@ class ApiService {
     });
     const queryString = query.toString();
     const fullEndpoint = queryString ? `${endpoint}?${queryString}` : endpoint;
-    return this.request(fullEndpoint, { method: 'GET' });
+
+    const useCache = options.cache === true;
+    
+    if (useCache) {
+      const cached = this.cache.get(fullEndpoint);
+      if (cached && Date.now() - cached.timestamp < (options.ttl || this.defaultCacheTTL)) {
+        return Promise.resolve(cached.data);
+      }
+    }
+
+    return this.request(fullEndpoint, { method: 'GET', ...options }).then((data) => {
+      if (useCache) {
+        this.cache.set(fullEndpoint, { data, timestamp: Date.now() });
+      }
+      return data;
+    });
   }
 
   post(endpoint, data) {
+    this.clearCache();
     const body = data instanceof FormData ? data : JSON.stringify(data);
     return this.request(endpoint, { method: 'POST', body });
   }
 
   put(endpoint, data) {
+    this.clearCache();
     const body = data instanceof FormData ? data : JSON.stringify(data);
     return this.request(endpoint, { method: 'PUT', body });
   }
 
   patch(endpoint, data) {
+    this.clearCache();
     const body = data instanceof FormData ? data : JSON.stringify(data);
     return this.request(endpoint, { method: 'PATCH', body });
   }
 
   delete(endpoint) {
+    this.clearCache();
     return this.request(endpoint, { method: 'DELETE' });
   }
 
   upload(endpoint, formData) {
+    this.clearCache();
     return this.request(endpoint, { method: 'POST', body: formData });
   }
 }
