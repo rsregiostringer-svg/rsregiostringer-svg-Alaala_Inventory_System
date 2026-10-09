@@ -450,13 +450,7 @@ export default function MainLayout() {
         <header className="hidden md:flex h-16 bg-white border-b border-slate-200 px-6 items-center justify-between z-20 shrink-0">
           {/* Left: Sidebar Toggle & System Title */}
           <div className="flex items-center gap-3">
-            <button
-              onClick={handleToggleSidebar}
-              title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
-              className="p-2 rounded-lg text-slate-600 hover:text-blue-600 hover:bg-slate-100 transition-colors cursor-pointer"
-            >
-              {isCollapsed ? <PanelLeftOpen className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
-            </button>
+
             <div className="flex items-center gap-2">
               <span className="font-bold text-base text-slate-900 tracking-wide">
                 ALAALA FUNERAL HOMES

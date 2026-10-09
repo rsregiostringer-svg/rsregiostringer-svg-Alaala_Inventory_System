@@ -31,12 +31,12 @@ export default function Select({
           } px-3.5 py-2 text-sm text-slate-900 focus:outline-none transition-colors disabled:opacity-50 disabled:bg-slate-100 appearance-none cursor-pointer ${className}`}
           {...props}
         >
-          {placeholder && <option value="" className="text-slate-500">{placeholder}</option>}
+          {placeholder && <option value="">{placeholder}</option>}
           {options.map((opt) => {
             const value = typeof opt === 'object' ? opt.value : opt;
             const labelText = typeof opt === 'object' ? opt.label : opt;
             return (
-              <option key={value} value={value} className="text-slate-900 bg-white">
+              <option key={value} value={value}>
                 {labelText}
               </option>
             );
