@@ -8,38 +8,61 @@ import SearchInput from '../components/common/SearchInput';
 import Select from '../components/common/Select';
 import Modal from '../components/common/Modal';
 import Input from '../components/common/Input';
-import { formatCurrency, formatDate, PAYMENT_STATUS_MAP } from '../utils/formatters';
-import { Plus, RefreshCw, Droplet, CreditCard, AlertCircle, Download } from 'lucide-react';
+import { formatCurrency, formatDate } from '../utils/formatters';
+import { Plus, RefreshCw, Droplet, Download, Trash2, AlertCircle } from 'lucide-react';
 import { handleExportExcel } from '../utils/exportUtils';
+import { useAuth } from '../contexts/AuthContext';
+
+const WATER_SOURCES = [
+  { value: 'PrimeWater', label: 'PrimeWater' },
+  { value: 'Deepwell', label: 'Deepwell' },
+  { value: 'Maynilad Water Services', label: 'Maynilad Water Services' },
+  { value: 'Manila Water', label: 'Manila Water' },
+];
+
+const SHIFTS = [
+  { value: 'Morning', label: 'Morning' },
+  { value: 'Afternoon', label: 'Afternoon' },
+  { value: 'Night', label: 'Night' },
+];
 
 export default function WaterPage() {
-  const [bills, setBills] = useState([]);
+  const [records, setRecords] = useState([]);
   const [locations, setLocations] = useState([]);
-  const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   // Filters
   const [search, setSearch] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [sourceFilter, setSourceFilter] = useState('');
+  const [dateFilter, setDateFilter] = useState('');
 
   // Modals
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [editBill, setEditBill] = useState(null);
-  const [formData, setFormData] = useState({
+  const [editRecord, setEditRecord] = useState(null);
+  
+  const getDefaultForm = () => ({
+    date: new Date().toISOString().split('T')[0],
+    water_source: 'Deepwell',
     location: '',
-    provider: 'Prime Water',
-    meter_number: '',
-    previous_reading: '',
-    current_reading: '',
-    billing_period: '',
-    bill_date: new Date().toISOString().split('T')[0],
-    due_date: '',
-    amount: '',
-    payment_status: 'UNPAID',
-    date_paid: '',
-    notes: '',
+    patient_name: '',
+    shift: 'Morning',
+    tank: '',
+    initial_level: '',
+    initial_additional: '',
+    initial_checked_by: user?.first_name ? `${user.first_name} ${user.last_name}` : '',
+    initial_remarks: '',
+    subsequent_level: '',
+    subsequent_additional: '',
+    subsequent_checked_by: '',
+    subsequent_remarks: '',
+    refilled_gallons: '',
+    flag_status: ''
   });
+
+  const [forms, setForms] = useState([getDefaultForm()]);
+  
   const [formLoading, setFormLoading] = useState(false);
   const [formError, setFormError] = useState('');
 
@@ -48,27 +71,23 @@ export default function WaterPage() {
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const [billsRes, sumRes, locRes] = await Promise.all([
+      const [recordsRes, locRes] = await Promise.all([
         api.get('/water/', {
           search,
           location: locationFilter,
-          payment_status: statusFilter,
-        }),
-        api.get('/water/summary/', {
-          location: locationFilter,
-          payment_status: statusFilter,
+          water_source: sourceFilter,
+          date: dateFilter,
         }),
         api.get('/locations/'),
       ]);
-      setBills(billsRes.results || billsRes);
-      setSummary(sumRes);
+      setRecords(recordsRes.results || recordsRes);
       setLocations(locRes.results || locRes);
     } catch (err) {
-      console.error('Error loading water bills:', err);
+      console.error('Error loading water records:', err);
     } finally {
       setLoading(false);
     }
-  }, [search, locationFilter, statusFilter]);
+  }, [search, locationFilter, sourceFilter, dateFilter]);
 
   useEffect(() => {
     loadData();
@@ -80,45 +99,62 @@ export default function WaterPage() {
   }, [subscribe, loadData]);
 
   const handleOpenCreate = () => {
-    const today = new Date();
-    const dueDate = new Date();
-    dueDate.setDate(today.getDate() + 15);
-
-    setFormData({
-      location: locations[0]?.id || '',
-      provider: 'Prime Water',
-      meter_number: '',
-      previous_reading: '',
-      current_reading: '',
-      billing_period: `${today.toLocaleString('en-US', { month: 'long' })} ${today.getFullYear()}`,
-      bill_date: today.toISOString().split('T')[0],
-      due_date: dueDate.toISOString().split('T')[0],
-      amount: '',
-      payment_status: 'UNPAID',
-      date_paid: '',
-      notes: '',
-    });
+    setForms([{...getDefaultForm(), location: locations[0]?.id || ''}]);
     setFormError('');
     setIsCreateOpen(true);
   };
 
-  const handleOpenEdit = (bill) => {
-    setFormData({
-      location: bill.location,
-      provider: bill.provider,
-      meter_number: bill.meter_number,
-      previous_reading: bill.previous_reading,
-      current_reading: bill.current_reading,
-      billing_period: bill.billing_period,
-      bill_date: bill.bill_date,
-      due_date: bill.due_date,
-      amount: bill.amount,
-      payment_status: bill.payment_status,
-      date_paid: bill.date_paid || '',
-      notes: bill.notes || '',
-    });
-    setEditBill(bill);
+  const handleOpenEdit = (record) => {
+    setForms([{
+      id: record.id,
+      date: record.date || '',
+      water_source: record.water_source || 'Deepwell',
+      location: record.location || '',
+      patient_name: record.patient_name || '',
+      shift: record.shift || 'Morning',
+      tank: record.tank || '',
+      initial_level: record.initial_level ?? '',
+      initial_additional: record.initial_additional ?? '',
+      initial_checked_by: record.initial_checked_by || '',
+      initial_remarks: record.initial_remarks || '',
+      subsequent_level: record.subsequent_level ?? '',
+      subsequent_additional: record.subsequent_additional ?? '',
+      subsequent_checked_by: record.subsequent_checked_by || '',
+      subsequent_remarks: record.subsequent_remarks || '',
+      refilled_gallons: record.refilled_gallons ?? '',
+      flag_status: record.flag_status || ''
+    }]);
+    setEditRecord(record);
     setFormError('');
+    setIsCreateOpen(true);
+  };
+
+  const addTankForm = () => {
+    if (forms.length > 0) {
+      const last = forms[forms.length - 1];
+      setForms([...forms, {
+        ...getDefaultForm(),
+        date: last.date,
+        water_source: last.water_source,
+        location: last.location,
+        patient_name: last.patient_name,
+        shift: last.shift
+      }]);
+    } else {
+      setForms([getDefaultForm()]);
+    }
+  };
+
+  const removeTankForm = (index) => {
+    setForms(forms.filter((_, i) => i !== index));
+  };
+
+  const updateForm = (index, field, value) => {
+    setForms(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
   };
 
   const handleFormSubmit = async (e) => {
@@ -127,92 +163,108 @@ export default function WaterPage() {
     setFormError('');
 
     try {
-      const payload = {
-        ...formData,
-        previous_reading: parseFloat(formData.previous_reading) || 0,
-        current_reading: parseFloat(formData.current_reading) || 0,
-        amount: parseFloat(formData.amount) || 0,
-        date_paid: formData.payment_status === 'PAID' && !formData.date_paid
-          ? new Date().toISOString().split('T')[0]
-          : formData.date_paid || null,
-      };
+      const payloads = forms.map(f => {
+        const payload = { ...f };
+        ['initial_level', 'initial_additional', 'subsequent_level', 'subsequent_additional', 'refilled_gallons'].forEach(key => {
+            if (payload[key] === '') payload[key] = null;
+            else if (payload[key] !== null) payload[key] = parseFloat(payload[key]);
+        });
+        return payload;
+      });
 
-      if (editBill) {
-        await api.put(`/water/${editBill.id}/`, payload);
-        setEditBill(null);
+      if (editRecord) {
+        await api.put(`/water/${editRecord.id}/`, payloads[0]);
       } else {
-        await api.post('/water/', payload);
-        setIsCreateOpen(false);
+        await api.post('/water/bulk_create/', payloads);
       }
+      setIsCreateOpen(false);
+      setEditRecord(null);
       loadData();
     } catch (err) {
-      setFormError(err.message || 'Failed to save water bill.');
+      let msg = err.message || 'Failed to save water records.';
+      if (err.response && err.response.data) {
+          if (Array.isArray(err.response.data)) {
+            msg = err.response.data.map(d => JSON.stringify(d)).join(', ');
+          } else {
+            msg = JSON.stringify(err.response.data);
+          }
+      }
+      setFormError(msg);
     } finally {
       setFormLoading(false);
     }
   };
 
-  const calculatedConsumption =
-    parseFloat(formData.current_reading || 0) - parseFloat(formData.previous_reading || 0);
-
   const columns = [
     {
-      header: 'Location & Period',
+      header: 'Date & Location',
       key: 'location_details',
       render: (row) => (
         <div>
-          <div className="font-semibold text-black-100">{row.location_details?.name}</div>
-          <div className="text-xs text-black-400 mt-0.5">
-            {row.billing_period} &bull; {row.provider}
+          <div className="font-semibold text-slate-900">{formatDate(row.date)}</div>
+          <div className="text-xs text-slate-500 mt-0.5">
+            {row.location_details?.name || 'Unknown'} &bull; Shift: {row.shift}
           </div>
+          {row.patient_name && <div className="text-[10px] text-slate-400">Patient: {row.patient_name}</div>}
         </div>
       ),
     },
     {
-      header: 'Meter & Readings',
-      key: 'meter_number',
+      header: 'Tank Details',
+      key: 'tank',
       render: (row) => (
         <div>
-          <div className="font-mono text-xs text-black-300">Meter: {row.meter_number}</div>
-          <div className="text-[11px] text-black-500">
-            {row.previous_reading} &rarr; {row.current_reading}
+          <div className="font-mono text-xs font-bold text-slate-700">Tank {row.tank}</div>
+          <div className="mt-1">
+             <Badge variant={row.water_source === 'PrimeWater' ? 'info' : 'success'}>{row.water_source}</Badge>
           </div>
         </div>
       ),
     },
     {
-      header: 'Consumption',
+      header: 'Initial (In)',
+      key: 'initial',
+      render: (row) => (
+        <div className="text-xs">
+          <div className="text-slate-700">Lvl: <span className="font-semibold">{row.initial_level ?? '-'}</span></div>
+          <div className="text-slate-500">Add: {row.initial_additional ?? '-'}</div>
+          {row.initial_checked_by && <div className="text-[10px] text-slate-400">By: {row.initial_checked_by}</div>}
+        </div>
+      ),
+    },
+    {
+      header: 'Subsequent (Out)',
+      key: 'subsequent',
+      render: (row) => (
+        <div className="text-xs">
+          <div className="text-slate-700">Lvl: <span className="font-semibold">{row.subsequent_level ?? '-'}</span></div>
+          <div className="text-slate-500">Add: {row.subsequent_additional ?? '-'}</div>
+          {row.subsequent_checked_by && <div className="text-[10px] text-slate-400">By: {row.subsequent_checked_by}</div>}
+        </div>
+      ),
+    },
+    {
+      header: 'Consumed',
       key: 'consumption',
-      render: (row) => (
-        <span className="font-bold text-sky-400">
-          {row.consumption} <span className="text-xs font-normal text--400">m³</span>
-        </span>
-      ),
-    },
-    {
-      header: 'Amount Due',
-      key: 'amount',
-      render: (row) => (
-        <div>
-          <div className="text-xs font-bold text-black-100">{formatCurrency(row.amount)}</div>
-          <div className="text-[11px] text-black-400">Due: {formatDate(row.due_date)}</div>
-        </div>
-      ),
-    },
-    {
-      header: 'Payment Status',
-      key: 'payment_status',
       render: (row) => {
-        const meta = PAYMENT_STATUS_MAP[row.payment_status] || { label: row.payment_status, variant: 'neutral' };
-        return (
-          <div>
-            <Badge variant={meta.variant}>{meta.label}</Badge>
-            {row.date_paid && (
-              <div className="text-[10px] text-slate-500 mt-0.5">Paid {formatDate(row.date_paid)}</div>
-            )}
-          </div>
-        );
+         const isIncomplete = row.initial_level === null || row.subsequent_level === null;
+         if (isIncomplete) return <Badge variant="warning">Incomplete</Badge>;
+         if (row.flag_status) return <Badge variant="error">Flagged</Badge>;
+         return (
+          <span className="font-bold text-sky-500">
+            {row.consumption} <span className="text-[10px] font-normal text-slate-400">units</span>
+          </span>
+         )
       },
+    },
+    {
+        header: 'Refills',
+        key: 'refilled_gallons',
+        render: (row) => (
+            <span className="text-sm font-semibold text-slate-600">
+                {row.refilled_gallons ?? '-'}
+            </span>
+        )
     },
     {
       header: 'Actions',
@@ -221,7 +273,7 @@ export default function WaterPage() {
       cellClassName: 'text-right',
       render: (row) => (
         <Button variant="secondary" size="sm" onClick={() => handleOpenEdit(row)}>
-          Edit / Pay
+          Edit
         </Button>
       ),
     },
@@ -232,11 +284,11 @@ export default function WaterPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-serif font-bold text-black-100 tracking-wide">
-            Water Utility Monitoring
+          <h1 className="text-2xl font-serif font-bold text-slate-900 tracking-wide">
+            Daily Water Tank Monitoring
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Track water consumption (m³), meter readings, bills, and payment accountability across chapels.
+            Track daily Deepwell and PrimeWater tank levels and calculate consumption.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -248,57 +300,42 @@ export default function WaterPage() {
                 await handleExportExcel('water', {
                   search,
                   location: locationFilter,
-                  payment_status: statusFilter
-                }, 'water');
+                  water_source: sourceFilter,
+                  date: dateFilter
+                }, 'Water_Monitoring_Log', 'xlsx');
               } catch (e) {
                 alert('Export failed.');
               }
             }}
             icon={Download}
           >
-            Export CSV
+            Export Excel
           </Button>
           <Button variant="secondary" size="sm" onClick={loadData} icon={RefreshCw}>
             Refresh
           </Button>
           <Button variant="primary" size="sm" onClick={handleOpenCreate} icon={Plus}>
-            Record Bill
+            Add Monitoring
           </Button>
         </div>
       </div>
-
-      {/* Summary KPI Cards */}
-      {summary && (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-4 rounded-xl bg-white border border-slate-200">
-            <span className="text-xs text-slate-500 uppercase font-medium">Total Billed</span>
-            <div className="mt-1 text-xl font-bold text-slate-100">{formatCurrency(summary.total_amount)}</div>
-          </div>
-          <div className="p-4 rounded-xl bg-white border border-slate-200">
-            <span className="text-xs text-slate-500 uppercase font-medium">Total Consumption</span>
-            <div className="mt-1 text-xl font-bold text-sky-400">{summary.total_consumption.toFixed(1)} m³</div>
-          </div>
-          <div className="p-4 rounded-xl bg-white border border-slate-200">
-            <span className="text-xs text-slate-500 uppercase font-medium">Unpaid Bills</span>
-            <div className="mt-1 text-xl font-bold text-rose-400">{summary.unpaid_count} bills</div>
-          </div>
-          <div className="p-4 rounded-xl bg-white border border-slate-200">
-            <span className="text-xs text-slate-500 uppercase font-medium">Unpaid Amount</span>
-            <div className="mt-1 text-xl font-bold text-rose-400">{formatCurrency(summary.unpaid_amount)}</div>
-          </div>
-        </div>
-      )}
 
       {/* Filter Toolbar */}
       <div className="p-4 rounded-xl bg-white border border-slate-200 flex flex-col md:flex-row items-center gap-3">
         <SearchInput
           value={search}
           onChange={setSearch}
-          placeholder="Search meter number, billing period..."
+          placeholder="Search tank, patient..."
           className="flex-1"
         />
 
         <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+          <Input 
+            type="date"
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+            className="w-40"
+          />
           <div className="w-44">
             <Select
               options={locations.map((l) => ({ value: l.id, label: l.name }))}
@@ -307,18 +344,12 @@ export default function WaterPage() {
               onChange={(e) => setLocationFilter(e.target.value)}
             />
           </div>
-
-          <div className="w-40">
+          <div className="w-36">
             <Select
-              options={[
-                { value: 'UNPAID', label: 'Unpaid' },
-                { value: 'OVERDUE', label: 'Overdue' },
-                { value: 'PAID', label: 'Paid' },
-                { value: 'PARTIALLY_PAID', label: 'Partially Paid' },
-              ]}
-              placeholder="All Payments"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              options={WATER_SOURCES}
+              placeholder="All Sources"
+              value={sourceFilter}
+              onChange={(e) => setSourceFilter(e.target.value)}
             />
           </div>
         </div>
@@ -327,165 +358,98 @@ export default function WaterPage() {
       {/* Table */}
       <DataTable
         columns={columns}
-        data={bills}
+        data={records}
         loading={loading}
-        emptyTitle="No water bills found"
-        emptyDescription="Add water bill records to start tracking consumption."
-        emptyActionLabel="Record Water Bill"
+        emptyTitle="No water monitoring records"
+        emptyDescription="Add tank monitoring records to track daily water usage."
+        emptyActionLabel="Add Monitoring"
         onEmptyAction={handleOpenCreate}
       />
 
       {/* Create / Edit Modal */}
       <Modal
-        isOpen={isCreateOpen || !!editBill}
+        isOpen={isCreateOpen}
         onClose={() => {
           setIsCreateOpen(false);
-          setEditBill(null);
+          setEditRecord(null);
         }}
-        title={editBill ? 'Update Water Bill' : 'Record Water Utility Bill'}
-        maxWidth="max-w-lg"
+        title={editRecord ? 'Update Tank Record' : 'Record Tank Monitoring'}
+        maxWidth="max-w-4xl"
       >
-        <form onSubmit={handleFormSubmit} className="space-y-4">
+        <form onSubmit={handleFormSubmit} className="space-y-6">
           {formError && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs rounded-lg">
-              {formError}
+            <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-500 text-sm rounded-lg flex items-center gap-2">
+              <AlertCircle size={16} />
+              <span>{formError}</span>
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-3">
-            <Select
-              label="Location / Chapel"
-              required
-              options={locations.map((l) => ({ value: l.id, label: l.name }))}
-              value={formData.location}
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-            />
+          <div className="max-h-[60vh] overflow-y-auto pr-2 space-y-6">
+            {forms.map((formData, index) => (
+                <div key={index} className="p-4 bg-slate-50 border border-slate-200 rounded-xl relative">
+                    {forms.length > 1 && !editRecord && (
+                        <button type="button" onClick={() => removeTankForm(index)} className="absolute top-4 right-4 text-rose-400 hover:text-rose-600 transition-colors">
+                            <Trash2 size={18} />
+                        </button>
+                    )}
+                    <h3 className="font-semibold text-slate-800 mb-4">{editRecord ? 'Edit Tank' : `Tank ${index + 1}`}</h3>
+                    
+                    {/* General Section */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                        <Input type="date" label="Date" required value={formData.date} onChange={(e) => updateForm(index, 'date', e.target.value)} />
+                        <Select label="Source" required options={WATER_SOURCES} value={formData.water_source} onChange={(e) => updateForm(index, 'water_source', e.target.value)} />
+                        <Select label="Location" required options={locations.map((l) => ({ value: l.id, label: l.name }))} value={formData.location} onChange={(e) => updateForm(index, 'location', e.target.value)} />
+                        <Select label="Shift" required options={SHIFTS} value={formData.shift} onChange={(e) => updateForm(index, 'shift', e.target.value)} />
+                        <Input label="Tank Number" required value={formData.tank} onChange={(e) => updateForm(index, 'tank', e.target.value)} placeholder="e.g. 1" />
+                        <Input label="Patient Name (Optional)" value={formData.patient_name} onChange={(e) => updateForm(index, 'patient_name', e.target.value)} />
+                        <Input type="number" label="Refilled Gallons" value={formData.refilled_gallons} onChange={(e) => updateForm(index, 'refilled_gallons', e.target.value)} />
+                    </div>
 
-            <Input
-              label="Provider"
-              required
-              value={formData.provider}
-              onChange={(e) => setFormData({ ...formData, provider: e.target.value })}
-            />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Initial Reading */}
+                        <div className="p-4 border border-slate-200 rounded-lg bg-white">
+                            <h4 className="text-sm font-semibold text-slate-700 mb-3 border-b pb-2">Initial Reading / Water In</h4>
+                            <div className="space-y-3">
+                                <div className="grid grid-cols-2 gap-3">
+                                    <Input type="number" step="0.01" label="Water Level" value={formData.initial_level} onChange={(e) => updateForm(index, 'initial_level', e.target.value)} required />
+                                    <Input type="number" step="0.01" label="Additional Water" value={formData.initial_additional} onChange={(e) => updateForm(index, 'initial_additional', e.target.value)} />
+                                </div>
+                                <Input label="Checked By" value={formData.initial_checked_by} onChange={(e) => updateForm(index, 'initial_checked_by', e.target.value)} />
+                                <Input label="Remarks" value={formData.initial_remarks} onChange={(e) => updateForm(index, 'initial_remarks', e.target.value)} />
+                            </div>
+                        </div>
+
+                        {/* Subsequent Reading */}
+                        <div className="p-4 border border-slate-200 rounded-lg bg-white">
+                            <h4 className="text-sm font-semibold text-slate-700 mb-3 border-b pb-2">Subsequent Reading / Water Out</h4>
+                            <div className="space-y-3">
+                                <div className="grid grid-cols-2 gap-3">
+                                    <Input type="number" step="0.01" label="Water Level" value={formData.subsequent_level} onChange={(e) => updateForm(index, 'subsequent_level', e.target.value)} />
+                                    <Input type="number" step="0.01" label="Additional Water" value={formData.subsequent_additional} onChange={(e) => updateForm(index, 'subsequent_additional', e.target.value)} />
+                                </div>
+                                <Input label="Checked By" value={formData.subsequent_checked_by} onChange={(e) => updateForm(index, 'subsequent_checked_by', e.target.value)} />
+                                <Input label="Remarks" value={formData.subsequent_remarks} onChange={(e) => updateForm(index, 'subsequent_remarks', e.target.value)} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ))}
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <Input
-              label="Meter Number"
-              required
-              value={formData.meter_number}
-              onChange={(e) => setFormData({ ...formData, meter_number: e.target.value })}
-              placeholder="e.g. MYN-882319"
-            />
-
-            <Input
-              label="Billing Period"
-              required
-              value={formData.billing_period}
-              onChange={(e) => setFormData({ ...formData, billing_period: e.target.value })}
-              placeholder="e.g. October 2026"
-            />
-          </div>
-
-          <div className="grid grid-cols-3 gap-3">
-            <Input
-              label="Previous Reading"
-              type="number"
-              step="0.01"
-              required
-              value={formData.previous_reading}
-              onChange={(e) => setFormData({ ...formData, previous_reading: e.target.value })}
-            />
-
-            <Input
-              label="Current Reading"
-              type="number"
-              step="0.01"
-              required
-              value={formData.current_reading}
-              onChange={(e) => setFormData({ ...formData, current_reading: e.target.value })}
-            />
-
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1.5">Consumption</label>
-              <div className="px-3.5 py-2 rounded-lg bg-[#F0F2F5] border border-slate-200 text-sm font-bold text-sky-400">
-                {calculatedConsumption > 0 ? calculatedConsumption.toFixed(2) : 0} m³
-              </div>
+          <div className="flex justify-between items-center pt-4 border-t border-slate-100">
+            {!editRecord && (
+                <Button type="button" variant="secondary" onClick={addTankForm} icon={Plus}>
+                    Add Another Tank
+                </Button>
+            )}
+            <div className="flex gap-2 ml-auto">
+                <Button type="button" variant="secondary" onClick={() => setIsCreateOpen(false)}>
+                    Cancel
+                </Button>
+                <Button type="submit" variant="primary" loading={formLoading}>
+                    {editRecord ? 'Update' : 'Save Records'}
+                </Button>
             </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <Input
-              label="Bill Amount (₱)"
-              type="number"
-              step="0.01"
-              required
-              value={formData.amount}
-              onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-            />
-
-            <Select
-              label="Payment Status"
-              required
-              options={[
-                { value: 'UNPAID', label: 'Unpaid' },
-                { value: 'OVERDUE', label: 'Overdue' },
-                { value: 'PAID', label: 'Paid' },
-                { value: 'PARTIALLY_PAID', label: 'Partially Paid' },
-              ]}
-              value={formData.payment_status}
-              onChange={(e) => setFormData({ ...formData, payment_status: e.target.value })}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <Input
-              type="date"
-              label="Bill Date"
-              required
-              value={formData.bill_date}
-              onChange={(e) => setFormData({ ...formData, bill_date: e.target.value })}
-            />
-
-            <Input
-              type="date"
-              label="Due Date"
-              required
-              value={formData.due_date}
-              onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
-            />
-          </div>
-
-          {formData.payment_status === 'PAID' && (
-            <Input
-              type="date"
-              label="Date Paid"
-              value={formData.date_paid}
-              onChange={(e) => setFormData({ ...formData, date_paid: e.target.value })}
-            />
-          )}
-
-          <Input
-            label="Notes / Receipt Reference"
-            placeholder="Official Receipt number, check #..."
-            value={formData.notes}
-            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-          />
-
-          <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-200">
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setIsCreateOpen(false);
-                setEditBill(null);
-              }}
-              disabled={formLoading}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" variant="primary" loading={formLoading}>
-              {editBill ? 'Update Bill' : 'Save Water Bill'}
-            </Button>
           </div>
         </form>
       </Modal>

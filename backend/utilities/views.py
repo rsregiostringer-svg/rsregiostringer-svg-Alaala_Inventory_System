@@ -42,27 +42,47 @@ class WaterBillViewSet(viewsets.ModelViewSet):
             qs = qs.filter(billing_period__icontains=period)
         if search:
             qs = qs.filter(
-                Q(meter_number__icontains=search) |
-                Q(provider__icontains=search) |
-                Q(billing_period__icontains=search)
+                Q(tank__icontains=search) |
+                Q(water_source__icontains=search) |
+                Q(billing_period__icontains=search) |
+                Q(patient_name__icontains=search)
             )
         return qs
 
     def perform_create(self, serializer):
         bill = serializer.save()
         log_audit(
-            self.request, 'CREATE', 'WATER', bill.id, f"{bill.location.name} - {bill.billing_period}",
-            f"Recorded water bill for {bill.location.name} ({bill.billing_period}): PHP {bill.amount}."
+            self.request, 'CREATE', 'WATER', bill.id, f"{bill.location.name} - {bill.tank}",
+            f"Recorded water monitoring for {bill.location.name} ({bill.tank})."
         )
         broadcast_event('water.updated', {'id': bill.id, 'location': bill.location.name, 'amount': float(bill.amount)})
 
     def perform_update(self, serializer):
         bill = serializer.save()
         log_audit(
-            self.request, 'UPDATE', 'WATER', bill.id, f"{bill.location.name} - {bill.billing_period}",
-            f"Updated water bill for {bill.location.name} ({bill.billing_period}): status={bill.payment_status}."
+            self.request, 'UPDATE', 'WATER', bill.id, f"{bill.location.name} - {bill.tank}",
+            f"Updated water monitoring for {bill.location.name} ({bill.tank}): status={bill.payment_status}."
         )
         broadcast_event('water.updated', {'id': bill.id, 'location': bill.location.name, 'amount': float(bill.amount)})
+
+    @action(detail=False, methods=['post'])
+    def bulk_create(self, request):
+        from django.db import transaction
+        serializer = self.get_serializer(data=request.data, many=True)
+        if serializer.is_valid():
+            try:
+                with transaction.atomic():
+                    bills = serializer.save()
+                    for bill in bills:
+                        log_audit(
+                            self.request, 'CREATE', 'WATER', bill.id, f"{bill.location.name} - {bill.tank}",
+                            f"Recorded water monitoring for {bill.location.name} ({bill.tank})."
+                        )
+                        broadcast_event('water.updated', {'id': bill.id, 'location': bill.location.name, 'amount': float(bill.amount)})
+                return Response(serializer.data, status=201)
+            except Exception as e:
+                return Response({'detail': str(e)}, status=400)
+        return Response(serializer.errors, status=400)
 
     @action(detail=False, methods=['get'])
     def summary(self, request):

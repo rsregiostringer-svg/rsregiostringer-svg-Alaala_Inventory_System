@@ -11,19 +11,32 @@ class UtilitiesTests(TestCase):
         self.today = datetime.date.today()
 
     def test_water_bill_consumption_auto_calculation(self):
+        # Legacy meter test (subsequent > initial)
         bill = WaterBill.objects.create(
             location=self.loc,
-            meter_number='MTR-001',
-            previous_reading=Decimal('100.00'),
-            current_reading=Decimal('145.50'),
+            tank='MTR-001',
+            initial_level=Decimal('100.00'),
+            subsequent_level=Decimal('145.50'),
             billing_period='October 2026',
-            bill_date=self.today,
+            date=self.today,
             due_date=self.today + datetime.timedelta(days=15),
             amount=Decimal('2500.00'),
             payment_status=PaymentStatus.UNPAID
         )
-        # Expected consumption: 145.50 - 100.00 = 45.50
-        self.assertEqual(bill.consumption, Decimal('45.50'))
+        
+        # New Tank Monitoring Test
+        tank_bill = WaterBill.objects.create(
+            location=self.loc,
+            tank='TANK-01',
+            initial_level=Decimal('700.00'),
+            initial_additional=Decimal('100.00'),
+            subsequent_level=Decimal('500.00'),
+            subsequent_additional=Decimal('0.00'),
+            date=self.today
+        )
+        
+        # 700 + 100 - 500 - 0 = 300
+        self.assertEqual(tank_bill.consumption, Decimal('300.00'))
 
     def test_electricity_bill_consumption_auto_calculation(self):
         bill = ElectricityBill.objects.create(

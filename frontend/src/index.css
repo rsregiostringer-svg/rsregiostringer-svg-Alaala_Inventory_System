@@ -45,13 +45,17 @@
     background: #ffffff !important;
     color: #000000 !important;
   }
+
   .no-print {
     display: none !important;
   }
+
   .print-only {
     display: block !important;
   }
-  .card, table {
+
+  .card,
+  table {
     border: 1px solid #ccc !important;
     box-shadow: none !important;
   }
@@ -61,9 +65,10 @@
 /* Remove arrows/spinners from number inputs */
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }
+
 input[type=number] {
-    -moz-appearance: textfield;
+  -moz-appearance: textfield;
 }

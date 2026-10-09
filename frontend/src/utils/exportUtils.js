@@ -6,7 +6,7 @@ import { api } from '../services/api';
  * @param {object} params - Any filters like { location: 1, start_date: '2026-01-01' }
  * @param {string} filenamePrefix - Used to construct filename like `alaala_{filenamePrefix}_{date}.csv`
  */
-export const handleExportExcel = async (module, params = {}, filenamePrefix = 'export') => {
+export const handleExportExcel = async (module, params = {}, filenamePrefix = 'export', extension = 'csv') => {
   try {
     const searchParams = new URLSearchParams({
       module,
@@ -20,7 +20,7 @@ export const handleExportExcel = async (module, params = {}, filenamePrefix = 'e
       }
     }
 
-    const exportUrl = `${api.baseUrl}/reports/export-csv/?${searchParams.toString()}`;
+    const exportUrl = `${api.baseUrl}/reports/export-${extension}/?${searchParams.toString()}`;
     const token = localStorage.getItem('alaala_access_token');
 
     const res = await fetch(exportUrl, {
@@ -39,7 +39,7 @@ export const handleExportExcel = async (module, params = {}, filenamePrefix = 'e
     a.href = url;
 
     const dateStr = new Date().toISOString().split('T')[0];
-    a.download = `alaala_${filenamePrefix}_${dateStr}.csv`;
+    a.download = `alaala_${filenamePrefix}_${dateStr}.${extension}`;
     document.body.appendChild(a);
     a.click();
     window.URL.revokeObjectURL(url);

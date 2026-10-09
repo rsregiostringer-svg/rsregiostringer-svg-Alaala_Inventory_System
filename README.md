@@ -42,8 +42,8 @@
 - `SERVICES` (Main preparation & embalming facilities)
 - `C2` (Air-conditioned Viewing Chapel 2)
 - `C3` (Air-conditioned Viewing Chapel 3)
-- `NC2` (Non-AC Chapel 2)
-- `NC3` (Non-AC Chapel 3)
+- `NC2` (New Chapel 2)
+- `NC3` (New Chapel 3)
 - `OFFICE` (Central Administrative depot)
 
 The system enforces strict audit accountability, atomic inter-branch stock transfers, negative stock prevention, and exact spreadsheet-aligned laundry workflow accountability.

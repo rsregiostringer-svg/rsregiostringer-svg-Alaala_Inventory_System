@@ -5,6 +5,8 @@ from django.db.models.functions import TruncMonth, TruncWeek, TruncDay
 from caskets.models import Deceased, LamayRecord, Chapel
 from rest_framework import viewsets, status, permissions
 from rest_framework.views import APIView
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError, PermissionDenied
@@ -292,6 +294,8 @@ class SettingsView(APIView):
 from django.utils import timezone
 from django.db.models import Count, Sum, Q
 from rest_framework.views import APIView
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework.response import Response
 from rest_framework import permissions
 from caskets.models import Deceased, LamayRecord, Chapel
@@ -412,6 +416,7 @@ class AnalyticsView(APIView):
         })
 
 
+@method_decorator(cache_page(60 * 5), name='dispatch')
 class DashboardStatsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -450,6 +455,9 @@ class DashboardStatsView(APIView):
             has_elec = user.is_simple_admin or user.has_custom_perm('electricity')
             water_qs = WaterBill.objects.filter(location_id__in=accessible_loc_ids) if has_water else WaterBill.objects.none()
             elec_qs = ElectricityBill.objects.filter(location_id__in=accessible_loc_ids) if has_elec else ElectricityBill.objects.none()
+
+        # Exclude daily tank readings from Water Bills (they don't have a billing period)
+        water_qs = water_qs.exclude(billing_period__isnull=True).exclude(billing_period='')
 
         # 1. Total Inventory
         total_items = active_items.count()

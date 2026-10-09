@@ -24,8 +24,8 @@ class Command(BaseCommand):
             {'name': 'SERVICES', 'code': 'SERVICES', 'description': 'Main preparation & services facility'},
             {'name': 'C2', 'code': 'C2', 'description': 'Chapel 2 (Air-conditioned viewing chapel)'},
             {'name': 'C3', 'code': 'C3', 'description': 'Chapel 3 (Viewing chapel)'},
-            {'name': 'NC2', 'code': 'NC2', 'description': 'Non-AC Chapel 2'},
-            {'name': 'NC3', 'code': 'NC3', 'description': 'Non-AC Chapel 3'},
+            {'name': 'NC2', 'code': 'NC2', 'description': 'New Chapel 2'},
+            {'name': 'NC3', 'code': 'NC3', 'description': 'New Chapel 3'},
             {'name': 'OFFICE', 'code': 'OFFICE', 'description': 'Administrative office & supply depot'},
         ]
 
@@ -353,12 +353,12 @@ class Command(BaseCommand):
             if not WaterBill.objects.filter(location=loc, billing_period=wb['period']).exists():
                 WaterBill.objects.create(
                     location=loc,
-                    provider=wb['prov'],
-                    meter_number=wb['meter'],
-                    previous_reading=wb['prev'],
-                    current_reading=wb['curr'],
+                    water_source=wb['prov'],
+                    tank=wb['meter'],
+                    initial_level=wb['prev'],
+                    subsequent_level=wb['curr'],
                     billing_period=wb['period'],
-                    bill_date=wb['bdate'],
+                    date=wb['bdate'],
                     due_date=wb['ddate'],
                     amount=wb['amt'],
                     payment_status=wb['status'],
